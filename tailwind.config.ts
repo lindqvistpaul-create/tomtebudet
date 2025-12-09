@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Source Sans 3", "sans-serif"],
+        sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
         serif: ["Playfair Display", "serif"],
       },
       colors: {
@@ -29,6 +29,7 @@ export default {
         "pine-dark": "hsl(var(--pine-dark))",
         berry: "hsl(var(--berry))",
         "tomte-red": "hsl(var(--tomte-red))",
+        "tomte-red-foreground": "hsl(var(--tomte-red-foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
