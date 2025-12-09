@@ -313,7 +313,8 @@ const PaymentPage = () => {
 
                 {/* Trust text below button */}
                 <p className="text-center text-xs text-muted-foreground mt-4">
-                  Betalningen reserveras och släpps först efter att tomtebesöket har genomförts.
+                  Genom att slutföra betalningen godkänner du våra{" "}
+                  <Link to="/kopvillkor" className="text-accent hover:underline">köpvillkor</Link>.
                 </p>
 
                 {/* Security badges */}

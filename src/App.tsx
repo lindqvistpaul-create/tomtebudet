@@ -21,6 +21,7 @@ import IconShowcase from "./pages/IconShowcase";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import PrivacySecurityPage from "./pages/PrivacySecurityPage";
 import ContactPage from "./pages/ContactPage";
+import TermsPage from "./pages/TermsPage";
 import Auth from "./pages/Auth";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/sa-funkar-det" element={<HowItWorksPage />} />
             <Route path="/integritet-sakerhet" element={<PrivacySecurityPage />} />
             <Route path="/kontakt" element={<ContactPage />} />
+            <Route path="/kopvillkor" element={<TermsPage />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
