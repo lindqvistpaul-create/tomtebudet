@@ -9,7 +9,8 @@ import {
   Settings,
   Menu,
   X,
-  LogOut
+  LogOut,
+  Home
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -78,8 +79,15 @@ const AdminLayout = () => {
           ))}
         </nav>
 
-        {/* Sign out button */}
-        <div className="p-4 border-t border-snow/10">
+        {/* Footer actions */}
+        <div className="p-4 border-t border-snow/10 space-y-2">
+          <NavLink
+            to="/"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-snow/70 hover:bg-snow/5 hover:text-snow transition-all duration-200 text-sm font-medium"
+          >
+            <Home className="w-5 h-5" />
+            Tillbaka till sidan
+          </NavLink>
           <Button
             variant="ghost"
             className="w-full justify-start gap-3 text-snow/70 hover:text-snow hover:bg-snow/5"
