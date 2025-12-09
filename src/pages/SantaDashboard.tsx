@@ -293,15 +293,28 @@ const SantaDashboard = () => {
         <Sparkles className="w-10 h-10 text-accent" />
       </div>
       <h3 className="font-serif text-2xl text-foreground mb-3">
-        Din profil blir aktiv inför <span className="text-gradient-gold">julen 2026</span>
+        Status: <span className="text-gradient-gold">Förbereds för julen 2026</span>
       </h3>
-      <p className="text-muted-foreground max-w-md mx-auto mb-6">
-        Just nu bygger vi upp nätverket. När bokningen öppnar för familjer kommer dina 
-        uppdrag att visas här. Se till att din profil är komplett och uppdaterad!
+      <p className="text-muted-foreground max-w-lg mx-auto mb-6 leading-relaxed">
+        Din tomteprofil är registrerad. Under 2025–2026 kommer vi att:
       </p>
+      <ul className="text-muted-foreground max-w-md mx-auto mb-6 text-left space-y-2">
+        <li className="flex items-start gap-2">
+          <span className="text-accent">–</span>
+          <span>verifiera tomtar</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="text-accent">–</span>
+          <span>testa plattformen</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="text-accent">–</span>
+          <span>förbereda marknadsföring</span>
+        </li>
+      </ul>
       <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6 max-w-md mx-auto">
         <p className="text-sm text-primary font-medium">
-          💡 Tips: Fyll i din profil så noggrant som möjligt nu, så är du redo när bokningen öppnar.
+          📧 Du får mejl från oss när det är dags att gå live och börja ta emot bokningar.
         </p>
       </div>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">

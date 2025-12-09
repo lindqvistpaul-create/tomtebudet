@@ -303,10 +303,15 @@ const BecomeSantaOnboarding = () => {
             <div className="bg-card rounded-3xl p-8 shadow-soft">
               <Gift className="w-16 h-16 text-accent mx-auto mb-6" />
               <h1 className="font-serif text-2xl text-foreground mb-4">
-                Bli tomte inför <span className="text-gradient-gold">julen 2026</span>
+                Bli jultomte hos Tomtebudet – <span className="text-gradient-gold">inför julen 2026</span>
               </h1>
-              <p className="text-muted-foreground mb-6">
-                Skapa ditt tomtekonto nu och bygg din profil. Du blir synlig för familjer när bokningen öppnar.
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                Tomtebudet lanseras till julen 2026. Redan nu kan du som vill jobba som jultomte 
+                skapa ett konto, bygga din profil och bli en del av vårt nätverk.
+              </p>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                När plattformen öppnar för bokningar kommer familjer kunna hitta och boka dig direkt 
+                – tryggt, verifierat och organiserat.
               </p>
               <Button 
                 variant="hero" 
@@ -418,12 +423,16 @@ const BecomeSantaOnboarding = () => {
                 </div>
                 
                 <h1 className="font-serif text-3xl md:text-4xl text-foreground mb-4">
-                  Bli <span className="text-gradient-gold">certifierad jultomte</span> inför julen 2026
+                  Bli jultomte hos Tomtebudet – <span className="text-gradient-gold">inför julen 2026</span>
                 </h1>
                 
+                <p className="text-muted-foreground text-lg mb-4">
+                  Tomtebudet lanseras till julen 2026. Redan nu kan du som vill jobba som jultomte 
+                  skapa ett konto, bygga din profil och bli en del av vårt nätverk.
+                </p>
                 <p className="text-muted-foreground text-lg mb-8">
-                  Vi bygger Sveriges tryggaste tomtenätverk och söker tomtar nu! 
-                  Skapa din profil idag så är du redo när bokningen öppnar för familjer inför julen 2026.
+                  När plattformen öppnar för bokningar kommer familjer kunna hitta och boka dig direkt 
+                  – tryggt, verifierat och organiserat.
                 </p>
 
                 {/* Benefits */}
