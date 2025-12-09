@@ -1,5 +1,5 @@
 import Snowfall from "@/components/Snowfall";
-import Navigation from "@/components/Navigation";
+import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import HowItWorks from "@/components/HowItWorks";
 import WhyTomtebudet from "@/components/WhyTomtebudet";
@@ -10,13 +10,22 @@ import Footer from "@/components/Footer";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
+      {/* Ambient decoration */}
       <Snowfall />
-      <Navigation />
-      <Hero />
-      <HowItWorks />
-      <WhyTomtebudet />
-      <TopSantas />
-      <BecomeSanta />
+      
+      {/* Header / Navigation */}
+      <Header />
+      
+      {/* Main content sections */}
+      <main>
+        <Hero />
+        <HowItWorks />
+        <WhyTomtebudet />
+        <TopSantas />
+        <BecomeSanta />
+      </main>
+      
+      {/* Footer */}
       <Footer />
     </div>
   );
