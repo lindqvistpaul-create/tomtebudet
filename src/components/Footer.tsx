@@ -46,8 +46,8 @@ const Footer = () => {
             <ul className="space-y-2 text-snow/60 text-sm">
               <li><a href="#" className="hover:text-accent transition-colors">Vår historia</a></li>
               <li><a href="#" className="hover:text-accent transition-colors">Kontakta oss</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Integritetspolicy</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Allmänna villkor</a></li>
+              <li><Link to="/integritet-sakerhet" className="hover:text-accent transition-colors">Integritet & säkerhet</Link></li>
+              <li><Link to="/integritet-sakerhet" className="hover:text-accent transition-colors">Användarvillkor</Link></li>
             </ul>
           </div>
         </div>
