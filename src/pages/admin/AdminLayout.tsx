@@ -1,5 +1,5 @@
-import { ReactNode, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, Outlet } from "react-router-dom";
 import { 
   LayoutDashboard, 
   Calendar, 
@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import Logo from "@/components/Logo";
+import AdminNotifications from "@/components/admin/AdminNotifications";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -29,19 +30,22 @@ const navItems = [
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { signOut } = useAuth();
-  const location = useLocation();
 
   return (
     <div className="min-h-screen bg-primary flex">
-      {/* Mobile menu button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="fixed top-4 left-4 z-50 lg:hidden text-snow hover:bg-snow/10"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-        {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-      </Button>
+      {/* Mobile header */}
+      <div className="fixed top-0 left-0 right-0 z-50 lg:hidden bg-primary border-b border-snow/10 h-14 flex items-center justify-between px-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-snow hover:bg-snow/10"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </Button>
+        <Logo variant="horizontal" size="sm" textColor="light" iconColor="gold" />
+        <AdminNotifications />
+      </div>
 
       {/* Sidebar */}
       <aside
@@ -50,10 +54,20 @@ const AdminLayout = () => {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Logo */}
-        <div className="p-6 border-b border-snow/10">
-          <Logo variant="horizontal" className="h-8" />
-          <p className="text-snow/50 text-xs mt-2 uppercase tracking-wider">Adminpanel</p>
+        {/* Logo - desktop only */}
+        <div className="hidden lg:block p-6 border-b border-snow/10">
+          <div className="flex items-center justify-between">
+            <div>
+              <Logo variant="horizontal" className="h-8" />
+              <p className="text-snow/50 text-xs mt-2 uppercase tracking-wider">Adminpanel</p>
+            </div>
+            <AdminNotifications />
+          </div>
+        </div>
+
+        {/* Mobile sidebar header */}
+        <div className="lg:hidden p-4 pt-16 border-b border-snow/10">
+          <p className="text-snow/50 text-xs uppercase tracking-wider">Navigation</p>
         </div>
 
         {/* Navigation */}
@@ -108,8 +122,8 @@ const AdminLayout = () => {
       )}
 
       {/* Main content */}
-      <main className="flex-1 lg:ml-0 min-h-screen">
-        <div className="p-4 lg:p-8 pt-16 lg:pt-8">
+      <main className="flex-1 lg:ml-0 min-h-screen pt-14 lg:pt-0">
+        <div className="p-4 lg:p-8">
           <Outlet />
         </div>
       </main>
