@@ -31,7 +31,7 @@ const Hero = () => {
             style={{ animationDelay: "0.2s" }}
           >
             <Shield className="w-4 h-4 text-accent" />
-            <span className="text-snow/90 text-sm font-medium">Alla tomtar är ID-verifierade med BankID</span>
+            <span className="text-snow/90 text-sm font-medium">Trygg tomtebokning – alla tomtar är BankID-verifierade</span>
           </div>
 
           {/* Main heading */}
@@ -39,7 +39,7 @@ const Hero = () => {
             className="font-serif text-4xl md:text-6xl lg:text-7xl text-snow mb-8 opacity-0 animate-fade-in leading-tight"
             style={{ animationDelay: "0.4s" }}
           >
-            Låt en äkta <span className="text-gradient-gold">jultomte</span> knacka på er dörr i år
+            Boka en äkta <span className="text-gradient-gold">jultomte</span> till julafton
           </h1>
 
           {/* Subtitle */}
@@ -47,8 +47,8 @@ const Hero = () => {
             className="text-lg md:text-xl text-snow/80 mb-12 max-w-2xl mx-auto leading-relaxed opacity-0 animate-fade-in"
             style={{ animationDelay: "0.6s" }}
           >
-            Tomtebudet förmedlar noggrant utvalda och verifierade jultomtar som skapar 
-            oförglömliga ögonblick för er familj. Tryggt, enkelt och magiskt.
+            Hyra jultomte har aldrig varit enklare. Tomtebudet förmedlar noggrant utvalda, 
+            BankID-verifierade tomtar i Stockholm och hela Sverige. Privat jultomte direkt hem till er familj.
           </p>
 
           {/* CTA Buttons */}
@@ -57,7 +57,7 @@ const Hero = () => {
             style={{ animationDelay: "0.8s" }}
           >
             <Button variant="hero" size="xl" onClick={() => scrollToSection("top-santas")}>
-              🎅 Hitta er tomte
+              🎅 Boka tomte nu
             </Button>
             <Button 
               variant="outline" 

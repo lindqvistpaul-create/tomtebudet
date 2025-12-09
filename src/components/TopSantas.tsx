@@ -55,12 +55,12 @@ const TopSantas = () => {
       <div className="container mx-auto px-4">
         {/* Section header */}
         <div className="text-center mb-16">
-          <span className="text-accent font-medium text-sm uppercase tracking-wider">Populära val</span>
+          <span className="text-accent font-medium text-sm uppercase tracking-wider">Boka tomte</span>
           <h2 className="font-serif text-4xl md:text-5xl text-foreground mt-3 mb-4">
-            Uppskattade tomtar <span className="text-primary">nära er</span>
+            Populära jultomtar i <span className="text-primary">Stockholm och hela Sverige</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Möt några av våra mest omtyckta tomtar – redo att göra er julafton magisk
+            Hyra jultomte till julafton – möt våra BankID-verifierade och uppskattade tomtar
           </p>
         </div>
 
