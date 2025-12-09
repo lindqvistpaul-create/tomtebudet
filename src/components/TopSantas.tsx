@@ -1,4 +1,4 @@
-import { Star, MapPin, BadgeCheck } from "lucide-react";
+import { Star, BadgeCheck, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const santas = [
@@ -7,8 +7,8 @@ const santas = [
     location: "Stockholm",
     rating: 5.0,
     reviews: 47,
-    price: 1200,
-    image: "https://images.unsplash.com/photo-1545696968-1a5245650b36?w=300&h=300&fit=crop&crop=face",
+    pricePerQuarter: 650,
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
     verified: true,
   },
   {
@@ -16,8 +16,8 @@ const santas = [
     location: "Göteborg",
     rating: 4.9,
     reviews: 32,
-    price: 1100,
-    image: "https://images.unsplash.com/photo-1482517967863-00e15c9b44be?w=300&h=300&fit=crop&crop=face",
+    pricePerQuarter: 600,
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
     verified: true,
   },
   {
@@ -25,8 +25,8 @@ const santas = [
     location: "Malmö",
     rating: 4.8,
     reviews: 28,
-    price: 1000,
-    image: "https://images.unsplash.com/photo-1576015222774-6a5ed4e2c6f7?w=300&h=300&fit=crop&crop=face",
+    pricePerQuarter: 550,
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=face",
     verified: true,
   },
   {
@@ -34,8 +34,8 @@ const santas = [
     location: "Uppsala",
     rating: 5.0,
     reviews: 19,
-    price: 1150,
-    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop&crop=face",
+    pricePerQuarter: 625,
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=300&fit=crop&crop=face",
     verified: true,
   },
 ];
@@ -60,47 +60,58 @@ const TopSantas = () => {
           {santas.map((santa) => (
             <div
               key={santa.name}
-              className="group bg-card rounded-2xl overflow-hidden shadow-soft hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+              className="group bg-card rounded-2xl overflow-hidden shadow-soft hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-border/50"
             >
               {/* Image */}
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-56 overflow-hidden bg-muted">
                 <img
                   src={santa.image}
                   alt={santa.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
+                {/* Verification badge */}
                 {santa.verified && (
-                  <div className="absolute top-3 right-3 bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                    <BadgeCheck className="w-3 h-3" />
-                    Verifierad
+                  <div className="absolute top-3 right-3 bg-primary text-primary-foreground px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-md">
+                    <BadgeCheck className="w-3.5 h-3.5" />
+                    BankID
                   </div>
                 )}
               </div>
 
               {/* Content */}
               <div className="p-5">
-                <h3 className="font-serif text-xl text-foreground mb-2">{santa.name}</h3>
-                
+                {/* Name and location */}
+                <h3 className="font-serif text-xl text-foreground mb-1">{santa.name}</h3>
                 <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
-                  <MapPin className="w-4 h-4" />
+                  <MapPin className="w-3.5 h-3.5" />
                   <span>{santa.location}</span>
                 </div>
 
-                <div className="flex items-center gap-1 mb-4">
-                  <Star className="w-4 h-4 text-accent fill-accent" />
+                {/* Rating */}
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star 
+                        key={i} 
+                        className={`w-4 h-4 ${i < Math.floor(santa.rating) ? 'text-accent fill-accent' : 'text-muted'}`} 
+                      />
+                    ))}
+                  </div>
                   <span className="font-medium text-foreground">{santa.rating}</span>
-                  <span className="text-muted-foreground text-sm">({santa.reviews} omdömen)</span>
+                  <span className="text-muted-foreground text-sm">({santa.reviews})</span>
                 </div>
 
-                <div className="flex items-center justify-between">
+                {/* Price and CTA */}
+                <div className="flex items-center justify-between pt-4 border-t border-border/50">
                   <div>
-                    <span className="font-serif text-xl text-foreground">{santa.price} kr</span>
-                    <span className="text-muted-foreground text-sm"> / besök</span>
+                    <span className="font-serif text-xl text-foreground">{santa.pricePerQuarter} kr</span>
+                    <span className="text-muted-foreground text-sm"> / 15 min</span>
                   </div>
-                  <Button variant="default" size="sm">
-                    Boka
-                  </Button>
                 </div>
+                
+                <Button variant="default" size="default" className="w-full mt-4">
+                  Boka tomte
+                </Button>
               </div>
             </div>
           ))}
@@ -108,7 +119,7 @@ const TopSantas = () => {
 
         {/* View all button */}
         <div className="text-center mt-12">
-          <Button variant="outline" size="lg">
+          <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/5">
             Visa alla tomtar
           </Button>
         </div>
