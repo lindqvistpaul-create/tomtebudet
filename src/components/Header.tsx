@@ -1,14 +1,20 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Fingerprint } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Menu, X, Fingerprint, User, Gift } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import Logo from "@/components/Logo";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    if (isHomePage) {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.location.href = `/#${id}`;
+    }
     setIsOpen(false);
   };
 
@@ -43,21 +49,34 @@ const Header = () => {
 
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-3">
-            <Button 
-              variant="ghost" 
-              size="default"
-              className="text-snow/80 hover:text-accent hover:bg-snow/5"
-            >
-              <Fingerprint className="w-4 h-4" />
-              Logga in
-            </Button>
-            <Button 
-              variant="hero" 
-              size="default"
-              onClick={() => scrollToSection("top-santas")}
-            >
-              Boka tomte
-            </Button>
+            <Link to="/tomte-dashboard">
+              <Button 
+                variant="ghost" 
+                size="default"
+                className="text-snow/80 hover:text-accent hover:bg-snow/5"
+              >
+                <Gift className="w-4 h-4" />
+                Tomteportal
+              </Button>
+            </Link>
+            <Link to="/mitt-konto">
+              <Button 
+                variant="ghost" 
+                size="default"
+                className="text-snow/80 hover:text-accent hover:bg-snow/5"
+              >
+                <User className="w-4 h-4" />
+                Mitt konto
+              </Button>
+            </Link>
+            <Link to="/sok">
+              <Button 
+                variant="hero" 
+                size="default"
+              >
+                Boka tomte
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -85,22 +104,35 @@ const Header = () => {
               ))}
               
               <div className="flex flex-col gap-2 pt-4 mt-2 border-t border-snow/10">
-                <Button 
-                  variant="ghost" 
-                  size="default"
-                  className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
-                >
-                  <Fingerprint className="w-4 h-4" />
-                  Logga in
-                </Button>
-                <Button 
-                  variant="hero" 
-                  size="default"
-                  onClick={() => scrollToSection("top-santas")}
-                  className="w-full"
-                >
-                  Boka tomte
-                </Button>
+                <Link to="/mitt-konto" onClick={() => setIsOpen(false)}>
+                  <Button 
+                    variant="ghost" 
+                    size="default"
+                    className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
+                  >
+                    <User className="w-4 h-4" />
+                    Mitt konto
+                  </Button>
+                </Link>
+                <Link to="/tomte-dashboard" onClick={() => setIsOpen(false)}>
+                  <Button 
+                    variant="ghost" 
+                    size="default"
+                    className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
+                  >
+                    <Gift className="w-4 h-4" />
+                    Tomteportal
+                  </Button>
+                </Link>
+                <Link to="/sok" onClick={() => setIsOpen(false)}>
+                  <Button 
+                    variant="hero" 
+                    size="default"
+                    className="w-full"
+                  >
+                    Boka tomte
+                  </Button>
+                </Link>
               </div>
             </div>
           </nav>
