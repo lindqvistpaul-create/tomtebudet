@@ -11,7 +11,8 @@ import {
   X,
   LogOut,
   Home,
-  ClipboardCheck
+  ClipboardCheck,
+  Heart
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,6 +23,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { path: "/admin", label: "Översikt", icon: LayoutDashboard, end: true },
   { path: "/admin/granskning", label: "Tomtegranskning", icon: ClipboardCheck },
+  { path: "/admin/familjeintresse", label: "Familjeintresse", icon: Heart },
   { path: "/admin/bokningar", label: "Bokningar", icon: Calendar },
   { path: "/admin/tomtar", label: "Alla tomtar", icon: UserCheck },
   { path: "/admin/kunder", label: "Kunder", icon: Users },

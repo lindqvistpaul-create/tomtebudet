@@ -8,6 +8,7 @@ import { usePageTracking } from "@/hooks/usePageTracking";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import PrelaunchInfo from "./pages/PrelaunchInfo";
+import FamilyInterest from "./pages/FamilyInterest";
 import BecomeSantaOnboarding from "./pages/BecomeSantaOnboarding";
 import SantaDashboard from "./pages/SantaDashboard";
 import UserDashboard from "./pages/UserDashboard";
@@ -26,6 +27,7 @@ import AdminOverview from "./pages/admin/AdminOverview";
 import AdminBookings from "./pages/admin/AdminBookings";
 import AdminSantas from "./pages/admin/AdminSantas";
 import AdminSantaReview from "./pages/admin/AdminSantaReview";
+import AdminFamilyInterest from "./pages/admin/AdminFamilyInterest";
 import AdminCustomers from "./pages/admin/AdminCustomers";
 import AdminCancellations from "./pages/admin/AdminCancellations";
 import AdminSettings from "./pages/admin/AdminSettings";
@@ -58,6 +60,7 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/glomt-losenord" element={<ForgotPassword />} />
             <Route path="/aterstall-losenord" element={<ResetPassword />} />
+            <Route path="/intresse-familj" element={<FamilyInterest />} />
             
             {/* PRELAUNCH: Customer booking routes redirect to info page */}
             <Route path="/sok" element={<PrelaunchInfo />} />
@@ -91,6 +94,7 @@ const App = () => (
             }>
               <Route index element={<AdminOverview />} />
               <Route path="granskning" element={<AdminSantaReview />} />
+              <Route path="familjeintresse" element={<AdminFamilyInterest />} />
               <Route path="bokningar" element={<AdminBookings />} />
               <Route path="tomtar" element={<AdminSantas />} />
               <Route path="kunder" element={<AdminCustomers />} />

@@ -7,6 +7,7 @@ import BecomeSanta from "@/components/BecomeSanta";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 import PrelaunchBanner from "@/components/PrelaunchBanner";
+import FamilyInterestCTA from "@/components/FamilyInterestCTA";
 
 const Index = () => {
   return (
@@ -24,6 +25,7 @@ const Index = () => {
       <main>
         <Hero />
         <HowItWorks />
+        <FamilyInterestCTA />
         <WhyTomtebudet />
         {/* PRELAUNCH: Hide TopSantas since no active santas yet */}
         <BecomeSanta />
