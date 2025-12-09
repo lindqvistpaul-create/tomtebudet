@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Gift, ShieldX, Sparkles, Star, Calendar } from "lucide-react";
 
-type RoleType = "customer" | "santa";
+type RoleType = "customer" | "santa" | "admin";
 
 interface RoleNotAllowedNoticeProps {
   userRole: RoleType;
@@ -10,29 +10,41 @@ interface RoleNotAllowedNoticeProps {
 }
 
 const RoleNotAllowedNotice = ({ userRole, requiredRole }: RoleNotAllowedNoticeProps) => {
-  // Customer trying to access santa pages
-  const isCustomerAccessingSanta = userRole === "customer" && requiredRole === "santa";
-  
-  // Santa trying to access customer pages
-  const isSantaAccessingCustomer = userRole === "santa" && requiredRole === "customer";
-
-  const content = isCustomerAccessingSanta
-    ? {
+  // Determine content based on required role
+  const getContent = () => {
+    if (requiredRole === "admin") {
+      return {
+        title: "Åtkomst nekad",
+        message: "Den här sidan är endast tillgänglig för administratörer. Om du tror att du borde ha tillgång, vänligen kontakta support.",
+        buttonText: "Till startsidan",
+        buttonLink: "/",
+        buttonIcon: Gift,
+        accentColor: "tomte-red",
+      };
+    }
+    
+    if (requiredRole === "santa") {
+      return {
         title: "Endast för jultomtar",
         message: "Den här sidan är bara till för jultomtar. Om du vill bli tomte och sprida julglädje kan du skicka in en ansökan.",
         buttonText: "Bli tomte",
         buttonLink: "/bli-tomte",
         buttonIcon: Star,
         accentColor: "accent",
-      }
-    : {
-        title: "Endast för kunder",
-        message: "Den här sidan är bara till för kunder. Gå till din tomtedashboard för att se dina bokningar och hantera din profil.",
-        buttonText: "Tomtens dashboard",
-        buttonLink: "/tomte-dashboard",
-        buttonIcon: Calendar,
-        accentColor: "primary",
       };
+    }
+    
+    return {
+      title: "Endast för kunder",
+      message: "Den här sidan är bara till för kunder. Gå till din tomtedashboard för att se dina bokningar och hantera din profil.",
+      buttonText: "Tomtens dashboard",
+      buttonLink: "/tomte-dashboard",
+      buttonIcon: Calendar,
+      accentColor: "primary",
+    };
+  };
+
+  const content = getContent();
 
   const ButtonIcon = content.buttonIcon;
 
