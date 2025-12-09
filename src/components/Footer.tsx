@@ -1,5 +1,6 @@
-import { Gift, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
+import Logo from "@/components/Logo";
 
 const Footer = () => {
   return (
@@ -8,9 +9,8 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8 mb-12">
           {/* Logo & description */}
           <div className="md:col-span-1">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <Gift className="w-7 h-7 text-accent" />
-              <span className="font-serif text-xl text-snow">Tomte<span className="text-gradient-gold">budet</span></span>
+            <Link to="/" className="inline-block mb-4">
+              <Logo variant="horizontal" size="md" textColor="light" iconColor="gold" />
             </Link>
             <p className="text-snow/60 text-sm leading-relaxed">
               Vi förmedlar trygga och magiska julupplevelser mellan familjer och 
