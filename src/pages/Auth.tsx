@@ -7,6 +7,8 @@ import { useAuth, UserRole } from "@/hooks/useAuth";
 import { Gift, Mail, Lock, User, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { validatePassword } from "@/lib/passwordValidation";
+import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
@@ -57,6 +59,18 @@ const Auth = () => {
           toast({
             title: "Namn saknas",
             description: "Vänligen ange ditt namn.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Validate password strength
+        const passwordValidation = validatePassword(password);
+        if (!passwordValidation.isValid) {
+          toast({
+            title: "Lösenordet är för svagt",
+            description: passwordValidation.errors[0] || "Välj ett starkare lösenord",
             variant: "destructive",
           });
           setLoading(false);
@@ -214,11 +228,11 @@ const Auth = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10 h-12 bg-background"
                     required
-                    minLength={6}
+                    minLength={8}
                   />
                 </div>
                 {!isLogin && (
-                  <p className="text-xs text-muted-foreground">Minst 6 tecken</p>
+                  <PasswordStrengthIndicator password={password} />
                 )}
               </div>
 
