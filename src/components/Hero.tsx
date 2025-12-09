@@ -3,11 +3,17 @@ import { Sparkles, TreePine } from "lucide-react";
 import { Link } from "react-router-dom";
 import Starfall from "@/components/Starfall";
 import TrustBadge from "@/components/TrustBadge";
+import { analytics } from "@/lib/analytics";
 
 const Hero = () => {
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const handleBookingClick = () => {
+    analytics.ctaClick('boka_tomte', 'hero');
+  };
+
   return (
     <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center bg-gradient-hero overflow-hidden pt-16 md:pt-20">
       {/* Falling stars - fewer on mobile */}
@@ -56,7 +62,7 @@ const Hero = () => {
             className="flex flex-col gap-3 px-4 sm:flex-row sm:gap-4 sm:justify-center sm:px-0 opacity-0 animate-fade-in"
             style={{ animationDelay: "0.8s" }}
           >
-            <Link to="/sok" className="w-full sm:w-auto">
+            <Link to="/sok" className="w-full sm:w-auto" onClick={handleBookingClick}>
               <Button variant="hero" size="lg" className="w-full sm:w-auto h-14 text-base">
                 🎅 Boka tomte nu
               </Button>
