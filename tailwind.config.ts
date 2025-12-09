@@ -28,6 +28,7 @@ export default {
         "gold-glow": "hsl(var(--gold-glow))",
         "pine-dark": "hsl(var(--pine-dark))",
         berry: "hsl(var(--berry))",
+        "tomte-red": "hsl(var(--tomte-red))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

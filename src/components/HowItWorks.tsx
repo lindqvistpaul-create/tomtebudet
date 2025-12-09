@@ -1,40 +1,40 @@
-import { PenLine, Wand2, Send, Heart } from "lucide-react";
+import { Search, ShieldCheck, CalendarCheck, Star } from "lucide-react";
 
 const steps = [
   {
-    icon: PenLine,
-    title: "Skriv din hälsning",
-    description: "Berätta vem hälsningen är till och skriv ett personligt meddelande fyllt med julkärlek.",
+    icon: Search,
+    title: "Hitta din tomte",
+    description: "Bläddra bland våra verifierade tomtar i ditt område. Läs omdömen och se profiler.",
   },
   {
-    icon: Wand2,
-    title: "Tomtens magi",
-    description: "Våra tomtar läser ditt meddelande och förbereder en magisk julhälsning.",
+    icon: ShieldCheck,
+    title: "Trygg bokning",
+    description: "Alla tomtar är legitimerade med BankID. Betala säkert via plattformen.",
   },
   {
-    icon: Send,
-    title: "Leverans från Nordpolen",
-    description: "Hälsningen skickas direkt från tomtens verkstad till din kära mottagare.",
+    icon: CalendarCheck,
+    title: "Bekräfta detaljerna",
+    description: "Dela barnens namn, önskemål och speciella önskningar tryggt med din tomte.",
   },
   {
-    icon: Heart,
-    title: "Glädje sprids",
-    description: "Se glädjen lysa i ögonen när din personliga julhälsning kommer fram.",
+    icon: Star,
+    title: "Magisk julafton",
+    description: "Din tomte kommer hem till er och skapar oförglömliga minnen för hela familjen.",
   },
 ];
 
 const HowItWorks = () => {
   return (
-    <section className="py-24 bg-background">
+    <section id="how-it-works" className="py-24 bg-background">
       <div className="container mx-auto px-4">
         {/* Section header */}
         <div className="text-center mb-16">
-          <span className="text-accent font-medium text-sm uppercase tracking-wider">Så fungerar det</span>
+          <span className="text-accent font-medium text-sm uppercase tracking-wider">Så funkar det</span>
           <h2 className="font-serif text-4xl md:text-5xl text-foreground mt-3 mb-4">
-            Fyra enkla steg till <span className="text-primary">julmagin</span>
+            Fyra enkla steg till <span className="text-primary">trygg bokning</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Att skicka en julhälsning från Nordpolen har aldrig varit enklare
+            Boka en verifierad jultomte på några minuter – helt säkert och enkelt
           </p>
         </div>
 

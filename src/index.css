@@ -32,6 +32,10 @@
     --accent: 42 75% 55%;
     --accent-foreground: 150 30% 15%;
 
+    /* Tomte red accent */
+    --tomte-red: 0 72% 47%;
+    --tomte-red-foreground: 40 33% 98%;
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 40 33% 98%;
 
