@@ -1,12 +1,12 @@
 import { Check } from "lucide-react";
 
 const benefits = [
-  "Alla tomtar verifieras med BankID",
-  "Personlig granskning av vårt team",
-  "Trygg betalning – pengarna frisläpps efter besöket",
-  "Dela barnens önskemål säkert och konfidentiellt",
-  "Se tomten både med och utan dräkt innan bokning",
-  "Tydliga profiler med omdömen från andra familjer",
+  "Alla tomtar BankID-verifierade – trygg tomtebokning garanterad",
+  "Personlig granskning – endast utvalda jultomtar godkänns",
+  "Säker betalning – pengarna frisläpps efter julafton-besöket",
+  "Dela barnens önskelistor säkert med er privata jultomte",
+  "Se tomten med och utan dräkt innan ni bokar tomte",
+  "Omdömen från familjer i Stockholm och hela Sverige",
 ];
 
 const WhyTomtebudet = () => {
@@ -18,10 +18,10 @@ const WhyTomtebudet = () => {
           <div className="text-center mb-16">
             <span className="text-accent font-medium text-sm uppercase tracking-wider">Trygghet & kvalitet</span>
             <h2 className="font-serif text-4xl md:text-5xl text-foreground mt-3 mb-4">
-              Varför familjer väljer <span className="text-primary">Tomtebudet</span>
+              Sveriges tryggaste sätt att <span className="text-primary">hyra jultomte</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-              Vi har skapat en plattform där trygghet och magi går hand i hand
+              Boka tomte med BankID-verifiering och fullständig nöjdhetsgaranti
             </p>
           </div>
 

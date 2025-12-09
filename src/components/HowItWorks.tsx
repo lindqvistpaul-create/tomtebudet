@@ -3,23 +3,23 @@ import { Search, UserCheck, CalendarHeart, Sparkles } from "lucide-react";
 const steps = [
   {
     icon: Search,
-    title: "Upptäck er tomte",
-    description: "Utforska noggrant utvalda tomtar i ert område. Läs omdömen från andra familjer och hitta den som passar just er.",
+    title: "Hitta tomte i ditt område",
+    description: "Utforska BankID-verifierade tomtar nära dig. Tomte Stockholm, Göteborg, Malmö och hela Sverige – se omdömen och välj den som passar er familj.",
   },
   {
     icon: UserCheck,
-    title: "Trygg verifiering",
-    description: "Varje tomte har genomgått ID-kontroll med BankID och granskats personligen av vårt team. Er trygghet är vår prioritet.",
+    title: "Trygg tomtebokning",
+    description: "Varje tomte har genomgått BankID-verifiering och personlig granskning. Boka tomte med fullständig trygghet och nöjdhetsgaranti.",
   },
   {
     icon: CalendarHeart,
-    title: "Skräddarsy besöket",
-    description: "Dela barnens namn, önskelistor och speciella detaljer. Ju mer tomten vet, desto mer magiskt blir mötet.",
+    title: "Personligt julafton-besök",
+    description: "Dela barnens namn, önskelistor och speciella detaljer. Er privata jultomte anpassar besöket för maximal magi.",
   },
   {
     icon: Sparkles,
-    title: "Magi vid dörren",
-    description: "På julafton knackar en riktig tomte på er dörr – redo att skapa minnen som varar livet ut.",
+    title: "Jultomte hem till er",
+    description: "På julafton kommer en riktig jultomte hem till er dörr – redo att skapa minnen som varar livet ut.",
   },
 ];
 
@@ -31,10 +31,10 @@ const HowItWorks = () => {
         <div className="text-center mb-16">
           <span className="text-accent font-medium text-sm uppercase tracking-wider">Så fungerar det</span>
           <h2 className="font-serif text-4xl md:text-5xl text-foreground mt-3 mb-4">
-            Från önskan till <span className="text-primary">oförglömligt ögonblick</span>
+            Boka jultomte i <span className="text-primary">fyra enkla steg</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Fyra enkla steg skiljer er från årets mest magiska julupplevelse
+            Hyra jultomte till julafton – från bokning till magiskt tomtebesök hemma hos er
           </p>
         </div>
 

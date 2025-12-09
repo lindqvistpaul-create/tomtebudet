@@ -47,13 +47,13 @@ const BecomeSanta = () => {
         <div className="max-w-4xl mx-auto">
           {/* Section header */}
           <div className="text-center mb-16">
-            <span className="text-accent font-medium text-sm uppercase tracking-wider">Sprid julglädje</span>
+            <span className="text-accent font-medium text-sm uppercase tracking-wider">Bli tomte</span>
             <h2 className="font-serif text-4xl md:text-5xl text-snow mt-3 mb-4">
-              Bli en av våra <span className="text-gradient-gold">certifierade tomtar</span>
+              Bli en av våra <span className="text-gradient-gold">BankID-verifierade jultomtar</span>
             </h2>
             <p className="text-snow/70 max-w-2xl mx-auto text-lg">
-              Har du hjärta för barn och en gnista av julmagi? Gå med i Tomtebudet 
-              och förvandla julaftnar till oförglömliga ögonblick – samtidigt som du tjänar extra.
+              Vill du hyras ut som jultomte? Gå med i Sveriges tryggaste tomtenätverk och sprid julmagin 
+              i Stockholm, Göteborg, Malmö och hela Sverige. BankID-verifiering krävs.
             </p>
           </div>
 
