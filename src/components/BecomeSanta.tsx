@@ -44,13 +44,13 @@ const BecomeSanta = () => {
         <div className="max-w-4xl mx-auto">
           {/* Section header - compact on mobile */}
           <div className="text-center mb-8 md:mb-16">
-            <span className="text-accent font-medium text-xs md:text-sm uppercase tracking-wider">Bli tomte</span>
+            <span className="text-accent font-medium text-xs md:text-sm uppercase tracking-wider">Bli tomte inför julen 2026</span>
             <h2 className="font-serif text-2xl md:text-5xl text-snow mt-2 md:mt-3 mb-2 md:mb-4">
               Bli en av våra <span className="text-gradient-gold">jultomtar</span>
             </h2>
             <p className="text-snow/70 max-w-2xl mx-auto text-sm md:text-lg">
-              <span className="hidden sm:inline">Vill du hyras ut som jultomte? </span>
-              Gå med i Sveriges tryggaste tomtenätverk.
+              <span className="hidden sm:inline">Vi bygger Sveriges tryggaste tomtenätverk. </span>
+              Skapa din profil nu och var redo när bokningen öppnar.
             </p>
           </div>
 
@@ -86,11 +86,11 @@ const BecomeSanta = () => {
           <div className="text-center px-4 md:px-0">
             <Link to="/bli-tomte" className="block sm:inline-block">
               <Button variant="hero" size="lg" className="w-full sm:w-auto h-14 text-base">
-                🎅 Ansök som tomte
+                🎅 Registrera dig som tomte
               </Button>
             </Link>
             <p className="text-snow/50 text-xs md:text-sm mt-3 md:mt-4">
-              Kostnadsfri registrering • Sätt egna priser
+              Kostnadsfri registrering • Bli synlig för familjer inför julen 2026
             </p>
           </div>
         </div>
