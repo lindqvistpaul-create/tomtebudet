@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
@@ -26,6 +26,8 @@ import {
 } from "lucide-react";
 import SimpleHeader from "@/components/SimpleHeader";
 import Footer from "@/components/Footer";
+import PullToRefresh from "@/components/PullToRefresh";
+import { SkeletonList, SkeletonCard } from "@/components/ui/skeleton-card";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -123,47 +125,51 @@ const SantaDashboard = () => {
   const totalReviews = 47;
 
   // Fetch bookings assigned to this Santa
-  useEffect(() => {
-    const fetchBookings = async () => {
-      if (!user) return;
+  const fetchBookings = useCallback(async () => {
+    if (!user) return;
 
-      setLoading(true);
-      try {
-        const { data: bookingsData, error: bookingsError } = await supabase
-          .from('bookings')
-          .select('*')
-          .eq('santa_user_id', user.id)
-          .order('date', { ascending: true })
-          .order('time', { ascending: true });
+    setLoading(true);
+    try {
+      const { data: bookingsData, error: bookingsError } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('santa_user_id', user.id)
+        .order('date', { ascending: true })
+        .order('time', { ascending: true });
 
-        if (bookingsError) throw bookingsError;
+      if (bookingsError) throw bookingsError;
 
-        // Fetch children for each booking
-        const bookingsWithChildren = await Promise.all(
-          (bookingsData || []).map(async (booking) => {
-            const { data: childrenData } = await supabase
-              .from('booking_children')
-              .select('*')
-              .eq('booking_id', booking.id);
-            
-            return {
-              ...booking,
-              children: childrenData || []
-            };
-          })
-        );
+      // Fetch children for each booking
+      const bookingsWithChildren = await Promise.all(
+        (bookingsData || []).map(async (booking) => {
+          const { data: childrenData } = await supabase
+            .from('booking_children')
+            .select('*')
+            .eq('booking_id', booking.id);
+          
+          return {
+            ...booking,
+            children: childrenData || []
+          };
+        })
+      );
 
-        setBookings(bookingsWithChildren);
-      } catch (error) {
-        console.error('Error fetching bookings:', error);
-        toast.error('Kunde inte hämta bokningar');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBookings();
+      setBookings(bookingsWithChildren);
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+      toast.error('Kunde inte hämta bokningar');
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
+
+  useEffect(() => {
+    fetchBookings();
+  }, [fetchBookings]);
+
+  const handleRefresh = async () => {
+    await fetchBookings();
+  };
 
   // Get today's date for "Dagens schema"
   const today = new Date().toISOString().split('T')[0];
@@ -481,11 +487,12 @@ const SantaDashboard = () => {
     <div className="min-h-screen bg-background">
       <SimpleHeader />
       
-      <main className="pt-24 pb-16">
-        <div className="container mx-auto px-4">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <div>
+      <PullToRefresh onRefresh={handleRefresh}>
+        <main className="pt-24 pb-16">
+          <div className="container mx-auto px-4">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+              <div>
               <h1 className="font-serif text-3xl md:text-4xl text-foreground">
                 Tomtens <span className="text-gradient-gold">dashboard</span>
               </h1>
@@ -1008,6 +1015,7 @@ const SantaDashboard = () => {
           </div>
         </div>
       </main>
+      </PullToRefresh>
 
       <Footer />
     </div>

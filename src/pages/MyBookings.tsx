@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,7 +13,6 @@ import {
   Gift,
   Sparkles,
   CreditCard,
-  Loader2,
   Search,
   User,
   Phone,
@@ -21,6 +20,8 @@ import {
 } from "lucide-react";
 import SimpleHeader from "@/components/SimpleHeader";
 import Footer from "@/components/Footer";
+import PullToRefresh from "@/components/PullToRefresh";
+import { SkeletonList } from "@/components/ui/skeleton-card";
 import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -90,7 +91,7 @@ const MyBookings = () => {
     }
   }, [user]);
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -132,6 +133,10 @@ const MyBookings = () => {
     } finally {
       setLoading(false);
     }
+  }, [user]);
+
+  const handleRefresh = async () => {
+    await fetchBookings();
   };
 
   const upcomingBookings = bookings.filter(
@@ -163,11 +168,14 @@ const MyBookings = () => {
       <div className="min-h-screen bg-background">
         <SimpleHeader />
         <main className="pt-24 pb-16">
-          <div className="container mx-auto px-4 flex items-center justify-center min-h-[50vh]">
-            <div className="flex flex-col items-center gap-4">
-              <Loader2 className="w-8 h-8 text-primary animate-spin" />
-              <p className="text-muted-foreground">Laddar dina bokningar...</p>
+          <div className="container mx-auto px-4">
+            <div className="mb-8">
+              <div className="h-4 w-24 bg-muted rounded animate-pulse mb-2" />
+              <div className="h-10 w-64 bg-muted rounded animate-pulse mb-3" />
+              <div className="h-5 w-96 max-w-full bg-muted rounded animate-pulse" />
             </div>
+            <div className="h-10 w-64 bg-muted rounded-xl animate-pulse mb-6" />
+            <SkeletonList count={3} variant="booking" />
           </div>
         </main>
       </div>
@@ -178,7 +186,8 @@ const MyBookings = () => {
     <div className="min-h-screen bg-background">
       <SimpleHeader />
       
-      <main className="pt-24 pb-16">
+      <PullToRefresh onRefresh={handleRefresh} className="min-h-screen">
+        <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
           {/* Header */}
           <div className="mb-8">
@@ -280,6 +289,7 @@ const MyBookings = () => {
       </main>
 
       <Footer />
+      </PullToRefresh>
     </div>
   );
 };
