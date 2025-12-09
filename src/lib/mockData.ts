@@ -1,4 +1,10 @@
-// Mock data for santas
+/**
+ * DEPRECATED: This file contains mock data that was used during development.
+ * It is no longer used in production - all Santa data comes from the database.
+ * Keeping for reference only.
+ */
+
+// Mock data for santas (NOT USED IN PRODUCTION)
 export interface Santa {
   id: string;
   name: string;
