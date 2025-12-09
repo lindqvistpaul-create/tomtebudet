@@ -15,6 +15,7 @@ import SantaDashboard from "./pages/SantaDashboard";
 import UserDashboard from "./pages/UserDashboard";
 import PaymentPage from "./pages/PaymentPage";
 import WizardDemo from "./pages/WizardDemo";
+import IconShowcase from "./pages/IconShowcase";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/tomte-dashboard" element={<SantaDashboard />} />
           <Route path="/betala/:id" element={<PaymentPage />} />
           <Route path="/wizard" element={<WizardDemo />} />
+          <Route path="/ikoner" element={<IconShowcase />} />
           <Route path="/logotyp" element={<LogoShowcase />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
