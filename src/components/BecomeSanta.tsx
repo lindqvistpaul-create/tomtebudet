@@ -1,21 +1,30 @@
 import { Button } from "@/components/ui/button";
-import { Sparkles, BadgeCheck, Wallet, Calendar } from "lucide-react";
+import { Sparkles, Fingerprint, FileCheck, Camera, CheckCircle } from "lucide-react";
 
-const benefits = [
+const steps = [
   {
-    icon: BadgeCheck,
-    title: "Verifiera dig enkelt",
-    description: "Legitimera dig med BankID på några sekunder",
+    icon: Fingerprint,
+    step: "1",
+    title: "Logga in med BankID",
+    description: "Verifiera din identitet snabbt och säkert med BankID.",
   },
   {
-    icon: Wallet,
-    title: "Tjäna extra pengar",
-    description: "Sätt dina egna priser och få betalt direkt",
+    icon: FileCheck,
+    step: "2",
+    title: "Ladda upp ID-handling",
+    description: "Ladda upp en bild på giltig legitimation för extra trygghet.",
   },
   {
-    icon: Calendar,
-    title: "Flexibla tider",
-    description: "Välj när och var du vill arbeta",
+    icon: Camera,
+    step: "3",
+    title: "Ladda upp två bilder",
+    description: "Ett porträtt och en bild i tomte-outfit så familjer känner igen dig.",
+  },
+  {
+    icon: CheckCircle,
+    step: "4",
+    title: "Godkänns av teamet",
+    description: "Vårt team granskar din ansökan och godkänner dig som certifierad tomte.",
   },
 ];
 
@@ -29,67 +38,60 @@ const BecomeSanta = () => {
       <div className="absolute bottom-20 right-10 text-accent/30 animate-twinkle" style={{ animationDelay: "1s" }}>
         <Sparkles className="w-8 h-8" />
       </div>
+      <div className="absolute top-40 right-20 text-accent/15 animate-twinkle" style={{ animationDelay: "0.5s" }}>
+        <Sparkles className="w-5 h-5" />
+      </div>
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Content */}
-            <div>
-              <span className="text-accent font-medium text-sm uppercase tracking-wider">Bli en del av oss</span>
-              <h2 className="font-serif text-4xl md:text-5xl text-snow mt-3 mb-6">
-                Bli <span className="text-gradient-gold">Tomte</span>
-              </h2>
-              <p className="text-snow/80 text-lg mb-8 leading-relaxed">
-                Älskar du att göra barn glada? Bli en del av Tomtebudet och sprid 
-                julglädje i ditt område. Vi söker pålitliga och kärleksfulla tomtar.
-              </p>
+          {/* Section header */}
+          <div className="text-center mb-16">
+            <span className="text-accent font-medium text-sm uppercase tracking-wider">Bli en del av oss</span>
+            <h2 className="font-serif text-4xl md:text-5xl text-snow mt-3 mb-4">
+              Tjäna extra i jul – bli{" "}
+              <span className="text-gradient-gold">certifierad jultomte</span>
+            </h2>
+            <p className="text-snow/70 max-w-2xl mx-auto text-lg">
+              Gå igenom vår enkla verifieringsprocess och börja sprida julglädje
+            </p>
+          </div>
 
-              {/* Benefits list */}
-              <div className="space-y-4 mb-8">
-                {benefits.map((benefit) => (
-                  <div key={benefit.title} className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                      <benefit.icon className="w-5 h-5 text-accent" />
-                    </div>
-                    <div>
-                      <h4 className="text-snow font-medium mb-1">{benefit.title}</h4>
-                      <p className="text-snow/60 text-sm">{benefit.description}</p>
-                    </div>
+          {/* Steps grid */}
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            {steps.map((item) => (
+              <div
+                key={item.title}
+                className="group relative bg-snow/5 backdrop-blur-sm border border-snow/10 rounded-2xl p-6 hover:bg-snow/10 transition-all duration-300"
+              >
+                {/* Step number badge */}
+                <div className="absolute -top-3 -left-3 w-8 h-8 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-serif font-bold text-sm shadow-lg">
+                  {item.step}
+                </div>
+
+                <div className="flex items-start gap-4">
+                  {/* Icon */}
+                  <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0 group-hover:bg-accent/30 transition-colors">
+                    <item.icon className="w-6 h-6 text-accent" />
                   </div>
-                ))}
-              </div>
 
-              <Button variant="hero" size="xl">
-                Ansök som tomte
-              </Button>
-            </div>
-
-            {/* Stats card */}
-            <div className="bg-card/95 backdrop-blur-sm rounded-3xl p-8 shadow-soft">
-              <h3 className="font-serif text-2xl text-foreground mb-6">Tomtar tjänar i snitt</h3>
-              
-              <div className="text-5xl font-serif text-primary mb-2">8 500 kr</div>
-              <p className="text-muted-foreground mb-8">per julafton (3-5 besök)</p>
-
-              <div className="space-y-4 border-t border-border pt-6">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Genomsnittligt pris per besök</span>
-                  <span className="font-medium text-foreground">1 200 kr</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Snittid per besök</span>
-                  <span className="font-medium text-foreground">20-30 min</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Utbetalning</span>
-                  <span className="font-medium text-foreground">Inom 2 dagar</span>
+                  {/* Content */}
+                  <div>
+                    <h3 className="font-serif text-xl text-snow mb-2">{item.title}</h3>
+                    <p className="text-snow/60 leading-relaxed">{item.description}</p>
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
 
-              <p className="text-muted-foreground text-sm mt-6">
-                * Baserat på tomtar med 4.5+ betyg i Stockholm-området
-              </p>
-            </div>
+          {/* CTA */}
+          <div className="text-center">
+            <Button variant="hero" size="xl">
+              🎅 Bli tomte
+            </Button>
+            <p className="text-snow/50 text-sm mt-4">
+              Gratis att registrera sig • Sätt dina egna priser • Utbetalning inom 2 dagar
+            </p>
           </div>
         </div>
       </div>
