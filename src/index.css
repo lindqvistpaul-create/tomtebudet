@@ -2,118 +2,121 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    /* Nordic Christmas palette */
-    --background: 40 33% 98%;
-    --foreground: 150 30% 15%;
+    /* Tomtebudet Premium Palette */
+    --background: 45 30% 96%;
+    --foreground: 153 52% 12%;
 
-    --card: 40 40% 96%;
-    --card-foreground: 150 30% 15%;
+    --card: 45 25% 94%;
+    --card-foreground: 153 52% 12%;
 
-    --popover: 40 40% 96%;
-    --popover-foreground: 150 30% 15%;
+    --popover: 45 25% 94%;
+    --popover-foreground: 153 52% 12%;
 
-    /* Deep forest green */
-    --primary: 150 40% 22%;
-    --primary-foreground: 40 33% 98%;
+    /* Deep pine green */
+    --primary: 153 52% 12%;
+    --primary-foreground: 45 30% 96%;
 
-    /* Warm Christmas red */
-    --secondary: 0 65% 45%;
-    --secondary-foreground: 40 33% 98%;
+    /* Tomte red for important CTAs */
+    --secondary: 0 66% 47%;
+    --secondary-foreground: 45 30% 96%;
 
-    /* Soft pine */
-    --muted: 150 15% 90%;
-    --muted-foreground: 150 20% 40%;
+    /* Soft muted tones */
+    --muted: 45 20% 90%;
+    --muted-foreground: 153 30% 35%;
 
     /* Golden accent */
-    --accent: 42 75% 55%;
-    --accent-foreground: 150 30% 15%;
+    --accent: 39 60% 59%;
+    --accent-foreground: 153 52% 12%;
 
-    /* Tomte red accent */
-    --tomte-red: 0 72% 47%;
-    --tomte-red-foreground: 40 33% 98%;
+    /* Tomte red */
+    --tomte-red: 0 66% 47%;
+    --tomte-red-foreground: 45 30% 96%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 40 33% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 45 30% 96%;
 
-    --border: 150 15% 85%;
-    --input: 150 15% 85%;
-    --ring: 150 40% 22%;
+    --border: 45 20% 85%;
+    --input: 45 20% 85%;
+    --ring: 153 52% 12%;
 
     --radius: 0.75rem;
 
     /* Custom tokens */
-    --snow: 210 20% 98%;
-    --gold: 42 75% 55%;
-    --gold-glow: 42 80% 65%;
-    --pine-dark: 150 45% 12%;
-    --berry: 0 65% 45%;
+    --snow: 45 30% 98%;
+    --gold: 39 60% 59%;
+    --gold-glow: 39 70% 68%;
+    --pine-dark: 153 52% 8%;
+    --berry: 0 66% 47%;
     
     /* Gradients */
-    --gradient-hero: linear-gradient(180deg, hsl(150 30% 18%) 0%, hsl(150 40% 22%) 50%, hsl(150 35% 28%) 100%);
-    --gradient-gold: linear-gradient(135deg, hsl(42 75% 55%) 0%, hsl(42 80% 65%) 100%);
-    --gradient-snow: linear-gradient(180deg, hsl(210 20% 98%) 0%, hsl(40 33% 98%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(153 52% 10%) 0%, hsl(153 52% 14%) 50%, hsl(153 48% 18%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(39 60% 59%) 0%, hsl(39 70% 68%) 100%);
+    --gradient-snow: linear-gradient(180deg, hsl(45 30% 98%) 0%, hsl(45 30% 96%) 100%);
 
     /* Shadows */
-    --shadow-soft: 0 4px 20px -4px hsl(150 30% 15% / 0.1);
-    --shadow-glow: 0 0 40px hsl(42 75% 55% / 0.3);
+    --shadow-soft: 0 4px 20px -4px hsl(153 52% 12% / 0.08);
+    --shadow-glow: 0 0 40px hsl(39 60% 59% / 0.25);
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 45 30% 96%;
+    --sidebar-foreground: 153 52% 12%;
+    --sidebar-primary: 153 52% 12%;
+    --sidebar-primary-foreground: 45 30% 96%;
+    --sidebar-accent: 45 20% 90%;
+    --sidebar-accent-foreground: 153 52% 12%;
+    --sidebar-border: 45 20% 85%;
+    --sidebar-ring: 153 52% 12%;
   }
 
   .dark {
-    /* Midnight winter palette */
-    --background: 220 40% 8%;
-    --foreground: 40 33% 95%;
+    /* Dark mode - Midnight forest */
+    --background: 153 45% 6%;
+    --foreground: 45 30% 95%;
 
-    --card: 220 35% 12%;
-    --card-foreground: 40 33% 95%;
+    --card: 153 40% 10%;
+    --card-foreground: 45 30% 95%;
 
-    --popover: 220 35% 12%;
-    --popover-foreground: 40 33% 95%;
+    --popover: 153 40% 10%;
+    --popover-foreground: 45 30% 95%;
 
-    --primary: 150 45% 45%;
-    --primary-foreground: 220 40% 8%;
+    --primary: 153 45% 45%;
+    --primary-foreground: 153 45% 6%;
 
     --secondary: 0 55% 55%;
-    --secondary-foreground: 40 33% 98%;
+    --secondary-foreground: 45 30% 98%;
 
-    --muted: 220 30% 18%;
-    --muted-foreground: 40 20% 65%;
+    --muted: 153 30% 15%;
+    --muted-foreground: 45 20% 65%;
 
-    --accent: 42 75% 55%;
-    --accent-foreground: 220 40% 8%;
+    --accent: 39 60% 59%;
+    --accent-foreground: 153 45% 6%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 40 33% 98%;
+    --tomte-red: 0 60% 50%;
+    --tomte-red-foreground: 45 30% 98%;
 
-    --border: 220 30% 20%;
-    --input: 220 30% 20%;
-    --ring: 150 45% 45%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 45 30% 98%;
 
-    --snow: 220 30% 95%;
-    --pine-dark: 220 40% 6%;
+    --border: 153 30% 18%;
+    --input: 153 30% 18%;
+    --ring: 153 45% 45%;
+
+    --snow: 153 20% 92%;
+    --pine-dark: 153 45% 4%;
     
-    --gradient-hero: linear-gradient(180deg, hsl(220 45% 6%) 0%, hsl(220 40% 10%) 50%, hsl(220 35% 15%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(153 50% 5%) 0%, hsl(153 45% 8%) 50%, hsl(153 40% 12%) 100%);
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 153 45% 6%;
+    --sidebar-foreground: 45 30% 95%;
+    --sidebar-primary: 39 60% 59%;
+    --sidebar-primary-foreground: 153 45% 6%;
+    --sidebar-accent: 153 30% 12%;
+    --sidebar-accent-foreground: 45 30% 95%;
+    --sidebar-border: 153 30% 15%;
+    --sidebar-ring: 39 60% 59%;
   }
 }
 
@@ -124,11 +127,12 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Source Sans 3', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
+    @apply tracking-tight;
   }
 }
 
