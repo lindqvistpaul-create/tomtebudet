@@ -6,26 +6,26 @@ const steps = [
   {
     icon: Fingerprint,
     step: "1",
-    title: "Logga in med BankID",
-    description: "Verifiera din identitet snabbt och säkert med BankID.",
+    title: "Verifiera dig med BankID",
+    description: "En trygg och snabb identitetskontroll som ger familjer förtroende.",
   },
   {
     icon: FileCheck,
     step: "2",
-    title: "Ladda upp ID-handling",
-    description: "Ladda upp en bild på giltig legitimation för extra trygghet.",
+    title: "Ladda upp legitimation",
+    description: "Din ID-handling granskas och raderas sedan för din integritet.",
   },
   {
     icon: Camera,
     step: "3",
-    title: "Ladda upp två bilder",
-    description: "Ett porträtt och en bild i tomte-outfit så familjer känner igen dig.",
+    title: "Visa vem du är",
+    description: "Ladda upp ett porträtt och en bild i din tomtedräkt.",
   },
   {
     icon: CheckCircle,
     step: "4",
-    title: "Godkänns av teamet",
-    description: "Vårt team granskar din ansökan och godkänner dig som certifierad tomte.",
+    title: "Välkommen ombord",
+    description: "Efter granskning blir du en del av Tomtebudets exklusiva nätverk.",
   },
 ];
 
@@ -47,13 +47,13 @@ const BecomeSanta = () => {
         <div className="max-w-4xl mx-auto">
           {/* Section header */}
           <div className="text-center mb-16">
-            <span className="text-accent font-medium text-sm uppercase tracking-wider">Bli en del av oss</span>
+            <span className="text-accent font-medium text-sm uppercase tracking-wider">Sprid julglädje</span>
             <h2 className="font-serif text-4xl md:text-5xl text-snow mt-3 mb-4">
-              Tjäna extra i jul – bli{" "}
-              <span className="text-gradient-gold">certifierad jultomte</span>
+              Bli en av våra <span className="text-gradient-gold">certifierade tomtar</span>
             </h2>
             <p className="text-snow/70 max-w-2xl mx-auto text-lg">
-              Gå igenom vår enkla verifieringsprocess och börja sprida julglädje
+              Har du hjärta för barn och en gnista av julmagi? Gå med i Tomtebudet 
+              och förvandla julaftnar till oförglömliga ögonblick – samtidigt som du tjänar extra.
             </p>
           </div>
 
@@ -89,11 +89,11 @@ const BecomeSanta = () => {
           <div className="text-center">
             <Link to="/bli-tomte">
               <Button variant="hero" size="xl">
-                🎅 Bli tomte
+                🎅 Ansök som tomte
               </Button>
             </Link>
             <p className="text-snow/50 text-sm mt-4">
-              Gratis att registrera sig • Sätt dina egna priser • Utbetalning inom 2 dagar
+              Kostnadsfri registrering • Sätt egna priser • Snabb utbetalning
             </p>
           </div>
         </div>

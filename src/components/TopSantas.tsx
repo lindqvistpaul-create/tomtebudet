@@ -4,8 +4,10 @@ import { Link } from "react-router-dom";
 
 const santas = [
   {
+    id: "1",
     name: "Tomte Erik",
     location: "Stockholm",
+    distance: "2.3 km",
     rating: 5.0,
     reviews: 47,
     pricePerQuarter: 650,
@@ -13,8 +15,10 @@ const santas = [
     verified: true,
   },
   {
+    id: "2",
     name: "Tomte Magnus",
     location: "Göteborg",
+    distance: "1.8 km",
     rating: 4.9,
     reviews: 32,
     pricePerQuarter: 600,
@@ -22,8 +26,10 @@ const santas = [
     verified: true,
   },
   {
+    id: "3",
     name: "Tomte Karl",
     location: "Malmö",
+    distance: "3.1 km",
     rating: 4.8,
     reviews: 28,
     pricePerQuarter: 550,
@@ -31,8 +37,10 @@ const santas = [
     verified: true,
   },
   {
+    id: "4",
     name: "Tomte Anders",
     location: "Uppsala",
+    distance: "4.5 km",
     rating: 5.0,
     reviews: 19,
     pricePerQuarter: 625,
@@ -47,20 +55,21 @@ const TopSantas = () => {
       <div className="container mx-auto px-4">
         {/* Section header */}
         <div className="text-center mb-16">
-          <span className="text-accent font-medium text-sm uppercase tracking-wider">Populära tomtar</span>
+          <span className="text-accent font-medium text-sm uppercase tracking-wider">Populära val</span>
           <h2 className="font-serif text-4xl md:text-5xl text-foreground mt-3 mb-4">
-            Topptomtar <span className="text-primary">nära dig</span>
+            Uppskattade tomtar <span className="text-primary">nära er</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Upptäck våra högst betygsatta och mest populära tomtar
+            Möt några av våra mest omtyckta tomtar – redo att göra er julafton magisk
           </p>
         </div>
 
         {/* Santas grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {santas.map((santa) => (
-            <div
-              key={santa.name}
+            <Link
+              key={santa.id}
+              to={`/tomte/${santa.id}`}
               className="group bg-card rounded-2xl overflow-hidden shadow-soft hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-border/50"
             >
               {/* Image */}
@@ -74,7 +83,7 @@ const TopSantas = () => {
                 {santa.verified && (
                   <div className="absolute top-3 right-3 bg-primary text-primary-foreground px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-md">
                     <BadgeCheck className="w-3.5 h-3.5" />
-                    BankID
+                    Verifierad
                   </div>
                 )}
               </div>
@@ -86,6 +95,8 @@ const TopSantas = () => {
                 <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
                   <MapPin className="w-3.5 h-3.5" />
                   <span>{santa.location}</span>
+                  <span className="mx-1">•</span>
+                  <span>{santa.distance}</span>
                 </div>
 
                 {/* Rating */}
@@ -94,7 +105,7 @@ const TopSantas = () => {
                     {[...Array(5)].map((_, i) => (
                       <Star 
                         key={i} 
-                        className={`w-4 h-4 ${i < Math.floor(santa.rating) ? 'text-accent fill-accent' : 'text-muted'}`} 
+                        className={`w-4 h-4 ${i < Math.floor(santa.rating) ? "text-accent fill-accent" : "text-muted"}`} 
                       />
                     ))}
                   </div>
@@ -111,10 +122,10 @@ const TopSantas = () => {
                 </div>
                 
                 <Button variant="default" size="default" className="w-full mt-4">
-                  Boka tomte
+                  Visa profil
                 </Button>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -122,7 +133,7 @@ const TopSantas = () => {
         <div className="text-center mt-12">
           <Link to="/sok">
             <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/5">
-              Visa alla tomtar
+              Utforska alla tomtar
             </Button>
           </Link>
         </div>
