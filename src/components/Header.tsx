@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Gift, User, LogOut, Calendar, Settings, ChevronRight } from "lucide-react";
+import { Menu, X, Gift, User, LogOut, Calendar, Settings, ChevronRight, Shield } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
@@ -25,6 +25,7 @@ const Header = () => {
   const isHomePage = location.pathname === "/";
   const { user, role, signOut, loading } = useAuth();
 
+  const isAdmin = role === "admin";
   const isSanta = role === "santa";
   const isCustomer = role === "customer";
 
@@ -146,6 +147,14 @@ const Header = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
+                    {isAdmin && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="cursor-pointer">
+                          <Shield className="w-4 h-4 mr-2" />
+                          Adminpanel
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem asChild>
                       <Link to="/mitt-konto" className="cursor-pointer">
                         <Settings className="w-4 h-4 mr-2" />
@@ -296,6 +305,18 @@ const Header = () => {
             <div className="flex flex-col gap-1">
               {user ? (
                 <>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-4 text-accent hover:text-accent/80 active:text-accent transition-colors py-4 px-4 rounded-xl hover:bg-accent/10 active:bg-accent/20 touch-manipulation min-h-[56px]"
+                    >
+                      <Shield className="w-5 h-5 flex-shrink-0" />
+                      <span className="flex-1 text-base font-medium">Adminpanel</span>
+                      <ChevronRight className="w-5 h-5 text-accent/40" />
+                    </Link>
+                  )}
+                  
                   <Link
                     to="/mitt-konto"
                     onClick={() => setIsOpen(false)}
