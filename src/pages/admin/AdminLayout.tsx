@@ -10,7 +10,8 @@ import {
   Menu,
   X,
   LogOut,
-  Home
+  Home,
+  ClipboardCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,8 +21,9 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { path: "/admin", label: "Översikt", icon: LayoutDashboard, end: true },
+  { path: "/admin/granskning", label: "Tomtegranskning", icon: ClipboardCheck },
   { path: "/admin/bokningar", label: "Bokningar", icon: Calendar },
-  { path: "/admin/tomtar", label: "Tomtar", icon: UserCheck },
+  { path: "/admin/tomtar", label: "Alla tomtar", icon: UserCheck },
   { path: "/admin/kunder", label: "Kunder", icon: Users },
   { path: "/admin/avbokningar", label: "Avbokningar & dispyter", icon: AlertTriangle },
   { path: "/admin/installningar", label: "Inställningar", icon: Settings },
