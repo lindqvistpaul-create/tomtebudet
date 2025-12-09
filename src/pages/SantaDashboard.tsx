@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { 
   Calendar, 
   Clock, 
@@ -15,38 +13,76 @@ import {
   Check, 
   X, 
   ChevronRight,
+  ChevronDown,
   MapPin,
   Wallet,
   TrendingUp,
-  BadgeCheck
+  BadgeCheck,
+  Gift,
+  FileText,
+  Users,
+  Sparkles
 } from "lucide-react";
 import SimpleHeader from "@/components/SimpleHeader";
 import Footer from "@/components/Footer";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
-// Mock data for santa dashboard
-const upcomingBookings = [
+// Mock data for santa dashboard - structured to match real database schema
+const mockBookings = [
   {
     id: "1",
     customerName: "Familjen Andersson",
-    date: "24 december 2024",
+    date: "2024-12-24",
     time: "14:00",
     duration: 30,
-    address: "Storgatan 15, Stockholm",
-    children: 2,
+    address: "Storgatan 15",
+    city: "Sundbyberg",
+    postal_code: "172 31",
+    instructions: "Ring på dörren, vi bor på våning 3. Barnen vet inte att tomten kommer!",
+    children: [
+      { name: "Emma", age: "5 år", gifts: "Docka och ritblock" },
+      { name: "Oscar", age: "7 år", gifts: "Lego och böcker" }
+    ],
     totalPrice: 900,
-    status: "confirmed"
+    status: "confirmed",
+    paymentStatus: "reserved"
   },
   {
     id: "2",
     customerName: "Familjen Lindqvist",
-    date: "24 december 2024",
+    date: "2024-12-24",
     time: "16:00",
     duration: 45,
-    address: "Kungsgatan 22, Stockholm",
-    children: 3,
+    address: "Kungsgatan 22",
+    city: "Stockholm",
+    postal_code: "111 35",
+    instructions: "Portkod 1234. Kom gärna med en stor säck!",
+    children: [
+      { name: "Maja", age: "4 år", gifts: "Nallebjörn" },
+      { name: "Axel", age: "6 år", gifts: "Dinosaurie" },
+      { name: "Elsa", age: "9 år", gifts: "Konstset" }
+    ],
     totalPrice: 1350,
-    status: "pending"
+    status: "pending",
+    paymentStatus: "reserved"
+  },
+  {
+    id: "3",
+    customerName: "Familjen Bergström",
+    date: "2024-12-24",
+    time: "18:30",
+    duration: 30,
+    address: "Björkvägen 8",
+    city: "Solna",
+    postal_code: "169 51",
+    instructions: "Grinden är olåst, gå rakt fram till dörren.",
+    children: [
+      { name: "Wilma", age: "3 år", gifts: "Pussel och klossar" }
+    ],
+    totalPrice: 900,
+    status: "confirmed",
+    paymentStatus: "reserved"
   }
 ];
 
@@ -104,7 +140,20 @@ const notifications = [
 type TabType = "overview" | "calendar" | "notifications" | "reviews" | "earnings" | "settings";
 
 const SantaDashboard = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>("overview");
+  const [expandedBookingId, setExpandedBookingId] = useState<string | null>(null);
+
+  // Use mock data - structure ready for real API data
+  const bookings = mockBookings;
+  const isVerified = true; // Would come from santa_applications table
+  const averageRating = 4.9;
+  const totalReviews = 47;
+
+  // Get today's date for "Dagens schema"
+  const today = new Date().toISOString().split('T')[0];
+  const todaysBookings = bookings.filter(b => b.date === today);
+  const upcomingBookings = bookings.filter(b => b.date >= today);
 
   const tabs = [
     { id: "overview" as TabType, label: "Översikt", icon: User },
@@ -114,6 +163,201 @@ const SantaDashboard = () => {
     { id: "earnings" as TabType, label: "Inkomster", icon: Wallet },
     { id: "settings" as TabType, label: "Inställningar", icon: Settings },
   ];
+
+  const toggleBookingDetails = (bookingId: string) => {
+    setExpandedBookingId(expandedBookingId === bookingId ? null : bookingId);
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('sv-SE', { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    });
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return (
+          <span className="px-2 py-1 bg-primary/20 text-primary rounded-full text-xs font-medium">
+            Bekräftad
+          </span>
+        );
+      case "pending":
+        return (
+          <span className="px-2 py-1 bg-accent/20 text-accent rounded-full text-xs font-medium">
+            Väntar på bekräftelse
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
+
+  // Empty state component
+  const EmptyState = () => (
+    <div className="bg-card rounded-2xl p-12 shadow-soft text-center">
+      <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+        <Gift className="w-10 h-10 text-primary" />
+      </div>
+      <h3 className="font-serif text-2xl text-foreground mb-3">
+        Du har inga bokningar ännu
+      </h3>
+      <p className="text-muted-foreground max-w-md mx-auto mb-6">
+        När en familj bokar dig dyker uppdragen upp här. Se till att din profil 
+        är uppdaterad och att du har angett din tillgänglighet för julafton.
+      </p>
+      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <Link to="/tomte/1">
+          <Button variant="hero" className="gap-2">
+            <User className="w-4 h-4" />
+            Visa min profil
+          </Button>
+        </Link>
+        <Button variant="outline" onClick={() => setActiveTab("calendar")} className="gap-2">
+          <Calendar className="w-4 h-4" />
+          Hantera tillgänglighet
+        </Button>
+      </div>
+    </div>
+  );
+
+  // Booking card component
+  const BookingCard = ({ booking }: { booking: typeof mockBookings[0] }) => {
+    const isExpanded = expandedBookingId === booking.id;
+    
+    return (
+      <div className="bg-muted/30 rounded-xl overflow-hidden">
+        {/* Main booking info */}
+        <div className="p-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="font-medium text-foreground">{booking.customerName}</h3>
+                {getStatusBadge(booking.status)}
+              </div>
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
+                  {formatDate(booking.date)}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  {booking.time} ({booking.duration} min)
+                </span>
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-4 h-4" />
+                  {booking.city}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Users className="w-4 h-4" />
+                  {booking.children.length} {booking.children.length === 1 ? 'barn' : 'barn'}
+                </span>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <span className="font-serif text-lg text-foreground">{booking.totalPrice} kr</span>
+              {booking.status === "pending" ? (
+                <div className="flex gap-2">
+                  <Button variant="hero" size="sm">
+                    <Check className="w-4 h-4" />
+                    Acceptera
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => toggleBookingDetails(booking.id)}
+                  className="gap-1"
+                >
+                  Visa detaljer
+                  <ChevronDown className={cn(
+                    "w-4 h-4 transition-transform",
+                    isExpanded && "rotate-180"
+                  )} />
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Expanded details */}
+        {isExpanded && (
+          <div className="border-t border-border/50 p-4 bg-background/50 space-y-4">
+            {/* Address */}
+            <div>
+              <h4 className="font-medium text-foreground mb-1 flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-primary" />
+                Adress
+              </h4>
+              <p className="text-muted-foreground ml-6">
+                {booking.address}, {booking.postal_code} {booking.city}
+              </p>
+            </div>
+
+            {/* Children */}
+            <div>
+              <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
+                <Gift className="w-4 h-4 text-primary" />
+                Barn
+              </h4>
+              <div className="ml-6 space-y-2">
+                {booking.children.map((child, index) => (
+                  <div key={index} className="bg-muted/30 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium text-foreground">{child.name}</span>
+                      <span className="text-sm text-muted-foreground">({child.age})</span>
+                    </div>
+                    {child.gifts && (
+                      <p className="text-sm text-muted-foreground">
+                        <span className="text-accent">Önskar:</span> {child.gifts}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Instructions */}
+            {booking.instructions && (
+              <div>
+                <h4 className="font-medium text-foreground mb-1 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-primary" />
+                  Instruktioner
+                </h4>
+                <p className="text-muted-foreground ml-6 bg-primary/5 rounded-lg p-3 border border-primary/10">
+                  "{booking.instructions}"
+                </p>
+              </div>
+            )}
+
+            {/* Payment status */}
+            <div className="ml-6 flex items-center gap-2 text-sm">
+              <CreditCard className="w-4 h-4 text-primary" />
+              <span className="text-primary font-medium">
+                Betalning reserverad hos Tomtebudet
+              </span>
+            </div>
+
+            {/* Action buttons */}
+            <div className="ml-6 flex gap-2 pt-2">
+              <Button variant="outline" size="sm" className="gap-2">
+                <MessageCircle className="w-4 h-4" />
+                Kontakta familjen
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -125,21 +369,25 @@ const SantaDashboard = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
               <h1 className="font-serif text-3xl md:text-4xl text-foreground">
-                Min <span className="text-gradient-gold">tomtesida</span>
+                Tomtens <span className="text-gradient-gold">dashboard</span>
               </h1>
-              <p className="text-muted-foreground mt-1">Välkommen tillbaka, Tomte Erik!</p>
+              <p className="text-muted-foreground mt-1">
+                Här ser du dina bokningar, ditt schema och din profil.
+              </p>
             </div>
             <div className="flex items-center gap-3">
               <Link to="/tomte/1">
                 <Button variant="outline" size="sm" className="gap-2">
                   <User className="w-4 h-4" />
-                  Visa min profil
+                  Visa min offentliga profil
                 </Button>
               </Link>
-              <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
-                <BadgeCheck className="w-5 h-5 text-primary" />
-                <span className="text-sm font-medium text-primary">Verifierad tomte</span>
-              </div>
+              {isVerified && (
+                <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
+                  <BadgeCheck className="w-5 h-5 text-primary" />
+                  <span className="text-sm font-medium text-primary">Verifierad tomte</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -177,6 +425,39 @@ const SantaDashboard = () => {
                     </li>
                   ))}
                 </ul>
+
+                {/* Profile status card */}
+                <div className="mt-6 p-4 bg-muted/30 rounded-xl">
+                  <h4 className="font-medium text-foreground mb-3 text-sm">Profilstatus</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">BankID</span>
+                      {isVerified ? (
+                        <span className="text-primary flex items-center gap-1">
+                          <Check className="w-4 h-4" />
+                          Verifierad
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground">Ej verifierad</span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Betyg</span>
+                      <span className="flex items-center gap-1">
+                        <Star className="w-4 h-4 text-accent fill-accent" />
+                        {averageRating} ({totalReviews})
+                      </span>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full mt-3"
+                    onClick={() => setActiveTab("settings")}
+                  >
+                    Redigera profil
+                  </Button>
+                </div>
               </nav>
             </div>
 
@@ -192,7 +473,7 @@ const SantaDashboard = () => {
                         <span className="text-muted-foreground text-sm">Bokningar i dec</span>
                         <Calendar className="w-5 h-5 text-primary" />
                       </div>
-                      <p className="font-serif text-3xl text-foreground">12</p>
+                      <p className="font-serif text-3xl text-foreground">{upcomingBookings.length}</p>
                       <p className="text-xs text-primary mt-1">+3 sedan förra månaden</p>
                     </div>
                     
@@ -201,8 +482,8 @@ const SantaDashboard = () => {
                         <span className="text-muted-foreground text-sm">Betyg</span>
                         <Star className="w-5 h-5 text-accent fill-accent" />
                       </div>
-                      <p className="font-serif text-3xl text-foreground">4.9</p>
-                      <p className="text-xs text-muted-foreground mt-1">Baserat på 47 omdömen</p>
+                      <p className="font-serif text-3xl text-foreground">{averageRating}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Baserat på {totalReviews} omdömen</p>
                     </div>
                     
                     <div className="bg-card rounded-2xl p-5 shadow-soft">
@@ -226,69 +507,56 @@ const SantaDashboard = () => {
                     </div>
                   </div>
 
+                  {/* Today's Schedule (if any) */}
+                  {todaysBookings.length > 0 && (
+                    <div className="bg-accent/10 border border-accent/20 rounded-2xl p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Sparkles className="w-5 h-5 text-accent" />
+                        <h2 className="font-serif text-2xl text-foreground">Dagens schema</h2>
+                      </div>
+                      <div className="space-y-3">
+                        {todaysBookings
+                          .sort((a, b) => a.time.localeCompare(b.time))
+                          .map((booking) => (
+                            <div 
+                              key={booking.id}
+                              className="flex items-center gap-4 p-4 bg-background rounded-xl"
+                            >
+                              <div className="font-serif text-2xl text-accent w-16">
+                                {booking.time}
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-medium text-foreground">{booking.customerName}</p>
+                                <p className="text-sm text-muted-foreground">{booking.city} • {booking.duration} min</p>
+                              </div>
+                              <Button variant="outline" size="sm" onClick={() => toggleBookingDetails(booking.id)}>
+                                Detaljer
+                              </Button>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Upcoming Bookings */}
                   <div className="bg-card rounded-2xl p-6 shadow-soft">
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="font-serif text-2xl text-foreground">Kommande bokningar</h2>
+                      <h2 className="font-serif text-2xl text-foreground">Kommande uppdrag</h2>
                       <Button variant="ghost" size="sm" onClick={() => setActiveTab("calendar")}>
-                        Visa alla
+                        Visa kalender
                         <ChevronRight className="w-4 h-4" />
                       </Button>
                     </div>
 
-                    <div className="space-y-4">
-                      {upcomingBookings.map((booking) => (
-                        <div
-                          key={booking.id}
-                          className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-muted/30 rounded-xl gap-4"
-                        >
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-medium text-foreground">{booking.customerName}</h3>
-                              {booking.status === "pending" && (
-                                <span className="px-2 py-0.5 bg-accent/20 text-accent rounded-full text-xs font-medium">
-                                  Väntar på bekräftelse
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                              <span className="flex items-center gap-1">
-                                <Calendar className="w-4 h-4" />
-                                {booking.date}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <Clock className="w-4 h-4" />
-                                {booking.time} ({booking.duration} min)
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <MapPin className="w-4 h-4" />
-                                {booking.address}
-                              </span>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-3">
-                            <span className="font-serif text-lg text-foreground">{booking.totalPrice} kr</span>
-                            {booking.status === "pending" ? (
-                              <div className="flex gap-2">
-                                <Button variant="hero" size="sm">
-                                  <Check className="w-4 h-4" />
-                                  Acceptera
-                                </Button>
-                                <Button variant="outline" size="sm">
-                                  <X className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            ) : (
-                              <Button variant="outline" size="sm">
-                                <MessageCircle className="w-4 h-4" />
-                                Chatta
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    {upcomingBookings.length > 0 ? (
+                      <div className="space-y-4">
+                        {upcomingBookings.map((booking) => (
+                          <BookingCard key={booking.id} booking={booking} />
+                        ))}
+                      </div>
+                    ) : (
+                      <EmptyState />
+                    )}
                   </div>
 
                   {/* Recent Reviews */}
@@ -369,6 +637,9 @@ const SantaDashboard = () => {
                     {/* Availability Settings */}
                     <div className="space-y-4">
                       <h3 className="font-medium text-foreground">Tillgängliga tider 24 december</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Ange vilka tider du kan ta emot bokningar på julafton.
+                      </p>
                       
                       <div className="space-y-2">
                         {["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"].map((time) => {
@@ -412,25 +683,23 @@ const SantaDashboard = () => {
                       >
                         <div className={cn(
                           "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0",
-                          notification.type === "booking" && "bg-primary/10 text-primary",
-                          notification.type === "message" && "bg-accent/10 text-accent",
-                          notification.type === "review" && "bg-accent/10 text-accent"
+                          notification.type === "booking" && "bg-primary/10",
+                          notification.type === "message" && "bg-accent/10",
+                          notification.type === "review" && "bg-accent/10"
                         )}>
-                          {notification.type === "booking" && <Calendar className="w-5 h-5" />}
-                          {notification.type === "message" && <MessageCircle className="w-5 h-5" />}
-                          {notification.type === "review" && <Star className="w-5 h-5" />}
+                          {notification.type === "booking" && <Calendar className="w-5 h-5 text-primary" />}
+                          {notification.type === "message" && <MessageCircle className="w-5 h-5 text-accent" />}
+                          {notification.type === "review" && <Star className="w-5 h-5 text-accent fill-accent" />}
                         </div>
-                        
                         <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <h3 className="font-medium text-foreground">{notification.title}</h3>
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="font-medium text-foreground">{notification.title}</h4>
                             <span className="text-xs text-muted-foreground">{notification.time}</span>
                           </div>
-                          <p className="text-muted-foreground text-sm mt-1">{notification.message}</p>
+                          <p className="text-sm text-muted-foreground">{notification.message}</p>
                         </div>
-                        
                         {notification.unread && (
-                          <div className="w-2 h-2 rounded-full bg-secondary flex-shrink-0 mt-2" />
+                          <span className="w-2 h-2 rounded-full bg-primary flex-shrink-0 mt-2" />
                         )}
                       </div>
                     ))}
@@ -442,14 +711,14 @@ const SantaDashboard = () => {
               {activeTab === "reviews" && (
                 <div className="bg-card rounded-2xl p-6 shadow-soft">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="font-serif text-2xl text-foreground">Alla omdömen</h2>
-                    <div className="flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full">
-                      <Star className="w-5 h-5 text-accent fill-accent" />
-                      <span className="font-serif text-xl text-foreground">4.9</span>
-                      <span className="text-muted-foreground text-sm">(47 omdömen)</span>
+                    <h2 className="font-serif text-2xl text-foreground">Omdömen</h2>
+                    <div className="flex items-center gap-2">
+                      <Star className="w-6 h-6 text-accent fill-accent" />
+                      <span className="font-serif text-2xl text-foreground">{averageRating}</span>
+                      <span className="text-muted-foreground">({totalReviews} omdömen)</span>
                     </div>
                   </div>
-
+                  
                   <div className="space-y-4">
                     {recentReviews.map((review) => (
                       <div key={review.id} className="border-b border-border/50 pb-4 last:border-0 last:pb-0">
@@ -478,51 +747,43 @@ const SantaDashboard = () => {
               {/* Earnings Tab */}
               {activeTab === "earnings" && (
                 <div className="space-y-6">
-                  {/* Earnings Overview */}
                   <div className="grid md:grid-cols-3 gap-4">
                     <div className="bg-card rounded-2xl p-6 shadow-soft">
-                      <h3 className="text-muted-foreground text-sm mb-2">Totalt intjänat</h3>
+                      <h3 className="text-muted-foreground text-sm mb-2">Intjänat denna månad</h3>
                       <p className="font-serif text-3xl text-foreground">14 850 kr</p>
-                      <p className="text-xs text-muted-foreground mt-1">December 2024</p>
                     </div>
-                    
                     <div className="bg-card rounded-2xl p-6 shadow-soft">
-                      <h3 className="text-muted-foreground text-sm mb-2">Reserverat</h3>
+                      <h3 className="text-muted-foreground text-sm mb-2">Utbetalat</h3>
                       <p className="font-serif text-3xl text-foreground">6 650 kr</p>
-                      <p className="text-xs text-muted-foreground mt-1">Väntar på genomförda besök</p>
                     </div>
-                    
                     <div className="bg-card rounded-2xl p-6 shadow-soft">
-                      <h3 className="text-muted-foreground text-sm mb-2">Tillgängligt att ta ut</h3>
-                      <p className="font-serif text-3xl text-foreground">8 200 kr</p>
-                      <Button variant="hero" size="sm" className="mt-2 w-full">
-                        <CreditCard className="w-4 h-4" />
-                        Ta ut till bankkonto
+                      <h3 className="text-muted-foreground text-sm mb-2">Tillgängligt för uttag</h3>
+                      <p className="font-serif text-3xl text-accent">8 200 kr</p>
+                      <Button variant="hero" size="sm" className="mt-3 w-full">
+                        Ta ut pengar
                       </Button>
                     </div>
                   </div>
 
-                  {/* Transaction History */}
                   <div className="bg-card rounded-2xl p-6 shadow-soft">
-                    <h2 className="font-serif text-2xl text-foreground mb-6">Transaktionshistorik</h2>
-                    
+                    <h3 className="font-serif text-xl text-foreground mb-4">Transaktionshistorik</h3>
                     <div className="space-y-3">
                       {[
-                        { date: "15 dec", desc: "Bokning - Familjen Svensson", amount: 900, type: "income" },
-                        { date: "14 dec", desc: "Bokning - Familjen Ek", amount: 1350, type: "income" },
-                        { date: "12 dec", desc: "Utbetalning till bankkonto", amount: -5000, type: "withdrawal" },
-                        { date: "10 dec", desc: "Bokning - Familjen Berg", amount: 900, type: "income" },
-                      ].map((transaction, i) => (
-                        <div key={i} className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
+                        { date: "15 dec", desc: "Bokning - Familjen Svensson", amount: "+1 350 kr" },
+                        { date: "14 dec", desc: "Uttag till bankkonto", amount: "-3 000 kr" },
+                        { date: "12 dec", desc: "Bokning - Familjen Johansson", amount: "+900 kr" },
+                        { date: "10 dec", desc: "Bokning - Familjen Pettersson", amount: "+1 800 kr" },
+                      ].map((tx, i) => (
+                        <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                           <div>
-                            <p className="font-medium text-foreground">{transaction.desc}</p>
-                            <p className="text-sm text-muted-foreground">{transaction.date}</p>
+                            <p className="font-medium text-foreground">{tx.desc}</p>
+                            <p className="text-sm text-muted-foreground">{tx.date}</p>
                           </div>
                           <span className={cn(
-                            "font-serif text-lg",
-                            transaction.type === "income" ? "text-primary" : "text-muted-foreground"
+                            "font-medium",
+                            tx.amount.startsWith("+") ? "text-primary" : "text-foreground"
                           )}>
-                            {transaction.type === "income" ? "+" : ""}{transaction.amount} kr
+                            {tx.amount}
                           </span>
                         </div>
                       ))}
@@ -534,91 +795,54 @@ const SantaDashboard = () => {
               {/* Settings Tab */}
               {activeTab === "settings" && (
                 <div className="space-y-6">
-                  {/* Profile Settings */}
                   <div className="bg-card rounded-2xl p-6 shadow-soft">
-                    <h2 className="font-serif text-2xl text-foreground mb-6">Profilinställningar</h2>
-                    
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div>
-                          <label className="text-sm font-medium text-foreground mb-2 block">Pris per 15 min</label>
-                          <Input defaultValue="450" className="bg-background" />
-                        </div>
-                        
-                        <div>
-                          <label className="text-sm font-medium text-foreground mb-2 block">Bio</label>
-                          <Textarea 
-                            defaultValue="Jag har arbetat som tomte i över 10 år och älskar att skapa magiska ögonblick för barn. Min specialitet är att skapa en lugn, varm stämning där varje barn känner sig sedd."
-                            className="bg-background resize-none"
-                            rows={4}
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-4">
-                        <div>
-                          <label className="text-sm font-medium text-foreground mb-2 block">Erfarenhet</label>
-                          <Input defaultValue="10+ års erfarenhet" className="bg-background" />
-                        </div>
-                        
-                        <div>
-                          <label className="text-sm font-medium text-foreground mb-2 block">Max avstånd (km)</label>
-                          <Input defaultValue="25" type="number" className="bg-background" />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-6 pt-6 border-t border-border">
-                      <Button variant="hero">
-                        Spara ändringar
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Photos */}
-                  <div className="bg-card rounded-2xl p-6 shadow-soft">
-                    <h2 className="font-serif text-2xl text-foreground mb-6">Profilbilder</h2>
-                    
+                    <h3 className="font-serif text-xl text-foreground mb-6">Profilinställningar</h3>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label className="text-sm font-medium text-foreground mb-2 block">Porträttbild</label>
-                        <div className="aspect-square bg-muted rounded-xl flex items-center justify-center overflow-hidden">
-                          <img 
-                            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"
-                            alt="Porträtt"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <Button variant="outline" className="w-full mt-3">Byt bild</Button>
+                        <label className="text-sm font-medium text-foreground mb-2 block">
+                          Visningsnamn
+                        </label>
+                        <input
+                          type="text"
+                          className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
+                          defaultValue="Tomte Erik"
+                        />
                       </div>
-                      
                       <div>
-                        <label className="text-sm font-medium text-foreground mb-2 block">I tomtedräkt</label>
-                        <div className="aspect-square bg-muted rounded-xl flex items-center justify-center overflow-hidden">
-                          <img 
-                            src="https://images.unsplash.com/photo-1545996124-0501ebae84d0?w=400&h=400&fit=crop"
-                            alt="I tomtedräkt"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <Button variant="outline" className="w-full mt-3">Byt bild</Button>
+                        <label className="text-sm font-medium text-foreground mb-2 block">
+                          Pris per 15 min
+                        </label>
+                        <input
+                          type="number"
+                          className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
+                          defaultValue="450"
+                        />
                       </div>
                     </div>
+                    <div className="mt-6">
+                      <label className="text-sm font-medium text-foreground mb-2 block">
+                        Beskrivning
+                      </label>
+                      <textarea
+                        className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground min-h-[120px]"
+                        defaultValue="Erfaren tomte med över 10 års erfarenhet av att sprida julglädje..."
+                      />
+                    </div>
+                    <Button variant="hero" className="mt-6">
+                      Spara ändringar
+                    </Button>
                   </div>
 
-                  {/* Payment Settings */}
                   <div className="bg-card rounded-2xl p-6 shadow-soft">
-                    <h2 className="font-serif text-2xl text-foreground mb-6">Betalningsuppgifter</h2>
-                    
-                    <div className="p-4 bg-muted/30 rounded-xl flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <CreditCard className="w-5 h-5 text-muted-foreground" />
+                    <h3 className="font-serif text-xl text-foreground mb-4">Utbetalningsinställningar</h3>
+                    <div className="p-4 bg-muted/30 rounded-xl">
+                      <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-foreground">Bankkonto ****4521</p>
-                          <p className="text-sm text-muted-foreground">Swedbank</p>
+                          <p className="font-medium text-foreground">Nordea ****1234</p>
+                          <p className="text-sm text-muted-foreground">Kopplat bankkonto</p>
                         </div>
+                        <Button variant="outline" size="sm">Ändra</Button>
                       </div>
-                      <Button variant="outline" size="sm">Ändra</Button>
                     </div>
                   </div>
                 </div>
