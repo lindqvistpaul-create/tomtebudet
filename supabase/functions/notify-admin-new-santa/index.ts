@@ -27,10 +27,19 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Verify authorization header exists (JWT verification is handled by Supabase)
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.error("No authorization header provided");
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     const { user_id, name, email, region }: NewSantaRequest = await req.json();
     
     console.log("New santa registration:", { user_id, name, email, region });
-
     // If we don't have full data, try to fetch from database
     let santaName = name || "Ej angivet";
     let santaEmail = email || "Ej angivet";
