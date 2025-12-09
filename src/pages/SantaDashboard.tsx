@@ -130,6 +130,12 @@ const SantaDashboard = () => {
               <p className="text-muted-foreground mt-1">Välkommen tillbaka, Tomte Erik!</p>
             </div>
             <div className="flex items-center gap-3">
+              <Link to="/tomte/1">
+                <Button variant="outline" size="sm" className="gap-2">
+                  <User className="w-4 h-4" />
+                  Visa min profil
+                </Button>
+              </Link>
               <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
                 <BadgeCheck className="w-5 h-5 text-primary" />
                 <span className="text-sm font-medium text-primary">Verifierad tomte</span>

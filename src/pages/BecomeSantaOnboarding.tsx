@@ -649,8 +649,8 @@ const BecomeSantaOnboarding = () => {
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  <Button variant="hero" size="xl" onClick={() => navigate("/")}>
-                    Tillbaka till startsidan
+                  <Button variant="hero" size="xl" onClick={() => navigate("/tomte-dashboard")}>
+                    Gå till din dashboard
                   </Button>
                 </div>
 
