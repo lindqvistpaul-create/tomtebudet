@@ -21,6 +21,8 @@ import IconShowcase from "./pages/IconShowcase";
 import Auth from "./pages/Auth";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +40,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/glomt-losenord" element={<ForgotPassword />} />
+            <Route path="/aterstall-losenord" element={<ResetPassword />} />
             <Route path="/sok" element={<SearchSantas />} />
             <Route path="/tomte/:id" element={<SantaProfile />} />
             <Route path="/wizard" element={<WizardDemo />} />
