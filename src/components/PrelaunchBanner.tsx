@@ -22,15 +22,6 @@ const PrelaunchBanner = () => {
             Bli tomte inför 2026
           </Button>
         </Link>
-        <Link to="/bli-tomte">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground whitespace-nowrap"
-          >
-            Bli tomte inför 2026
-          </Button>
-        </Link>
       </div>
     </div>
   );
