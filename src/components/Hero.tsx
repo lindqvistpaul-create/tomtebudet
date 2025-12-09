@@ -15,7 +15,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center bg-gradient-hero overflow-hidden pt-4 md:pt-8">
+    <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center bg-gradient-hero overflow-hidden pt-0">
       {/* Falling stars - fewer on mobile */}
       <Starfall count={8} />
 
