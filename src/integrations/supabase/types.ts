@@ -14,7 +14,131 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      booking_children: {
+        Row: {
+          age: string
+          booking_id: string
+          gifts: string | null
+          id: string
+          name: string
+          special_info: string | null
+        }
+        Insert: {
+          age: string
+          booking_id: string
+          gifts?: string | null
+          id?: string
+          name: string
+          special_info?: string | null
+        }
+        Update: {
+          age?: string
+          booking_id?: string
+          gifts?: string | null
+          id?: string
+          name?: string
+          special_info?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_children_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bookings: {
+        Row: {
+          address: string
+          city: string | null
+          created_at: string
+          date: string
+          door_code: string | null
+          duration: number
+          id: string
+          instructions: string | null
+          postal_code: string | null
+          santa_id: string
+          santa_image: string | null
+          santa_name: string
+          status: string
+          time: string
+          total_price: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address: string
+          city?: string | null
+          created_at?: string
+          date: string
+          door_code?: string | null
+          duration?: number
+          id?: string
+          instructions?: string | null
+          postal_code?: string | null
+          santa_id: string
+          santa_image?: string | null
+          santa_name: string
+          status?: string
+          time: string
+          total_price: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          city?: string | null
+          created_at?: string
+          date?: string
+          door_code?: string | null
+          duration?: number
+          id?: string
+          instructions?: string | null
+          postal_code?: string | null
+          santa_id?: string
+          santa_image?: string | null
+          santa_name?: string
+          status?: string
+          time?: string
+          total_price?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

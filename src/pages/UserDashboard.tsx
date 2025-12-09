@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,13 +22,16 @@ import {
   ChevronRight,
   Mail,
   Phone,
-  Save
+  Save,
+  LogOut
 } from "lucide-react";
 import SimpleHeader from "@/components/SimpleHeader";
 import Footer from "@/components/Footer";
 import { mockBookings } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const statusConfig = {
   upcoming: {
@@ -51,18 +54,86 @@ const statusConfig = {
 type TabType = "bookings" | "favorites" | "settings";
 
 const UserDashboard = () => {
+  const { user, loading, signOut } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>("settings");
   const [activeBookingTab, setActiveBookingTab] = useState<"upcoming" | "completed">("upcoming");
   const [chatMessage, setChatMessage] = useState("");
   const [selectedBooking, setSelectedBooking] = useState<string | null>(mockBookings[0]?.id || null);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
-  // Mock user data
   const [userData, setUserData] = useState({
-    name: "Anna Andersson",
-    email: "anna.andersson@email.se",
-    phone: "070-123 45 67"
+    name: "",
+    email: "",
+    phone: ""
   });
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
+
+  // Load user data
+  useEffect(() => {
+    if (user) {
+      setUserData({
+        name: user.user_metadata?.full_name || "",
+        email: user.email || "",
+        phone: ""
+      });
+      
+      // Fetch profile data
+      const fetchProfile = async () => {
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        if (data) {
+          setUserData({
+            name: data.full_name || user.user_metadata?.full_name || "",
+            email: data.email || user.email || "",
+            phone: data.phone || ""
+          });
+        }
+      };
+      
+      fetchProfile();
+    }
+  }, [user]);
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: userData.name,
+          phone: userData.phone
+        })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      
+      setIsEditingProfile(false);
+      toast.success("Dina uppgifter har sparats!");
+    } catch (error) {
+      toast.error("Kunde inte spara uppgifterna");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   const filteredBookings = mockBookings.filter((booking) => {
     if (activeBookingTab === "upcoming") return booking.status === "upcoming";
@@ -77,7 +148,6 @@ const UserDashboard = () => {
     { id: "settings" as TabType, label: "Inställningar", icon: Settings },
   ];
 
-  // Mock favorite santas
   const favoriteSantas = [
     {
       id: "1",
@@ -97,6 +167,18 @@ const UserDashboard = () => {
     }
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <SimpleHeader />
@@ -107,7 +189,7 @@ const UserDashboard = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
               <h1 className="font-serif text-3xl md:text-4xl text-foreground">
-                Välkommen, <span className="text-gradient-gold">{userData.name.split(' ')[0]}!</span>
+                Välkommen, <span className="text-gradient-gold">{userData.name.split(' ')[0] || 'användare'}!</span>
               </h1>
               <p className="text-muted-foreground mt-1">Hantera dina bokningar och upplevelser</p>
             </div>
@@ -140,6 +222,15 @@ const UserDashboard = () => {
                       </button>
                     </li>
                   ))}
+                  <li className="pt-2 border-t border-border mt-2">
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-destructive/10 text-destructive"
+                    >
+                      <LogOut className="w-5 h-5" />
+                      <span className="font-medium">Logga ut</span>
+                    </button>
+                  </li>
                 </ul>
               </nav>
             </div>
@@ -149,7 +240,6 @@ const UserDashboard = () => {
               {/* Bookings Tab */}
               {activeTab === "bookings" && (
                 <div className="space-y-6">
-                  {/* Booking Tabs */}
                   <div className="flex gap-2">
                     <Button
                       variant={activeBookingTab === "upcoming" ? "default" : "outline"}
@@ -182,7 +272,6 @@ const UserDashboard = () => {
                     </div>
                   ) : (
                     <div className="grid lg:grid-cols-5 gap-6">
-                      {/* Bookings List */}
                       <div className="lg:col-span-2 space-y-4">
                         {filteredBookings.map((booking) => {
                           const status = statusConfig[booking.status];
@@ -224,10 +313,8 @@ const UserDashboard = () => {
                         })}
                       </div>
 
-                      {/* Booking Details */}
                       {currentBooking && (
                         <div className="lg:col-span-3 space-y-6">
-                          {/* Main Details Card */}
                           <div className="bg-card rounded-2xl p-6 shadow-soft">
                             <div className="flex items-start justify-between mb-6">
                               <div className="flex items-center gap-4">
@@ -307,7 +394,6 @@ const UserDashboard = () => {
                             </div>
                           </div>
 
-                          {/* Chat Card */}
                           {currentBooking.status === "upcoming" && (
                             <div className="bg-card rounded-2xl p-6 shadow-soft">
                               <div className="flex items-center gap-2 mb-4">
@@ -445,12 +531,14 @@ const UserDashboard = () => {
                         <Button 
                           variant="hero" 
                           size="sm" 
-                          onClick={() => {
-                            setIsEditingProfile(false);
-                            toast.success("Dina uppgifter har sparats!");
-                          }}
+                          onClick={handleSaveProfile}
+                          disabled={isSaving}
                         >
-                          <Save className="w-4 h-4" />
+                          {isSaving ? (
+                            <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                          ) : (
+                            <Save className="w-4 h-4" />
+                          )}
                           Spara
                         </Button>
                       )}
@@ -473,9 +561,10 @@ const UserDashboard = () => {
                             id="email"
                             type="email"
                             value={userData.email}
-                            onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-                            className="bg-background"
+                            disabled
+                            className="bg-background opacity-50"
                           />
+                          <p className="text-xs text-muted-foreground">E-postadressen kan inte ändras</p>
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="phone">Telefonnummer</Label>
@@ -485,6 +574,7 @@ const UserDashboard = () => {
                             value={userData.phone}
                             onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
                             className="bg-background"
+                            placeholder="070-123 45 67"
                           />
                         </div>
                       </div>
@@ -494,7 +584,7 @@ const UserDashboard = () => {
                           <User className="w-5 h-5 text-muted-foreground" />
                           <div>
                             <p className="text-sm text-muted-foreground">Namn</p>
-                            <p className="font-medium text-foreground">{userData.name}</p>
+                            <p className="font-medium text-foreground">{userData.name || "Ej angivet"}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl">
@@ -508,7 +598,7 @@ const UserDashboard = () => {
                           <Phone className="w-5 h-5 text-muted-foreground" />
                           <div>
                             <p className="text-sm text-muted-foreground">Telefon</p>
-                            <p className="font-medium text-foreground">{userData.phone}</p>
+                            <p className="font-medium text-foreground">{userData.phone || "Ej angivet"}</p>
                           </div>
                         </div>
                       </div>

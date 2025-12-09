@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import SearchSantas from "./pages/SearchSantas";
 import SantaProfile from "./pages/SantaProfile";
@@ -16,35 +17,39 @@ import UserDashboard from "./pages/UserDashboard";
 import PaymentPage from "./pages/PaymentPage";
 import WizardDemo from "./pages/WizardDemo";
 import IconShowcase from "./pages/IconShowcase";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/sok" element={<SearchSantas />} />
-          <Route path="/tomte/:id" element={<SantaProfile />} />
-          <Route path="/boka/:id" element={<Booking />} />
-          <Route path="/bekraftelse/:bookingId" element={<BookingConfirmation />} />
-          <Route path="/mina-bokningar" element={<MyBookings />} />
-          <Route path="/mitt-konto" element={<UserDashboard />} />
-          <Route path="/bli-tomte" element={<BecomeSantaOnboarding />} />
-          <Route path="/tomte-dashboard" element={<SantaDashboard />} />
-          <Route path="/betala/:id" element={<PaymentPage />} />
-          <Route path="/wizard" element={<WizardDemo />} />
-          <Route path="/ikoner" element={<IconShowcase />} />
-          <Route path="/logotyp" element={<LogoShowcase />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/sok" element={<SearchSantas />} />
+            <Route path="/tomte/:id" element={<SantaProfile />} />
+            <Route path="/boka/:id" element={<Booking />} />
+            <Route path="/bekraftelse/:bookingId" element={<BookingConfirmation />} />
+            <Route path="/mina-bokningar" element={<MyBookings />} />
+            <Route path="/mitt-konto" element={<UserDashboard />} />
+            <Route path="/bli-tomte" element={<BecomeSantaOnboarding />} />
+            <Route path="/tomte-dashboard" element={<SantaDashboard />} />
+            <Route path="/betala/:id" element={<PaymentPage />} />
+            <Route path="/wizard" element={<WizardDemo />} />
+            <Route path="/ikoner" element={<IconShowcase />} />
+            <Route path="/logotyp" element={<LogoShowcase />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
