@@ -25,6 +25,13 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminOverview from "./pages/admin/AdminOverview";
+import AdminBookings from "./pages/admin/AdminBookings";
+import AdminSantas from "./pages/admin/AdminSantas";
+import AdminCustomers from "./pages/admin/AdminCustomers";
+import AdminCancellations from "./pages/admin/AdminCancellations";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 const queryClient = new QueryClient();
 
@@ -85,6 +92,20 @@ const App = () => (
             } />
             {/* Santa onboarding - public, handles own auth */}
             <Route path="/bli-tomte" element={<BecomeSantaOnboarding />} />
+            
+            {/* Admin-only routes */}
+            <Route path="/admin" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<AdminOverview />} />
+              <Route path="bokningar" element={<AdminBookings />} />
+              <Route path="tomtar" element={<AdminSantas />} />
+              <Route path="kunder" element={<AdminCustomers />} />
+              <Route path="avbokningar" element={<AdminCancellations />} />
+              <Route path="installningar" element={<AdminSettings />} />
+            </Route>
             
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
