@@ -59,12 +59,15 @@ export type Database = {
           duration: number
           id: string
           instructions: string | null
+          payment_status: string
           postal_code: string | null
           santa_id: string
           santa_image: string | null
           santa_name: string
           santa_user_id: string | null
           status: string
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
           time: string
           total_price: number
           updated_at: string
@@ -79,12 +82,15 @@ export type Database = {
           duration?: number
           id?: string
           instructions?: string | null
+          payment_status?: string
           postal_code?: string | null
           santa_id: string
           santa_image?: string | null
           santa_name: string
           santa_user_id?: string | null
           status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
           time: string
           total_price: number
           updated_at?: string
@@ -99,12 +105,15 @@ export type Database = {
           duration?: number
           id?: string
           instructions?: string | null
+          payment_status?: string
           postal_code?: string | null
           santa_id?: string
           santa_image?: string | null
           santa_name?: string
           santa_user_id?: string | null
           status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
           time?: string
           total_price?: number
           updated_at?: string
