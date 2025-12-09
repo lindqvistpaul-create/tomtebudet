@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import SearchSantas from "./pages/SearchSantas";
 import SantaProfile from "./pages/SantaProfile";
@@ -30,21 +31,55 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Public routes */}
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/sok" element={<SearchSantas />} />
             <Route path="/tomte/:id" element={<SantaProfile />} />
-            <Route path="/boka/:id" element={<Booking />} />
-            <Route path="/bekraftelse/:bookingId" element={<BookingConfirmation />} />
-            <Route path="/mina-bokningar" element={<MyBookings />} />
-            <Route path="/mitt-konto" element={<UserDashboard />} />
-            <Route path="/bli-tomte" element={<BecomeSantaOnboarding />} />
-            <Route path="/tomte-dashboard" element={<SantaDashboard />} />
-            <Route path="/betala/:id" element={<PaymentPage />} />
             <Route path="/wizard" element={<WizardDemo />} />
             <Route path="/ikoner" element={<IconShowcase />} />
             <Route path="/logotyp" element={<LogoShowcase />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            
+            {/* Protected routes - any logged in user */}
+            <Route path="/mitt-konto" element={
+              <ProtectedRoute>
+                <UserDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/boka/:id" element={
+              <ProtectedRoute>
+                <Booking />
+              </ProtectedRoute>
+            } />
+            <Route path="/betala/:id" element={
+              <ProtectedRoute>
+                <PaymentPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/bekraftelse/:bookingId" element={
+              <ProtectedRoute>
+                <BookingConfirmation />
+              </ProtectedRoute>
+            } />
+            <Route path="/mina-bokningar" element={
+              <ProtectedRoute>
+                <MyBookings />
+              </ProtectedRoute>
+            } />
+            
+            {/* Santa-only routes */}
+            <Route path="/tomte-dashboard" element={
+              <ProtectedRoute requiredRole="santa">
+                <SantaDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/bli-tomte" element={
+              <ProtectedRoute requiredRole="santa">
+                <BecomeSantaOnboarding />
+              </ProtectedRoute>
+            } />
+            
+            {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

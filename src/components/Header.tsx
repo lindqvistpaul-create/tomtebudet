@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Gift, User, LogOut } from "lucide-react";
+import { Menu, X, Gift, User, LogOut, Calendar, Settings } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
@@ -16,7 +16,10 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === "/";
-  const { user, signOut, loading } = useAuth();
+  const { user, role, signOut, loading } = useAuth();
+
+  const isSanta = role === "santa";
+  const isCustomer = role === "customer";
 
   const scrollToSection = (id: string) => {
     if (isHomePage) {
@@ -36,7 +39,6 @@ const Header = () => {
     { label: "Hitta tomte", target: "top-santas" },
     { label: "Så fungerar det", target: "how-it-works" },
     { label: "Trygghet & kvalitet", target: "why-tomtebudet" },
-    { label: "Bli tomte", target: "become-santa" },
   ];
 
   return (
@@ -63,76 +65,117 @@ const Header = () => {
 
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-3">
-            <Link to="/tomte-dashboard">
-              <Button 
-                variant="ghost" 
-                size="default"
-                className="text-snow/80 hover:text-accent hover:bg-snow/5"
-              >
-                <Gift className="w-4 h-4" />
-                Tomteportal
-              </Button>
-            </Link>
-            
             {loading ? (
               <div className="w-24 h-10 bg-snow/10 rounded animate-pulse" />
             ) : user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+              <>
+                {/* Role-specific navigation */}
+                {isSanta && (
+                  <Link to="/tomte-dashboard">
+                    <Button 
+                      variant="ghost" 
+                      size="default"
+                      className="text-snow/80 hover:text-accent hover:bg-snow/5"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      Tomtens dashboard
+                    </Button>
+                  </Link>
+                )}
+                {isCustomer && (
+                  <Link to="/mina-bokningar">
+                    <Button 
+                      variant="ghost" 
+                      size="default"
+                      className="text-snow/80 hover:text-accent hover:bg-snow/5"
+                    >
+                      <Gift className="w-4 h-4" />
+                      Mina bokningar
+                    </Button>
+                  </Link>
+                )}
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="default"
+                      className="text-snow/80 hover:text-accent hover:bg-snow/5 gap-2"
+                    >
+                      <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center">
+                        <User className="w-4 h-4 text-accent" />
+                      </div>
+                      <span className="max-w-24 truncate">
+                        {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem asChild>
+                      <Link to="/mitt-konto" className="cursor-pointer">
+                        <Settings className="w-4 h-4 mr-2" />
+                        Mitt konto
+                      </Link>
+                    </DropdownMenuItem>
+                    {isCustomer && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/mina-bokningar" className="cursor-pointer">
+                          <Gift className="w-4 h-4 mr-2" />
+                          Mina bokningar
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {isSanta && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/tomte-dashboard" className="cursor-pointer">
+                          <Calendar className="w-4 h-4 mr-2" />
+                          Tomtens dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logga ut
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <>
+                <Link to="/auth">
                   <Button 
                     variant="ghost" 
                     size="default"
-                    className="text-snow/80 hover:text-accent hover:bg-snow/5 gap-2"
+                    className="text-snow/80 hover:text-accent hover:bg-snow/5"
                   >
-                    <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center">
-                      <User className="w-4 h-4 text-accent" />
-                    </div>
-                    <span className="max-w-24 truncate">
-                      {user.user_metadata?.full_name || user.email?.split('@')[0]}
-                    </span>
+                    <User className="w-4 h-4" />
+                    Logga in
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem asChild>
-                    <Link to="/mitt-konto" className="cursor-pointer">
-                      <User className="w-4 h-4 mr-2" />
-                      Mitt konto
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/mina-bokningar" className="cursor-pointer">
-                      <Gift className="w-4 h-4 mr-2" />
-                      Mina bokningar
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logga ut
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Link to="/auth">
+                </Link>
+                <Link to="/auth?role=santa">
+                  <Button 
+                    variant="ghost" 
+                    size="default"
+                    className="text-snow/80 hover:text-accent hover:bg-snow/5"
+                  >
+                    <Gift className="w-4 h-4" />
+                    Bli tomte
+                  </Button>
+                </Link>
+              </>
+            )}
+            
+            {!isSanta && (
+              <Link to="/sok">
                 <Button 
-                  variant="ghost" 
+                  variant="hero" 
                   size="default"
-                  className="text-snow/80 hover:text-accent hover:bg-snow/5"
                 >
-                  <User className="w-4 h-4" />
-                  Logga in
+                  Boka tomte
                 </Button>
               </Link>
             )}
-            
-            <Link to="/sok">
-              <Button 
-                variant="hero" 
-                size="default"
-              >
-                Boka tomte
-              </Button>
-            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -168,20 +211,34 @@ const Header = () => {
                         size="default"
                         className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
                       >
-                        <User className="w-4 h-4" />
+                        <Settings className="w-4 h-4" />
                         Mitt konto
                       </Button>
                     </Link>
-                    <Link to="/mina-bokningar" onClick={() => setIsOpen(false)}>
-                      <Button 
-                        variant="ghost" 
-                        size="default"
-                        className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
-                      >
-                        <Gift className="w-4 h-4" />
-                        Mina bokningar
-                      </Button>
-                    </Link>
+                    {isCustomer && (
+                      <Link to="/mina-bokningar" onClick={() => setIsOpen(false)}>
+                        <Button 
+                          variant="ghost" 
+                          size="default"
+                          className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
+                        >
+                          <Gift className="w-4 h-4" />
+                          Mina bokningar
+                        </Button>
+                      </Link>
+                    )}
+                    {isSanta && (
+                      <Link to="/tomte-dashboard" onClick={() => setIsOpen(false)}>
+                        <Button 
+                          variant="ghost" 
+                          size="default"
+                          className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
+                        >
+                          <Calendar className="w-4 h-4" />
+                          Tomtens dashboard
+                        </Button>
+                      </Link>
+                    )}
                     <Button 
                       variant="ghost" 
                       size="default"
@@ -193,36 +250,40 @@ const Header = () => {
                     </Button>
                   </>
                 ) : (
-                  <Link to="/auth" onClick={() => setIsOpen(false)}>
+                  <>
+                    <Link to="/auth" onClick={() => setIsOpen(false)}>
+                      <Button 
+                        variant="ghost" 
+                        size="default"
+                        className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
+                      >
+                        <User className="w-4 h-4" />
+                        Logga in
+                      </Button>
+                    </Link>
+                    <Link to="/auth?role=santa" onClick={() => setIsOpen(false)}>
+                      <Button 
+                        variant="ghost" 
+                        size="default"
+                        className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
+                      >
+                        <Gift className="w-4 h-4" />
+                        Bli tomte
+                      </Button>
+                    </Link>
+                  </>
+                )}
+                {!isSanta && (
+                  <Link to="/sok" onClick={() => setIsOpen(false)}>
                     <Button 
-                      variant="ghost" 
+                      variant="hero" 
                       size="default"
-                      className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
+                      className="w-full"
                     >
-                      <User className="w-4 h-4" />
-                      Logga in
+                      Boka tomte
                     </Button>
                   </Link>
                 )}
-                <Link to="/tomte-dashboard" onClick={() => setIsOpen(false)}>
-                  <Button 
-                    variant="ghost" 
-                    size="default"
-                    className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
-                  >
-                    <Gift className="w-4 h-4" />
-                    Tomteportal
-                  </Button>
-                </Link>
-                <Link to="/sok" onClick={() => setIsOpen(false)}>
-                  <Button 
-                    variant="hero" 
-                    size="default"
-                    className="w-full"
-                  >
-                    Boka tomte
-                  </Button>
-                </Link>
               </div>
             </div>
           </nav>
