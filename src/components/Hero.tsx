@@ -40,41 +40,42 @@ const Hero = () => {
             <TrustBadge variant="hero" />
           </div>
 
-          {/* Main heading - much smaller on mobile */}
+          {/* Main heading - PRELAUNCH message */}
           <h1 
             className="font-serif text-3xl sm:text-4xl md:text-6xl lg:text-7xl text-snow mb-4 md:mb-8 opacity-0 animate-fade-in leading-tight px-2"
             style={{ animationDelay: "0.4s" }}
           >
-            Boka en äkta <span className="text-gradient-gold">jultomte</span> till julafton
+            Bli en <span className="text-gradient-gold">certifierad jultomte</span> till julen 2026
           </h1>
 
-          {/* Subtitle - shorter on mobile */}
+          {/* Subtitle - PRELAUNCH focus on Santa recruitment */}
           <p 
             className="text-base md:text-xl text-snow/80 mb-6 md:mb-12 max-w-2xl mx-auto leading-relaxed opacity-0 animate-fade-in px-4"
             style={{ animationDelay: "0.6s" }}
           >
-            <span className="hidden sm:inline">Hyra jultomte har aldrig varit enklare. Tomtebudet förmedlar noggrant utvalda, </span>
-            BankID-verifierade tomtar i Stockholm och hela Sverige.
+            <span className="hidden sm:inline">Vi bygger Sveriges tryggaste tomtenätverk. </span>
+            Skapa din tomteprofil nu och var redo när bokningen öppnar.
           </p>
 
-          {/* CTA Buttons - full width on mobile, stacked */}
+          {/* CTA Buttons - PRELAUNCH: Focus on Santa recruitment */}
           <div 
             className="flex flex-col gap-3 px-4 sm:flex-row sm:gap-4 sm:justify-center sm:px-0 opacity-0 animate-fade-in"
             style={{ animationDelay: "0.8s" }}
           >
-            <Link to="/sok" className="w-full sm:w-auto" onClick={handleBookingClick}>
+            <Link to="/bli-tomte" className="w-full sm:w-auto" onClick={handleBookingClick}>
               <Button variant="hero" size="lg" className="w-full sm:w-auto h-14 text-base">
-                🎅 Boka tomte nu
+                🎅 Bli tomte inför julen 2026
               </Button>
             </Link>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              onClick={() => scrollToSection("become-santa")}
-              className="w-full sm:w-auto h-14 text-base border-accent text-accent hover:bg-accent/10 hover:text-accent"
-            >
-              Bli en del av magin
-            </Button>
+            <Link to="/sok" className="w-full sm:w-auto">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="w-full sm:w-auto h-14 text-base border-accent text-accent hover:bg-accent/10 hover:text-accent"
+              >
+                Boka tomte (öppnar snart)
+              </Button>
+            </Link>
           </div>
 
           {/* Trust indicators - more compact on mobile */}

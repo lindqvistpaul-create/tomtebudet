@@ -7,15 +7,10 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
-import SearchSantas from "./pages/SearchSantas";
-import SantaProfile from "./pages/SantaProfile";
-import Booking from "./pages/Booking";
-import BookingConfirmation from "./pages/BookingConfirmation";
-import MyBookings from "./pages/MyBookings";
+import PrelaunchInfo from "./pages/PrelaunchInfo";
 import BecomeSantaOnboarding from "./pages/BecomeSantaOnboarding";
 import SantaDashboard from "./pages/SantaDashboard";
 import UserDashboard from "./pages/UserDashboard";
-import PaymentPage from "./pages/PaymentPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import PrivacySecurityPage from "./pages/PrivacySecurityPage";
 import ContactPage from "./pages/ContactPage";
@@ -62,33 +57,19 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/glomt-losenord" element={<ForgotPassword />} />
             <Route path="/aterstall-losenord" element={<ResetPassword />} />
-            <Route path="/sok" element={<SearchSantas />} />
-            <Route path="/tomte/:id" element={<SantaProfile />} />
             
-            {/* Protected routes - any logged in user */}
+            {/* PRELAUNCH: Customer booking routes redirect to info page */}
+            <Route path="/sok" element={<PrelaunchInfo />} />
+            <Route path="/tomte/:id" element={<PrelaunchInfo />} />
+            <Route path="/boka/:id" element={<PrelaunchInfo />} />
+            <Route path="/betala/:id" element={<PrelaunchInfo />} />
+            <Route path="/bekraftelse/:bookingId" element={<PrelaunchInfo />} />
+            <Route path="/mina-bokningar" element={<PrelaunchInfo />} />
+            
+            {/* Protected routes - user account still works */}
             <Route path="/mitt-konto" element={
               <ProtectedRoute>
                 <UserDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/boka/:id" element={
-              <ProtectedRoute>
-                <Booking />
-              </ProtectedRoute>
-            } />
-            <Route path="/betala/:id" element={
-              <ProtectedRoute>
-                <PaymentPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/bekraftelse/:bookingId" element={
-              <ProtectedRoute>
-                <BookingConfirmation />
-              </ProtectedRoute>
-            } />
-            <Route path="/mina-bokningar" element={
-              <ProtectedRoute>
-                <MyBookings />
               </ProtectedRoute>
             } />
             

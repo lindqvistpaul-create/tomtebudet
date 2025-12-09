@@ -286,29 +286,34 @@ const SantaDashboard = () => {
     }
   };
 
-  // Empty state component
+  // Empty state component - PRELAUNCH version
   const EmptyState = () => (
     <div className="bg-card rounded-2xl p-12 shadow-soft text-center">
-      <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-        <Gift className="w-10 h-10 text-primary" />
+      <div className="w-20 h-20 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-6">
+        <Sparkles className="w-10 h-10 text-accent" />
       </div>
       <h3 className="font-serif text-2xl text-foreground mb-3">
-        Du har inga bokningar ännu
+        Din profil blir aktiv inför <span className="text-gradient-gold">julen 2026</span>
       </h3>
       <p className="text-muted-foreground max-w-md mx-auto mb-6">
-        När en familj bokar dig dyker uppdragen upp här. Se till att din profil 
-        är uppdaterad och att du har angett din tillgänglighet för julafton.
+        Just nu bygger vi upp nätverket. När bokningen öppnar för familjer kommer dina 
+        uppdrag att visas här. Se till att din profil är komplett och uppdaterad!
       </p>
+      <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6 max-w-md mx-auto">
+        <p className="text-sm text-primary font-medium">
+          💡 Tips: Fyll i din profil så noggrant som möjligt nu, så är du redo när bokningen öppnar.
+        </p>
+      </div>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
-        <Link to="/tomte/1">
+        <Link to="/bli-tomte">
           <Button variant="hero" className="gap-2">
             <User className="w-4 h-4" />
-            Visa min profil
+            Redigera min profil
           </Button>
         </Link>
-        <Button variant="outline" onClick={() => setActiveTab("calendar")} className="gap-2">
-          <Calendar className="w-4 h-4" />
-          Hantera tillgänglighet
+        <Button variant="outline" onClick={() => setActiveTab("settings")} className="gap-2">
+          <Settings className="w-4 h-4" />
+          Inställningar
         </Button>
       </div>
     </div>
@@ -497,7 +502,7 @@ const SantaDashboard = () => {
                 Tomtens <span className="text-gradient-gold">dashboard</span>
               </h1>
               <p className="text-muted-foreground mt-1">
-                Här ser du dina bokningar, ditt schema och din profil.
+                Din profil är registrerad och blir synlig för familjer inför julen 2026.
               </p>
             </div>
             <div className="flex items-center gap-3">
