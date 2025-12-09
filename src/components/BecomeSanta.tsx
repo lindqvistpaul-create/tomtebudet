@@ -66,7 +66,7 @@ const BecomeSanta = () => {
                   {item.step}
                 </div>
 
-                <div className="flex flex-col md:flex-row md:items-start gap-3 md:gap-4">
+                <div className="flex flex-col items-start md:items-center md:text-center gap-3 md:gap-4">
                   {/* Icon */}
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0 group-hover:bg-accent/30 transition-colors">
                     <item.icon className="w-5 h-5 md:w-6 md:h-6 text-accent" />
