@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Sparkles, TreePine } from "lucide-react";
+import { Link } from "react-router-dom";
 import Starfall from "@/components/Starfall";
 import TrustBadge from "@/components/TrustBadge";
 
@@ -7,7 +8,6 @@ const Hero = () => {
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
-
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-hero overflow-hidden pt-20">
       {/* Falling stars */}
@@ -56,9 +56,11 @@ const Hero = () => {
             className="flex flex-col sm:flex-row gap-4 justify-center opacity-0 animate-fade-in"
             style={{ animationDelay: "0.8s" }}
           >
-            <Button variant="hero" size="xl" onClick={() => scrollToSection("top-santas")}>
-              🎅 Boka tomte nu
-            </Button>
+            <Link to="/sok">
+              <Button variant="hero" size="xl">
+                🎅 Boka tomte nu
+              </Button>
+            </Link>
             <Button 
               variant="outline" 
               size="xl" 
