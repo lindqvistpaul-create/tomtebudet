@@ -1,25 +1,25 @@
-import { Search, ShieldCheck, CalendarCheck, Star } from "lucide-react";
+import { Search, UserCheck, CalendarHeart, Sparkles } from "lucide-react";
 
 const steps = [
   {
     icon: Search,
-    title: "Hitta din tomte",
-    description: "Bläddra bland våra verifierade tomtar i ditt område. Läs omdömen och se profiler.",
+    title: "Sök tomte",
+    description: "Hitta tomtar nära dig och jämför pris, omdömen och tillgänglighet.",
   },
   {
-    icon: ShieldCheck,
-    title: "Trygg bokning",
-    description: "Alla tomtar är legitimerade med BankID. Betala säkert via plattformen.",
+    icon: UserCheck,
+    title: "Verifierade profiler",
+    description: "Alla tomtar legitimerar sig med BankID och laddar upp foto med och utan tomtedräkt.",
   },
   {
-    icon: CalendarCheck,
-    title: "Bekräfta detaljerna",
-    description: "Dela barnens namn, önskemål och speciella önskningar tryggt med din tomte.",
+    icon: CalendarHeart,
+    title: "Boka & dela info",
+    description: "Boka tomten och dela barnens namn samt viktiga detaljer som tomten behöver veta.",
   },
   {
-    icon: Star,
-    title: "Magisk julafton",
-    description: "Din tomte kommer hem till er och skapar oförglömliga minnen för hela familjen.",
+    icon: Sparkles,
+    title: "Magiskt besök",
+    description: "En verifierad tomte dyker upp på julafton och levererar en trygg och oförglömlig upplevelse.",
   },
 ];
 
