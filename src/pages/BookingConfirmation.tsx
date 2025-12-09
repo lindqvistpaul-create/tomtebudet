@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Check, Calendar, MessageCircle, Home, Sparkles } from "lucide-react";
+import { Calendar, MessageCircle, Home, Sparkles } from "lucide-react";
 import SimpleHeader from "@/components/SimpleHeader";
+import AnimatedCheckmark from "@/components/AnimatedCheckmark";
 
 const BookingConfirmation = () => {
   return (
@@ -11,9 +12,9 @@ const BookingConfirmation = () => {
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-2xl">
           <div className="bg-card rounded-3xl p-8 md:p-12 shadow-soft text-center">
-            {/* Success Icon */}
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-              <Check className="w-10 h-10 text-primary" />
+            {/* Success Icon with Animation */}
+            <div className="flex justify-center mb-6">
+              <AnimatedCheckmark size="md" />
             </div>
 
             {/* Heading */}
