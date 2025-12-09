@@ -9,6 +9,7 @@ import SantaProfile from "./pages/SantaProfile";
 import Booking from "./pages/Booking";
 import BookingConfirmation from "./pages/BookingConfirmation";
 import MyBookings from "./pages/MyBookings";
+import BecomeSantaOnboarding from "./pages/BecomeSantaOnboarding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/boka/:id" element={<Booking />} />
           <Route path="/bekraftelse/:bookingId" element={<BookingConfirmation />} />
           <Route path="/mina-bokningar" element={<MyBookings />} />
+          <Route path="/bli-tomte" element={<BecomeSantaOnboarding />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
