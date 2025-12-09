@@ -95,11 +95,13 @@ const MyBookings = () => {
                       )}
                     >
                       <div className="flex items-start gap-4">
-                        <img
-                          src={booking.santaImage}
-                          alt={booking.santaName}
-                          className="w-14 h-14 rounded-xl object-cover"
-                        />
+                        <Link to={`/tomte/${booking.santaId}`} onClick={(e) => e.stopPropagation()}>
+                          <img
+                            src={booking.santaImage}
+                            alt={booking.santaName}
+                            className="w-14 h-14 rounded-xl object-cover hover:ring-2 hover:ring-primary transition-all"
+                          />
+                        </Link>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1">
                             <h3 className="font-serif text-lg text-foreground truncate">
@@ -130,15 +132,19 @@ const MyBookings = () => {
                   <div className="bg-card rounded-2xl p-6 shadow-soft">
                     <div className="flex items-start justify-between mb-6">
                       <div className="flex items-center gap-4">
-                        <img
-                          src={currentBooking.santaImage}
-                          alt={currentBooking.santaName}
-                          className="w-16 h-16 rounded-xl object-cover"
-                        />
+                        <Link to={`/tomte/${currentBooking.santaId}`}>
+                          <img
+                            src={currentBooking.santaImage}
+                            alt={currentBooking.santaName}
+                            className="w-16 h-16 rounded-xl object-cover hover:ring-2 hover:ring-primary transition-all"
+                          />
+                        </Link>
                         <div>
-                          <h2 className="font-serif text-2xl text-foreground">
-                            {currentBooking.santaName}
-                          </h2>
+                          <Link to={`/tomte/${currentBooking.santaId}`} className="hover:text-primary transition-colors">
+                            <h2 className="font-serif text-2xl text-foreground">
+                              {currentBooking.santaName}
+                            </h2>
+                          </Link>
                           <span className={cn(
                             "px-2 py-1 rounded-full text-xs font-medium",
                             statusConfig[currentBooking.status].color

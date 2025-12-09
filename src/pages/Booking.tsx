@@ -72,8 +72,8 @@ const Booking = () => {
   };
 
   const handleConfirm = () => {
-    // In a real app, this would submit to the backend
-    navigate(`/bekraftelse/b-${Date.now()}`);
+    // Navigate to payment page
+    navigate(`/betala/${id}`);
   };
 
   return (
