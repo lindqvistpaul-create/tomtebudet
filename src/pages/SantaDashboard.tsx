@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
@@ -21,70 +21,40 @@ import {
   Gift,
   FileText,
   Users,
-  Sparkles
+  Sparkles,
+  Loader2
 } from "lucide-react";
 import SimpleHeader from "@/components/SimpleHeader";
 import Footer from "@/components/Footer";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
-// Mock data for santa dashboard - structured to match real database schema
-const mockBookings = [
-  {
-    id: "1",
-    customerName: "Familjen Andersson",
-    date: "2024-12-24",
-    time: "14:00",
-    duration: 30,
-    address: "Storgatan 15",
-    city: "Sundbyberg",
-    postal_code: "172 31",
-    instructions: "Ring på dörren, vi bor på våning 3. Barnen vet inte att tomten kommer!",
-    children: [
-      { name: "Emma", age: "5 år", gifts: "Docka och ritblock" },
-      { name: "Oscar", age: "7 år", gifts: "Lego och böcker" }
-    ],
-    totalPrice: 900,
-    status: "confirmed",
-    paymentStatus: "reserved"
-  },
-  {
-    id: "2",
-    customerName: "Familjen Lindqvist",
-    date: "2024-12-24",
-    time: "16:00",
-    duration: 45,
-    address: "Kungsgatan 22",
-    city: "Stockholm",
-    postal_code: "111 35",
-    instructions: "Portkod 1234. Kom gärna med en stor säck!",
-    children: [
-      { name: "Maja", age: "4 år", gifts: "Nallebjörn" },
-      { name: "Axel", age: "6 år", gifts: "Dinosaurie" },
-      { name: "Elsa", age: "9 år", gifts: "Konstset" }
-    ],
-    totalPrice: 1350,
-    status: "pending",
-    paymentStatus: "reserved"
-  },
-  {
-    id: "3",
-    customerName: "Familjen Bergström",
-    date: "2024-12-24",
-    time: "18:30",
-    duration: 30,
-    address: "Björkvägen 8",
-    city: "Solna",
-    postal_code: "169 51",
-    instructions: "Grinden är olåst, gå rakt fram till dörren.",
-    children: [
-      { name: "Wilma", age: "3 år", gifts: "Pussel och klossar" }
-    ],
-    totalPrice: 900,
-    status: "confirmed",
-    paymentStatus: "reserved"
-  }
-];
+interface BookingChild {
+  id: string;
+  name: string;
+  age: string;
+  gifts: string | null;
+  special_info: string | null;
+}
+
+interface Booking {
+  id: string;
+  date: string;
+  time: string;
+  duration: number;
+  address: string;
+  city: string | null;
+  postal_code: string | null;
+  instructions: string | null;
+  total_price: number;
+  status: string;
+  santa_name: string;
+  santa_image: string | null;
+  user_id: string;
+  children?: BookingChild[];
+}
 
 const recentReviews = [
   {
@@ -115,7 +85,7 @@ const notifications = [
     id: "1",
     type: "booking",
     title: "Ny bokning!",
-    message: "Familjen Lindqvist vill boka dig 24 dec kl 16:00",
+    message: "En familj vill boka dig på julafton",
     time: "2 tim sedan",
     unread: true
   },
@@ -123,7 +93,7 @@ const notifications = [
     id: "2",
     type: "message",
     title: "Nytt meddelande",
-    message: "Familjen Andersson: 'Barnen är så exalterade!'",
+    message: "En familj har skickat ett meddelande",
     time: "5 tim sedan",
     unread: true
   },
@@ -143,22 +113,68 @@ const SantaDashboard = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>("overview");
   const [expandedBookingId, setExpandedBookingId] = useState<string | null>(null);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [updatingBookingId, setUpdatingBookingId] = useState<string | null>(null);
 
-  // Use mock data - structure ready for real API data
-  const bookings = mockBookings;
-  const isVerified = true; // Would come from santa_applications table
+  // Profile status (would come from santa_applications table)
+  const isVerified = true;
   const averageRating = 4.9;
   const totalReviews = 47;
+
+  // Fetch bookings assigned to this Santa
+  useEffect(() => {
+    const fetchBookings = async () => {
+      if (!user) return;
+
+      setLoading(true);
+      try {
+        const { data: bookingsData, error: bookingsError } = await supabase
+          .from('bookings')
+          .select('*')
+          .eq('santa_user_id', user.id)
+          .order('date', { ascending: true })
+          .order('time', { ascending: true });
+
+        if (bookingsError) throw bookingsError;
+
+        // Fetch children for each booking
+        const bookingsWithChildren = await Promise.all(
+          (bookingsData || []).map(async (booking) => {
+            const { data: childrenData } = await supabase
+              .from('booking_children')
+              .select('*')
+              .eq('booking_id', booking.id);
+            
+            return {
+              ...booking,
+              children: childrenData || []
+            };
+          })
+        );
+
+        setBookings(bookingsWithChildren);
+      } catch (error) {
+        console.error('Error fetching bookings:', error);
+        toast.error('Kunde inte hämta bokningar');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, [user]);
 
   // Get today's date for "Dagens schema"
   const today = new Date().toISOString().split('T')[0];
   const todaysBookings = bookings.filter(b => b.date === today);
-  const upcomingBookings = bookings.filter(b => b.date >= today);
+  const upcomingBookings = bookings.filter(b => b.date >= today && b.status !== 'declined');
+  const pendingBookings = bookings.filter(b => b.status === 'pending');
 
   const tabs = [
     { id: "overview" as TabType, label: "Översikt", icon: User },
     { id: "calendar" as TabType, label: "Kalender", icon: Calendar },
-    { id: "notifications" as TabType, label: "Notiser", icon: Bell, badge: 2 },
+    { id: "notifications" as TabType, label: "Notiser", icon: Bell, badge: pendingBookings.length > 0 ? pendingBookings.length : undefined },
     { id: "reviews" as TabType, label: "Omdömen", icon: Star },
     { id: "earnings" as TabType, label: "Inkomster", icon: Wallet },
     { id: "settings" as TabType, label: "Inställningar", icon: Settings },
@@ -177,6 +193,58 @@ const SantaDashboard = () => {
     });
   };
 
+  const handleAcceptBooking = async (bookingId: string) => {
+    setUpdatingBookingId(bookingId);
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status: 'confirmed' })
+        .eq('id', bookingId);
+
+      if (error) throw error;
+
+      // Update local state
+      setBookings(prev => prev.map(b => 
+        b.id === bookingId ? { ...b, status: 'confirmed' } : b
+      ));
+
+      toast.success('Bokning accepterad!', {
+        description: 'Familjen får nu en bekräftelse.'
+      });
+    } catch (error) {
+      console.error('Error accepting booking:', error);
+      toast.error('Kunde inte acceptera bokningen');
+    } finally {
+      setUpdatingBookingId(null);
+    }
+  };
+
+  const handleDeclineBooking = async (bookingId: string) => {
+    setUpdatingBookingId(bookingId);
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status: 'declined' })
+        .eq('id', bookingId);
+
+      if (error) throw error;
+
+      // Update local state
+      setBookings(prev => prev.map(b => 
+        b.id === bookingId ? { ...b, status: 'declined' } : b
+      ));
+
+      toast.success('Bokning nekad', {
+        description: 'Familjen meddelas om att hitta en annan tomte.'
+      });
+    } catch (error) {
+      console.error('Error declining booking:', error);
+      toast.error('Kunde inte neka bokningen');
+    } finally {
+      setUpdatingBookingId(null);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "confirmed":
@@ -191,8 +259,24 @@ const SantaDashboard = () => {
             Väntar på bekräftelse
           </span>
         );
+      case "declined":
+        return (
+          <span className="px-2 py-1 bg-destructive/20 text-destructive rounded-full text-xs font-medium">
+            Nekad
+          </span>
+        );
+      case "completed":
+        return (
+          <span className="px-2 py-1 bg-muted text-muted-foreground rounded-full text-xs font-medium">
+            Genomförd
+          </span>
+        );
       default:
-        return null;
+        return (
+          <span className="px-2 py-1 bg-muted text-muted-foreground rounded-full text-xs font-medium">
+            {status}
+          </span>
+        );
     }
   };
 
@@ -225,17 +309,23 @@ const SantaDashboard = () => {
   );
 
   // Booking card component
-  const BookingCard = ({ booking }: { booking: typeof mockBookings[0] }) => {
+  const BookingCard = ({ booking }: { booking: Booking }) => {
     const isExpanded = expandedBookingId === booking.id;
+    const isUpdating = updatingBookingId === booking.id;
+    const isPending = booking.status === 'pending';
+    const isDeclined = booking.status === 'declined';
     
     return (
-      <div className="bg-muted/30 rounded-xl overflow-hidden">
+      <div className={cn(
+        "bg-muted/30 rounded-xl overflow-hidden transition-opacity",
+        isDeclined && "opacity-60"
+      )}>
         {/* Main booking info */}
         <div className="p-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <h3 className="font-medium text-foreground">{booking.customerName}</h3>
+                <h3 className="font-medium text-foreground">Bokning #{booking.id.slice(0, 8)}</h3>
                 {getStatusBadge(booking.status)}
               </div>
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
@@ -247,30 +337,49 @@ const SantaDashboard = () => {
                   <Clock className="w-4 h-4" />
                   {booking.time} ({booking.duration} min)
                 </span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4" />
-                  {booking.city}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Users className="w-4 h-4" />
-                  {booking.children.length} {booking.children.length === 1 ? 'barn' : 'barn'}
-                </span>
+                {booking.city && (
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-4 h-4" />
+                    {booking.city}
+                  </span>
+                )}
+                {booking.children && booking.children.length > 0 && (
+                  <span className="flex items-center gap-1">
+                    <Users className="w-4 h-4" />
+                    {booking.children.length} {booking.children.length === 1 ? 'barn' : 'barn'}
+                  </span>
+                )}
               </div>
             </div>
             
             <div className="flex items-center gap-3">
-              <span className="font-serif text-lg text-foreground">{booking.totalPrice} kr</span>
-              {booking.status === "pending" ? (
+              <span className="font-serif text-lg text-foreground">{booking.total_price} kr</span>
+              {isPending ? (
                 <div className="flex gap-2">
-                  <Button variant="hero" size="sm">
-                    <Check className="w-4 h-4" />
+                  <Button 
+                    variant="hero" 
+                    size="sm"
+                    onClick={() => handleAcceptBooking(booking.id)}
+                    disabled={isUpdating}
+                    className="gap-1"
+                  >
+                    {isUpdating ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Check className="w-4 h-4" />
+                    )}
                     Acceptera
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleDeclineBooking(booking.id)}
+                    disabled={isUpdating}
+                  >
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
-              ) : (
+              ) : !isDeclined ? (
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -283,13 +392,13 @@ const SantaDashboard = () => {
                     isExpanded && "rotate-180"
                   )} />
                 </Button>
-              )}
+              ) : null}
             </div>
           </div>
         </div>
 
         {/* Expanded details */}
-        {isExpanded && (
+        {isExpanded && !isDeclined && (
           <div className="border-t border-border/50 p-4 bg-background/50 space-y-4">
             {/* Address */}
             <div>
@@ -298,32 +407,41 @@ const SantaDashboard = () => {
                 Adress
               </h4>
               <p className="text-muted-foreground ml-6">
-                {booking.address}, {booking.postal_code} {booking.city}
+                {booking.address}
+                {booking.postal_code && `, ${booking.postal_code}`}
+                {booking.city && ` ${booking.city}`}
               </p>
             </div>
 
             {/* Children */}
-            <div>
-              <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
-                <Gift className="w-4 h-4 text-primary" />
-                Barn
-              </h4>
-              <div className="ml-6 space-y-2">
-                {booking.children.map((child, index) => (
-                  <div key={index} className="bg-muted/30 rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-foreground">{child.name}</span>
-                      <span className="text-sm text-muted-foreground">({child.age})</span>
+            {booking.children && booking.children.length > 0 && (
+              <div>
+                <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
+                  <Gift className="w-4 h-4 text-primary" />
+                  Barn
+                </h4>
+                <div className="ml-6 space-y-2">
+                  {booking.children.map((child) => (
+                    <div key={child.id} className="bg-muted/30 rounded-lg p-3">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-foreground">{child.name}</span>
+                        <span className="text-sm text-muted-foreground">({child.age})</span>
+                      </div>
+                      {child.gifts && (
+                        <p className="text-sm text-muted-foreground">
+                          <span className="text-accent">Önskar:</span> {child.gifts}
+                        </p>
+                      )}
+                      {child.special_info && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          <span className="text-primary">Info:</span> {child.special_info}
+                        </p>
+                      )}
                     </div>
-                    {child.gifts && (
-                      <p className="text-sm text-muted-foreground">
-                        <span className="text-accent">Önskar:</span> {child.gifts}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Instructions */}
             {booking.instructions && (
@@ -416,7 +534,7 @@ const SantaDashboard = () => {
                             "px-2 py-0.5 rounded-full text-xs font-medium",
                             activeTab === tab.id
                               ? "bg-primary-foreground text-primary"
-                              : "bg-secondary text-secondary-foreground"
+                              : "bg-accent text-accent-foreground"
                           )}>
                             {tab.badge}
                           </span>
@@ -463,18 +581,25 @@ const SantaDashboard = () => {
 
             {/* Main Content */}
             <div className="lg:col-span-4 space-y-6">
+              {/* Loading state */}
+              {loading && (
+                <div className="bg-card rounded-2xl p-12 shadow-soft flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                </div>
+              )}
+
               {/* Overview Tab */}
-              {activeTab === "overview" && (
+              {!loading && activeTab === "overview" && (
                 <>
                   {/* Stats Grid */}
                   <div className="grid md:grid-cols-4 gap-4">
                     <div className="bg-card rounded-2xl p-5 shadow-soft">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-muted-foreground text-sm">Bokningar i dec</span>
+                        <span className="text-muted-foreground text-sm">Bokningar</span>
                         <Calendar className="w-5 h-5 text-primary" />
                       </div>
                       <p className="font-serif text-3xl text-foreground">{upcomingBookings.length}</p>
-                      <p className="text-xs text-primary mt-1">+3 sedan förra månaden</p>
+                      <p className="text-xs text-muted-foreground mt-1">Kommande uppdrag</p>
                     </div>
                     
                     <div className="bg-card rounded-2xl p-5 shadow-soft">
@@ -488,47 +613,66 @@ const SantaDashboard = () => {
                     
                     <div className="bg-card rounded-2xl p-5 shadow-soft">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-muted-foreground text-sm">Intjänat i dec</span>
+                        <span className="text-muted-foreground text-sm">Intjänat</span>
                         <TrendingUp className="w-5 h-5 text-primary" />
                       </div>
-                      <p className="font-serif text-3xl text-foreground">14 850 kr</p>
-                      <p className="text-xs text-primary mt-1">+22% vs förra året</p>
+                      <p className="font-serif text-3xl text-foreground">
+                        {upcomingBookings.reduce((sum, b) => sum + b.total_price, 0)} kr
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">Från bekräftade bokningar</p>
                     </div>
                     
                     <div className="bg-card rounded-2xl p-5 shadow-soft">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-muted-foreground text-sm">Tillgängligt</span>
-                        <Wallet className="w-5 h-5 text-accent" />
+                        <span className="text-muted-foreground text-sm">Väntande</span>
+                        <Bell className="w-5 h-5 text-accent" />
                       </div>
-                      <p className="font-serif text-3xl text-foreground">8 200 kr</p>
-                      <Button variant="outline" size="sm" className="mt-2 w-full">
-                        Ta ut
-                      </Button>
+                      <p className="font-serif text-3xl text-foreground">{pendingBookings.length}</p>
+                      <p className="text-xs text-accent mt-1">Kräver åtgärd</p>
                     </div>
                   </div>
 
-                  {/* Today's Schedule (if any) */}
-                  {todaysBookings.length > 0 && (
+                  {/* Pending bookings alert */}
+                  {pendingBookings.length > 0 && (
                     <div className="bg-accent/10 border border-accent/20 rounded-2xl p-6">
                       <div className="flex items-center gap-2 mb-4">
-                        <Sparkles className="w-5 h-5 text-accent" />
+                        <Bell className="w-5 h-5 text-accent" />
+                        <h2 className="font-serif text-2xl text-foreground">
+                          {pendingBookings.length} {pendingBookings.length === 1 ? 'bokning väntar' : 'bokningar väntar'} på svar
+                        </h2>
+                      </div>
+                      <div className="space-y-3">
+                        {pendingBookings.map((booking) => (
+                          <BookingCard key={booking.id} booking={booking} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Today's Schedule (if any) */}
+                  {todaysBookings.length > 0 && (
+                    <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Sparkles className="w-5 h-5 text-primary" />
                         <h2 className="font-serif text-2xl text-foreground">Dagens schema</h2>
                       </div>
                       <div className="space-y-3">
                         {todaysBookings
+                          .filter(b => b.status !== 'declined')
                           .sort((a, b) => a.time.localeCompare(b.time))
                           .map((booking) => (
                             <div 
                               key={booking.id}
                               className="flex items-center gap-4 p-4 bg-background rounded-xl"
                             >
-                              <div className="font-serif text-2xl text-accent w-16">
+                              <div className="font-serif text-2xl text-primary w-16">
                                 {booking.time}
                               </div>
                               <div className="flex-1">
-                                <p className="font-medium text-foreground">{booking.customerName}</p>
-                                <p className="text-sm text-muted-foreground">{booking.city} • {booking.duration} min</p>
+                                <p className="font-medium text-foreground">Bokning #{booking.id.slice(0, 8)}</p>
+                                <p className="text-sm text-muted-foreground">{booking.city || 'Ej angivet'} • {booking.duration} min</p>
                               </div>
+                              {getStatusBadge(booking.status)}
                               <Button variant="outline" size="sm" onClick={() => toggleBookingDetails(booking.id)}>
                                 Detaljer
                               </Button>
@@ -548,14 +692,20 @@ const SantaDashboard = () => {
                       </Button>
                     </div>
 
-                    {upcomingBookings.length > 0 ? (
+                    {upcomingBookings.filter(b => b.status !== 'pending').length > 0 ? (
                       <div className="space-y-4">
-                        {upcomingBookings.map((booking) => (
-                          <BookingCard key={booking.id} booking={booking} />
-                        ))}
+                        {upcomingBookings
+                          .filter(b => b.status !== 'pending')
+                          .map((booking) => (
+                            <BookingCard key={booking.id} booking={booking} />
+                          ))}
                       </div>
-                    ) : (
+                    ) : pendingBookings.length === 0 ? (
                       <EmptyState />
+                    ) : (
+                      <p className="text-muted-foreground text-center py-8">
+                        Du har inga bekräftade bokningar ännu. Acceptera väntande bokningar ovan.
+                      </p>
                     )}
                   </div>
 
@@ -596,7 +746,7 @@ const SantaDashboard = () => {
               )}
 
               {/* Calendar Tab */}
-              {activeTab === "calendar" && (
+              {!loading && activeTab === "calendar" && (
                 <div className="bg-card rounded-2xl p-6 shadow-soft">
                   <h2 className="font-serif text-2xl text-foreground mb-6">Kalender & tillgänglighet</h2>
                   
@@ -612,8 +762,9 @@ const SantaDashboard = () => {
                         ))}
                         {[...Array(31)].map((_, i) => {
                           const day = i + 1;
-                          const hasBooking = [14, 15, 20, 24].includes(day);
-                          const isToday = day === 9;
+                          const dayStr = `2024-12-${day.toString().padStart(2, '0')}`;
+                          const hasBooking = bookings.some(b => b.date === dayStr && b.status !== 'declined');
+                          const isToday = day === new Date().getDate() && new Date().getMonth() === 11;
                           return (
                             <button
                               key={i}
@@ -643,7 +794,9 @@ const SantaDashboard = () => {
                       
                       <div className="space-y-2">
                         {["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"].map((time) => {
-                          const booked = ["14:00", "16:00"].includes(time);
+                          const booked = bookings.some(
+                            b => b.date === '2024-12-24' && b.time === time && b.status !== 'declined'
+                          );
                           return (
                             <div
                               key={time}
@@ -668,7 +821,7 @@ const SantaDashboard = () => {
               )}
 
               {/* Notifications Tab */}
-              {activeTab === "notifications" && (
+              {!loading && activeTab === "notifications" && (
                 <div className="bg-card rounded-2xl p-6 shadow-soft">
                   <h2 className="font-serif text-2xl text-foreground mb-6">Notiser</h2>
                   
@@ -708,7 +861,7 @@ const SantaDashboard = () => {
               )}
 
               {/* Reviews Tab */}
-              {activeTab === "reviews" && (
+              {!loading && activeTab === "reviews" && (
                 <div className="bg-card rounded-2xl p-6 shadow-soft">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="font-serif text-2xl text-foreground">Omdömen</h2>
@@ -745,20 +898,26 @@ const SantaDashboard = () => {
               )}
 
               {/* Earnings Tab */}
-              {activeTab === "earnings" && (
+              {!loading && activeTab === "earnings" && (
                 <div className="space-y-6">
                   <div className="grid md:grid-cols-3 gap-4">
                     <div className="bg-card rounded-2xl p-6 shadow-soft">
                       <h3 className="text-muted-foreground text-sm mb-2">Intjänat denna månad</h3>
-                      <p className="font-serif text-3xl text-foreground">14 850 kr</p>
+                      <p className="font-serif text-3xl text-foreground">
+                        {bookings.filter(b => b.status === 'confirmed' || b.status === 'completed')
+                          .reduce((sum, b) => sum + b.total_price, 0)} kr
+                      </p>
                     </div>
                     <div className="bg-card rounded-2xl p-6 shadow-soft">
                       <h3 className="text-muted-foreground text-sm mb-2">Utbetalat</h3>
-                      <p className="font-serif text-3xl text-foreground">6 650 kr</p>
+                      <p className="font-serif text-3xl text-foreground">0 kr</p>
                     </div>
                     <div className="bg-card rounded-2xl p-6 shadow-soft">
                       <h3 className="text-muted-foreground text-sm mb-2">Tillgängligt för uttag</h3>
-                      <p className="font-serif text-3xl text-accent">8 200 kr</p>
+                      <p className="font-serif text-3xl text-accent">
+                        {bookings.filter(b => b.status === 'completed')
+                          .reduce((sum, b) => sum + b.total_price, 0)} kr
+                      </p>
                       <Button variant="hero" size="sm" className="mt-3 w-full">
                         Ta ut pengar
                       </Button>
@@ -767,33 +926,31 @@ const SantaDashboard = () => {
 
                   <div className="bg-card rounded-2xl p-6 shadow-soft">
                     <h3 className="font-serif text-xl text-foreground mb-4">Transaktionshistorik</h3>
-                    <div className="space-y-3">
-                      {[
-                        { date: "15 dec", desc: "Bokning - Familjen Svensson", amount: "+1 350 kr" },
-                        { date: "14 dec", desc: "Uttag till bankkonto", amount: "-3 000 kr" },
-                        { date: "12 dec", desc: "Bokning - Familjen Johansson", amount: "+900 kr" },
-                        { date: "10 dec", desc: "Bokning - Familjen Pettersson", amount: "+1 800 kr" },
-                      ].map((tx, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                          <div>
-                            <p className="font-medium text-foreground">{tx.desc}</p>
-                            <p className="text-sm text-muted-foreground">{tx.date}</p>
-                          </div>
-                          <span className={cn(
-                            "font-medium",
-                            tx.amount.startsWith("+") ? "text-primary" : "text-foreground"
-                          )}>
-                            {tx.amount}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                    {bookings.filter(b => b.status === 'confirmed' || b.status === 'completed').length > 0 ? (
+                      <div className="space-y-3">
+                        {bookings
+                          .filter(b => b.status === 'confirmed' || b.status === 'completed')
+                          .map((booking) => (
+                            <div key={booking.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                              <div>
+                                <p className="font-medium text-foreground">Bokning #{booking.id.slice(0, 8)}</p>
+                                <p className="text-sm text-muted-foreground">{formatDate(booking.date)}</p>
+                              </div>
+                              <span className="font-medium text-primary">+{booking.total_price} kr</span>
+                            </div>
+                          ))}
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground text-center py-8">
+                        Inga transaktioner ännu. Genomförda bokningar visas här.
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
 
               {/* Settings Tab */}
-              {activeTab === "settings" && (
+              {!loading && activeTab === "settings" && (
                 <div className="space-y-6">
                   <div className="bg-card rounded-2xl p-6 shadow-soft">
                     <h3 className="font-serif text-xl text-foreground mb-6">Profilinställningar</h3>
