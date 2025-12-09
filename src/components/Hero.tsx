@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Shield, Sparkles, Star, TreePine } from "lucide-react";
+import { Shield, Sparkles, TreePine } from "lucide-react";
+import Starfall from "@/components/Starfall";
 
 const Hero = () => {
   const scrollToSection = (id: string) => {
@@ -8,15 +9,15 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-hero overflow-hidden pt-20">
+      {/* Falling stars */}
+      <Starfall count={15} />
+
       {/* Decorative elements */}
       <div className="absolute top-32 left-10 text-accent/30 animate-float">
         <TreePine className="w-8 h-8" />
       </div>
       <div className="absolute top-52 right-20 text-accent/20 animate-float" style={{ animationDelay: "1s" }}>
         <Sparkles className="w-12 h-12" />
-      </div>
-      <div className="absolute bottom-40 left-20 text-accent/25 animate-float" style={{ animationDelay: "0.5s" }}>
-        <Star className="w-10 h-10" />
       </div>
       <div className="absolute top-40 right-10 text-accent/20 animate-float" style={{ animationDelay: "1.5s" }}>
         <TreePine className="w-6 h-6" />

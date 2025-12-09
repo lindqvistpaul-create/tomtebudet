@@ -70,7 +70,7 @@ const TopSantas = () => {
             <Link
               key={santa.id}
               to={`/tomte/${santa.id}`}
-              className="group bg-card rounded-2xl overflow-hidden shadow-soft hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-border/50"
+              className="group santa-card bg-card rounded-2xl overflow-hidden shadow-soft border border-border/50"
             >
               {/* Image */}
               <div className="relative h-56 overflow-hidden bg-muted">

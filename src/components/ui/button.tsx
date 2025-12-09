@@ -15,7 +15,7 @@ const buttonVariants = cva(
         secondary: "bg-tomte-red text-tomte-red-foreground font-semibold hover:bg-tomte-red/90 shadow-soft",
         ghost: "hover:bg-muted hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-gradient-to-r from-accent to-gold-glow text-accent-foreground font-semibold shadow-glow hover:shadow-[0_0_50px_hsl(39_60%_59%/0.5)] hover:scale-105",
+        hero: "btn-gold-glow bg-gradient-to-r from-accent to-gold-glow text-accent-foreground font-semibold shadow-glow hover:shadow-[0_0_50px_hsl(39_60%_59%/0.5)] hover:scale-105",
         festive: "bg-tomte-red text-tomte-red-foreground font-semibold hover:bg-tomte-red/90 shadow-soft hover:scale-105",
         snow: "bg-snow/20 text-snow border border-snow/30 backdrop-blur-sm hover:bg-snow/30",
       },
