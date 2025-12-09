@@ -43,10 +43,10 @@ const HowItWorks = () => {
           {steps.map((step, index) => (
             <div
               key={step.title}
-              className="group relative bg-card rounded-xl md:rounded-2xl p-5 md:p-8 shadow-soft hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex-shrink-0 w-[280px] md:w-auto snap-start"
+              className="group relative bg-card rounded-xl md:rounded-2xl p-5 md:p-8 pt-8 md:pt-8 shadow-soft hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex-shrink-0 w-[280px] md:w-auto snap-start"
             >
-              {/* Step number */}
-              <div className="absolute -top-2 -right-2 md:-top-3 md:-right-3 w-7 h-7 md:w-8 md:h-8 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-serif font-bold text-xs md:text-sm">
+              {/* Step number - inside card on mobile, outside on desktop */}
+              <div className="absolute top-3 right-3 md:-top-3 md:-right-3 w-7 h-7 md:w-8 md:h-8 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-serif font-bold text-xs md:text-sm shadow-md">
                 {index + 1}
               </div>
 

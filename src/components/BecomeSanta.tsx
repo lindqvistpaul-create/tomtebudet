@@ -59,14 +59,14 @@ const BecomeSanta = () => {
             {steps.map((item) => (
               <div
                 key={item.title}
-                className="group relative bg-snow/5 backdrop-blur-sm border border-snow/10 rounded-xl md:rounded-2xl p-4 md:p-6 hover:bg-snow/10 transition-all duration-300 flex-shrink-0 w-[180px] md:w-auto snap-start"
+                className="group relative bg-snow/5 backdrop-blur-sm border border-snow/10 rounded-xl md:rounded-2xl p-4 md:p-6 pt-8 md:pt-6 hover:bg-snow/10 transition-all duration-300 flex-shrink-0 w-[180px] md:w-auto snap-start"
               >
-                {/* Step number badge */}
-                <div className="absolute -top-2 -left-2 md:-top-3 md:-left-3 w-6 h-6 md:w-8 md:h-8 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-serif font-bold text-xs md:text-sm shadow-lg">
+                {/* Step number badge - inside card on mobile, outside on desktop */}
+                <div className="absolute top-2 left-2 md:-top-3 md:-left-3 w-6 h-6 md:w-8 md:h-8 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-serif font-bold text-xs md:text-sm shadow-lg">
                   {item.step}
                 </div>
 
-                <div className="flex flex-col md:flex-row md:items-start gap-3 md:gap-4 pt-1">
+                <div className="flex flex-col md:flex-row md:items-start gap-3 md:gap-4">
                   {/* Icon */}
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0 group-hover:bg-accent/30 transition-colors">
                     <item.icon className="w-5 h-5 md:w-6 md:h-6 text-accent" />
