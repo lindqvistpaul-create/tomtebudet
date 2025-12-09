@@ -3,14 +3,17 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import HowItWorks from "@/components/HowItWorks";
 import WhyTomtebudet from "@/components/WhyTomtebudet";
-import TopSantas from "@/components/TopSantas";
 import BecomeSanta from "@/components/BecomeSanta";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
+import PrelaunchBanner from "@/components/PrelaunchBanner";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
+      {/* Prelaunch Banner */}
+      <PrelaunchBanner />
+      
       {/* Ambient decoration */}
       <Snowfall />
       
@@ -22,7 +25,7 @@ const Index = () => {
         <Hero />
         <HowItWorks />
         <WhyTomtebudet />
-        <TopSantas />
+        {/* PRELAUNCH: Hide TopSantas since no active santas yet */}
         <BecomeSanta />
         <FAQ />
       </main>

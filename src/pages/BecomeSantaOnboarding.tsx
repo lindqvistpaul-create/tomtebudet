@@ -303,10 +303,10 @@ const BecomeSantaOnboarding = () => {
             <div className="bg-card rounded-3xl p-8 shadow-soft">
               <Gift className="w-16 h-16 text-accent mx-auto mb-6" />
               <h1 className="font-serif text-2xl text-foreground mb-4">
-                Bli en certifierad tomte
+                Bli tomte inför <span className="text-gradient-gold">julen 2026</span>
               </h1>
               <p className="text-muted-foreground mb-6">
-                Du behöver skapa ett konto eller logga in för att fortsätta med din ansökan.
+                Skapa ditt tomtekonto nu och bygg din profil. Du blir synlig för familjer när bokningen öppnar.
               </p>
               <Button 
                 variant="hero" 
@@ -418,12 +418,12 @@ const BecomeSantaOnboarding = () => {
                 </div>
                 
                 <h1 className="font-serif text-3xl md:text-4xl text-foreground mb-4">
-                  Bli <span className="text-gradient-gold">certifierad jultomte</span>
+                  Bli <span className="text-gradient-gold">certifierad jultomte</span> inför julen 2026
                 </h1>
                 
                 <p className="text-muted-foreground text-lg mb-8">
-                  Sprid julglädje och tjäna extra pengar genom att bli en del av Tomtebudet. 
-                  Vi söker pålitliga och kärleksfulla tomtar som vill göra barns drömmar sanna.
+                  Vi bygger Sveriges tryggaste tomtenätverk och söker tomtar nu! 
+                  Skapa din profil idag så är du redo när bokningen öppnar för familjer inför julen 2026.
                 </p>
 
                 {/* Benefits */}
