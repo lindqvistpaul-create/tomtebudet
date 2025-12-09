@@ -73,11 +73,8 @@ const App = () => (
                 <SantaDashboard />
               </ProtectedRoute>
             } />
-            <Route path="/bli-tomte" element={
-              <ProtectedRoute requiredRole="santa">
-                <BecomeSantaOnboarding />
-              </ProtectedRoute>
-            } />
+            {/* Santa onboarding - public, handles own auth */}
+            <Route path="/bli-tomte" element={<BecomeSantaOnboarding />} />
             
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,10 +19,14 @@ import {
   Calendar,
   Star,
   Sparkles,
-  Gift
+  Gift,
+  Loader2
 } from "lucide-react";
 import SimpleHeader from "@/components/SimpleHeader";
 import { cn } from "@/lib/utils";
+import { useCurrentUser } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const steps = [
   { id: 1, title: "Introduktion", icon: Gift },
@@ -38,17 +42,146 @@ const availableTimes = ["13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "1
 
 const BecomeSantaOnboarding = () => {
   const navigate = useNavigate();
+  const { user, role, loading: authLoading } = useCurrentUser();
+  
   const [currentStep, setCurrentStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [applicationId, setApplicationId] = useState<string | null>(null);
+  
+  // BankID state
+  const [bankIdVerifying, setBankIdVerifying] = useState(false);
   const [bankIdVerified, setBankIdVerified] = useState(false);
-  const [idUploaded, setIdUploaded] = useState(false);
-  const [portraitUploaded, setPortraitUploaded] = useState(false);
-  const [costumeUploaded, setCostumeUploaded] = useState(false);
+  
+  // File upload states
+  const [idDocument, setIdDocument] = useState<File | null>(null);
+  const [idDocumentUrl, setIdDocumentUrl] = useState<string | null>(null);
+  const [portraitPhoto, setPortraitPhoto] = useState<File | null>(null);
+  const [portraitPhotoUrl, setPortraitPhotoUrl] = useState<string | null>(null);
+  const [costumePhoto, setCostumePhoto] = useState<File | null>(null);
+  const [costumePhotoUrl, setCostumePhotoUrl] = useState<string | null>(null);
+  
+  // Profile state
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [profile, setProfile] = useState({
     pricePerQuarter: "",
     bio: "",
     experience: "",
   });
+
+  // File input refs
+  const idInputRef = useRef<HTMLInputElement>(null);
+  const portraitInputRef = useRef<HTMLInputElement>(null);
+  const costumeInputRef = useRef<HTMLInputElement>(null);
+
+  // Load existing application on mount
+  useEffect(() => {
+    if (user && !authLoading) {
+      loadExistingApplication();
+    }
+  }, [user, authLoading]);
+
+  const loadExistingApplication = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('santa_applications')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error loading application:', error);
+        return;
+      }
+      
+      if (data) {
+        setApplicationId(data.id);
+        setBankIdVerified(data.bankid_verified);
+        setIdDocumentUrl(data.id_document_url);
+        setPortraitPhotoUrl(data.portrait_photo_url);
+        setCostumePhotoUrl(data.costume_photo_url);
+        setSelectedTimes(data.available_times || []);
+        setProfile({
+          pricePerQuarter: data.price_per_quarter?.toString() || "",
+          bio: data.bio || "",
+          experience: data.experience || "",
+        });
+        
+        // Determine which step to resume from
+        if (data.status === 'pending_review' || data.status === 'approved') {
+          setCurrentStep(7);
+        } else if (data.price_per_quarter && data.available_times?.length > 0) {
+          setCurrentStep(6);
+        } else if (data.portrait_photo_url && data.costume_photo_url) {
+          setCurrentStep(5);
+        } else if (data.id_document_url) {
+          setCurrentStep(4);
+        } else if (data.bankid_verified) {
+          setCurrentStep(3);
+        }
+      }
+    } catch (err) {
+      console.error('Error:', err);
+    }
+  };
+
+  const createOrUpdateApplication = async (updates: Record<string, unknown>) => {
+    if (!user) return null;
+    
+    try {
+      if (applicationId) {
+        const { data, error } = await supabase
+          .from('santa_applications')
+          .update(updates)
+          .eq('id', applicationId)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        return data;
+      } else {
+        const { data, error } = await supabase
+          .from('santa_applications')
+          .insert({ user_id: user.id, ...updates })
+          .select()
+          .single();
+        
+        if (error) throw error;
+        setApplicationId(data.id);
+        return data;
+      }
+    } catch (err) {
+      console.error('Error saving application:', err);
+      toast.error('Kunde inte spara ansökan');
+      return null;
+    }
+  };
+
+  const uploadFile = async (file: File, folder: string): Promise<string | null> => {
+    if (!user) return null;
+    
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.id}/${folder}/${Date.now()}.${fileExt}`;
+    
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from('santa-uploads')
+        .upload(fileName, file, { upsert: true });
+      
+      if (uploadError) throw uploadError;
+      
+      const { data: { publicUrl } } = supabase.storage
+        .from('santa-uploads')
+        .getPublicUrl(fileName);
+      
+      return publicUrl;
+    } catch (err) {
+      console.error('Upload error:', err);
+      toast.error('Kunde inte ladda upp filen');
+      return null;
+    }
+  };
 
   const handleNext = () => {
     if (currentStep < 7) {
@@ -70,15 +203,168 @@ const BecomeSantaOnboarding = () => {
     }
   };
 
-  const simulateBankId = () => {
-    setTimeout(() => {
+  const simulateBankId = async () => {
+    setBankIdVerifying(true);
+    
+    // Simulate BankID verification (in production, this would call a real BankID service)
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    const result = await createOrUpdateApplication({
+      bankid_verified: true,
+      bankid_verified_at: new Date().toISOString(),
+    });
+    
+    if (result) {
       setBankIdVerified(true);
-    }, 1500);
+      toast.success('BankID-verifiering lyckades!');
+    }
+    
+    setBankIdVerifying(false);
   };
+
+  const handleIdUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIdDocument(file);
+    setLoading(true);
+    
+    const url = await uploadFile(file, 'id-documents');
+    if (url) {
+      setIdDocumentUrl(url);
+      await createOrUpdateApplication({ id_document_url: url });
+      toast.success('ID-handling uppladdad');
+    }
+    
+    setLoading(false);
+  };
+
+  const handlePortraitUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setPortraitPhoto(file);
+    setLoading(true);
+    
+    const url = await uploadFile(file, 'portraits');
+    if (url) {
+      setPortraitPhotoUrl(url);
+      await createOrUpdateApplication({ portrait_photo_url: url });
+      toast.success('Porträttbild uppladdad');
+    }
+    
+    setLoading(false);
+  };
+
+  const handleCostumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setCostumePhoto(file);
+    setLoading(true);
+    
+    const url = await uploadFile(file, 'costumes');
+    if (url) {
+      setCostumePhotoUrl(url);
+      await createOrUpdateApplication({ costume_photo_url: url });
+      toast.success('Tomtebild uppladdad');
+    }
+    
+    setLoading(false);
+  };
+
+  const handleSubmitProfile = async () => {
+    setLoading(true);
+    
+    const result = await createOrUpdateApplication({
+      price_per_quarter: parseInt(profile.pricePerQuarter),
+      bio: profile.bio,
+      experience: profile.experience,
+      available_times: selectedTimes,
+      status: 'pending_review',
+      submitted_at: new Date().toISOString(),
+    });
+    
+    if (result) {
+      toast.success('Din ansökan har skickats in!');
+      handleNext();
+    }
+    
+    setLoading(false);
+  };
+
+  // Redirect to auth if not logged in
+  if (!authLoading && !user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SimpleHeader />
+        <main className="pt-24 pb-16">
+          <div className="container mx-auto px-4 max-w-lg text-center">
+            <div className="bg-card rounded-3xl p-8 shadow-soft">
+              <Gift className="w-16 h-16 text-accent mx-auto mb-6" />
+              <h1 className="font-serif text-2xl text-foreground mb-4">
+                Bli en certifierad tomte
+              </h1>
+              <p className="text-muted-foreground mb-6">
+                Du behöver skapa ett konto eller logga in för att fortsätta med din ansökan.
+              </p>
+              <Button 
+                variant="hero" 
+                size="lg" 
+                onClick={() => navigate('/auth?mode=signup&role=santa&returnTo=/bli-tomte')}
+              >
+                Skapa tomtekonto
+              </Button>
+              <p className="text-sm text-muted-foreground mt-4">
+                Har du redan ett konto?{" "}
+                <button 
+                  onClick={() => navigate('/auth?mode=login&returnTo=/bli-tomte')}
+                  className="text-primary hover:underline"
+                >
+                  Logga in
+                </button>
+              </p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <SimpleHeader />
+      
+      {/* Hidden file inputs */}
+      <input
+        type="file"
+        ref={idInputRef}
+        onChange={handleIdUpload}
+        accept="image/*"
+        className="hidden"
+      />
+      <input
+        type="file"
+        ref={portraitInputRef}
+        onChange={handlePortraitUpload}
+        accept="image/*"
+        className="hidden"
+      />
+      <input
+        type="file"
+        ref={costumeInputRef}
+        onChange={handleCostumeUpload}
+        accept="image/*"
+        className="hidden"
+      />
       
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-4xl">
@@ -215,10 +501,14 @@ const BecomeSantaOnboarding = () => {
                   <div className="space-y-6">
                     <div className="bg-muted/30 rounded-2xl p-8">
                       <div className="w-32 h-32 mx-auto mb-4 bg-background rounded-xl flex items-center justify-center border-2 border-dashed border-border">
-                        <Fingerprint className="w-16 h-16 text-muted-foreground" />
+                        {bankIdVerifying ? (
+                          <Loader2 className="w-16 h-16 text-primary animate-spin" />
+                        ) : (
+                          <Fingerprint className="w-16 h-16 text-muted-foreground" />
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        Klicka nedan för att öppna BankID
+                        {bankIdVerifying ? "Väntar på BankID..." : "Klicka nedan för att öppna BankID"}
                       </p>
                     </div>
 
@@ -227,9 +517,19 @@ const BecomeSantaOnboarding = () => {
                       size="xl" 
                       className="w-full"
                       onClick={simulateBankId}
+                      disabled={bankIdVerifying}
                     >
-                      <Fingerprint className="w-5 h-5" />
-                      Öppna BankID
+                      {bankIdVerifying ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Verifierar...
+                        </>
+                      ) : (
+                        <>
+                          <Fingerprint className="w-5 h-5" />
+                          Öppna BankID
+                        </>
+                      )}
                     </Button>
                   </div>
                 ) : (
@@ -279,13 +579,18 @@ const BecomeSantaOnboarding = () => {
                 <div 
                   className={cn(
                     "border-2 border-dashed rounded-2xl p-8 text-center transition-colors cursor-pointer mb-6",
-                    idUploaded 
+                    idDocumentUrl 
                       ? "border-primary bg-primary/5" 
                       : "border-border hover:border-primary/50 hover:bg-muted/30"
                   )}
-                  onClick={() => setIdUploaded(true)}
+                  onClick={() => idInputRef.current?.click()}
                 >
-                  {idUploaded ? (
+                  {loading ? (
+                    <div className="py-4">
+                      <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto mb-4" />
+                      <p className="text-muted-foreground">Laddar upp...</p>
+                    </div>
+                  ) : idDocumentUrl ? (
                     <div>
                       <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                         <CheckCircle className="w-8 h-8 text-primary" />
@@ -324,7 +629,7 @@ const BecomeSantaOnboarding = () => {
                   <Button 
                     variant="hero" 
                     onClick={handleNext} 
-                    disabled={!idUploaded}
+                    disabled={!idDocumentUrl || loading}
                     className="flex-1"
                   >
                     Fortsätt
@@ -356,17 +661,17 @@ const BecomeSantaOnboarding = () => {
                   <div 
                     className={cn(
                       "border-2 border-dashed rounded-2xl p-6 text-center transition-colors cursor-pointer",
-                      portraitUploaded 
+                      portraitPhotoUrl 
                         ? "border-primary bg-primary/5" 
                         : "border-border hover:border-primary/50 hover:bg-muted/30"
                     )}
-                    onClick={() => setPortraitUploaded(true)}
+                    onClick={() => portraitInputRef.current?.click()}
                   >
-                    {portraitUploaded ? (
+                    {portraitPhotoUrl ? (
                       <div>
                         <div className="w-24 h-24 rounded-full bg-muted mx-auto mb-4 overflow-hidden">
                           <img 
-                            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face" 
+                            src={portraitPhotoUrl} 
                             alt="Portrait"
                             className="w-full h-full object-cover"
                           />
@@ -389,17 +694,17 @@ const BecomeSantaOnboarding = () => {
                   <div 
                     className={cn(
                       "border-2 border-dashed rounded-2xl p-6 text-center transition-colors cursor-pointer",
-                      costumeUploaded 
+                      costumePhotoUrl 
                         ? "border-primary bg-primary/5" 
                         : "border-border hover:border-primary/50 hover:bg-muted/30"
                     )}
-                    onClick={() => setCostumeUploaded(true)}
+                    onClick={() => costumeInputRef.current?.click()}
                   >
-                    {costumeUploaded ? (
+                    {costumePhotoUrl ? (
                       <div>
                         <div className="w-24 h-24 rounded-full bg-muted mx-auto mb-4 overflow-hidden">
                           <img 
-                            src="https://images.unsplash.com/photo-1545996124-0501ebae84d0?w=200&h=200&fit=crop&crop=face" 
+                            src={costumePhotoUrl} 
                             alt="Santa costume"
                             className="w-full h-full object-cover"
                           />
@@ -419,6 +724,13 @@ const BecomeSantaOnboarding = () => {
                   </div>
                 </div>
 
+                {loading && (
+                  <div className="flex items-center justify-center gap-2 mb-4 text-primary">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-sm">Laddar upp foto...</span>
+                  </div>
+                )}
+
                 <p className="text-sm text-muted-foreground text-center mb-8">
                   Tips: Välj bilder med bra ljus och en neutral bakgrund för bäst resultat.
                 </p>
@@ -431,7 +743,7 @@ const BecomeSantaOnboarding = () => {
                   <Button 
                     variant="hero" 
                     onClick={handleNext} 
-                    disabled={!portraitUploaded || !costumeUploaded}
+                    disabled={!portraitPhotoUrl || !costumePhotoUrl || loading}
                     className="flex-1"
                   >
                     Fortsätt
@@ -534,12 +846,21 @@ const BecomeSantaOnboarding = () => {
                   </Button>
                   <Button 
                     variant="hero" 
-                    onClick={handleNext}
-                    disabled={!profile.pricePerQuarter || selectedTimes.length === 0}
+                    onClick={handleSubmitProfile}
+                    disabled={!profile.pricePerQuarter || selectedTimes.length === 0 || loading}
                     className="flex-1"
                   >
-                    Skicka in
-                    <ChevronRight className="w-4 h-4" />
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Skickar...
+                      </>
+                    ) : (
+                      <>
+                        Skicka in
+                        <ChevronRight className="w-4 h-4" />
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>

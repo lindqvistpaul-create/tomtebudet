@@ -139,6 +139,66 @@ export type Database = {
         }
         Relationships: []
       }
+      santa_applications: {
+        Row: {
+          available_times: string[] | null
+          bankid_verified: boolean
+          bankid_verified_at: string | null
+          bio: string | null
+          costume_photo_url: string | null
+          created_at: string
+          experience: string | null
+          id: string
+          id_document_url: string | null
+          portrait_photo_url: string | null
+          price_per_quarter: number | null
+          review_notes: string | null
+          reviewed_at: string | null
+          status: string
+          submitted_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          available_times?: string[] | null
+          bankid_verified?: boolean
+          bankid_verified_at?: string | null
+          bio?: string | null
+          costume_photo_url?: string | null
+          created_at?: string
+          experience?: string | null
+          id?: string
+          id_document_url?: string | null
+          portrait_photo_url?: string | null
+          price_per_quarter?: number | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          available_times?: string[] | null
+          bankid_verified?: boolean
+          bankid_verified_at?: string | null
+          bio?: string | null
+          costume_photo_url?: string | null
+          created_at?: string
+          experience?: string | null
+          id?: string
+          id_document_url?: string | null
+          portrait_photo_url?: string | null
+          price_per_quarter?: number | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
