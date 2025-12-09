@@ -143,7 +143,7 @@ const Header = () => {
               </>
             ) : (
               <>
-                <Link to="/auth">
+                <Link to="/login">
                   <Button 
                     variant="ghost" 
                     size="default"
@@ -153,7 +153,7 @@ const Header = () => {
                     Logga in
                   </Button>
                 </Link>
-                <Link to="/auth?role=santa">
+                <Link to="/signup?role=santa">
                   <Button 
                     variant="ghost" 
                     size="default"
@@ -251,7 +251,7 @@ const Header = () => {
                   </>
                 ) : (
                   <>
-                    <Link to="/auth" onClick={() => setIsOpen(false)}>
+                    <Link to="/login" onClick={() => setIsOpen(false)}>
                       <Button 
                         variant="ghost" 
                         size="default"
@@ -261,7 +261,7 @@ const Header = () => {
                         Logga in
                       </Button>
                     </Link>
-                    <Link to="/auth?role=santa" onClick={() => setIsOpen(false)}>
+                    <Link to="/signup?role=santa" onClick={() => setIsOpen(false)}>
                       <Button 
                         variant="ghost" 
                         size="default"

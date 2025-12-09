@@ -12,7 +12,7 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ 
   children, 
   requiredRole, 
-  redirectTo = "/auth" 
+  redirectTo = "/login" 
 }: ProtectedRouteProps) => {
   const { user, role, loading } = useAuth();
   const location = useLocation();
@@ -29,7 +29,7 @@ const ProtectedRoute = ({
     );
   }
 
-  // Not logged in - redirect to auth with return URL
+  // Not logged in - redirect to login with return URL
   if (!user) {
     const returnTo = encodeURIComponent(location.pathname + location.search);
     return <Navigate to={`${redirectTo}?returnTo=${returnTo}`} replace />;
@@ -49,7 +49,7 @@ const ProtectedRoute = ({
               Den här sidan är bara tillgänglig för registrerade tomtar.
             </p>
             <a 
-              href="/auth?role=santa" 
+              href="/signup?role=santa" 
               className="text-primary hover:underline"
             >
               Vill du bli tomte? Registrera dig här →
