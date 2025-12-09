@@ -1,18 +1,23 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, UserRole } from "@/hooks/useAuth";
 import { Gift, Mail, Lock, User, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
+  const [searchParams] = useSearchParams();
+  const defaultRole = (searchParams.get("role") as UserRole) || "customer";
+  const returnTo = searchParams.get("returnTo") || "/";
+  
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [selectedRole, setSelectedRole] = useState<UserRole>(defaultRole);
   const [loading, setLoading] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
@@ -21,9 +26,9 @@ const Auth = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate(returnTo);
     }
-  }, [user, navigate]);
+  }, [user, navigate, returnTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +50,7 @@ const Auth = () => {
             title: "Välkommen tillbaka!",
             description: "Du är nu inloggad.",
           });
-          navigate("/");
+          navigate(returnTo);
         }
       } else {
         if (!fullName.trim()) {
@@ -58,7 +63,7 @@ const Auth = () => {
           return;
         }
         
-        const { error } = await signUp(email, password, fullName);
+        const { error } = await signUp(email, password, fullName, selectedRole);
         if (error) {
           if (error.message.includes("already registered")) {
             toast({
@@ -75,10 +80,14 @@ const Auth = () => {
           }
         } else {
           toast({
-            title: "Välkommen till Tomtebudet!",
-            description: "Ditt konto har skapats och du är nu inloggad.",
+            title: selectedRole === "santa" 
+              ? "Välkommen till Tomtebudet!" 
+              : "Välkommen till Tomtebudet!",
+            description: selectedRole === "santa"
+              ? "Ditt tomtekonto har skapats. Nu kan du slutföra din profil."
+              : "Ditt konto har skapats och du är nu inloggad.",
           });
-          navigate("/");
+          navigate(selectedRole === "santa" ? "/bli-tomte" : returnTo);
         }
       }
     } catch (err) {
@@ -91,6 +100,8 @@ const Auth = () => {
       setLoading(false);
     }
   };
+
+  const isSantaSignup = selectedRole === "santa";
 
   return (
     <div className="min-h-screen bg-gradient-hero flex flex-col">
@@ -116,14 +127,44 @@ const Auth = () => {
                 <Sparkles className="w-5 h-5 text-accent" />
               </div>
               <h1 className="font-serif text-2xl md:text-3xl text-foreground mb-2">
-                {isLogin ? "Välkommen tillbaka!" : "Skapa konto"}
+                {isLogin ? "Välkommen tillbaka!" : isSantaSignup ? "Bli tomte" : "Skapa konto"}
               </h1>
               <p className="text-muted-foreground">
                 {isLogin 
                   ? "Logga in för att se dina bokningar" 
-                  : "Registrera dig för att boka en tomte"}
+                  : isSantaSignup
+                    ? "Registrera dig för att erbjuda dina tomtetjänster"
+                    : "Registrera dig för att boka en tomte"}
               </p>
             </div>
+
+            {/* Role Toggle (only for signup) */}
+            {!isLogin && (
+              <div className="flex gap-2 mb-6 p-1 bg-muted rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setSelectedRole("customer")}
+                  className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+                    selectedRole === "customer"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Boka tomte
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedRole("santa")}
+                  className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+                    selectedRole === "santa"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Bli tomte
+                </button>
+              </div>
+            )}
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
@@ -135,7 +176,7 @@ const Auth = () => {
                     <Input
                       id="fullName"
                       type="text"
-                      placeholder="Anna Andersson"
+                      placeholder={isSantaSignup ? "Kalle Jansen" : "Anna Andersson"}
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       className="pl-10 h-12 bg-background"
@@ -194,7 +235,7 @@ const Auth = () => {
                     Vänta...
                   </div>
                 ) : (
-                  isLogin ? "Logga in" : "Skapa konto"
+                  isLogin ? "Logga in" : isSantaSignup ? "Registrera som tomte" : "Skapa konto"
                 )}
               </Button>
             </form>
