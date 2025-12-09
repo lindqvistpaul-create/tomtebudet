@@ -5,6 +5,7 @@ import HowItWorks from "@/components/HowItWorks";
 import WhyTomtebudet from "@/components/WhyTomtebudet";
 import TopSantas from "@/components/TopSantas";
 import BecomeSanta from "@/components/BecomeSanta";
+import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -23,6 +24,7 @@ const Index = () => {
         <WhyTomtebudet />
         <TopSantas />
         <BecomeSanta />
+        <FAQ />
       </main>
       
       {/* Footer */}
