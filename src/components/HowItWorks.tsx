@@ -3,23 +3,23 @@ import { Search, UserCheck, CalendarHeart, Sparkles } from "lucide-react";
 const steps = [
   {
     icon: Search,
-    title: "Sök tomte",
-    description: "Hitta tomtar nära dig och jämför pris, omdömen och tillgänglighet.",
+    title: "Upptäck er tomte",
+    description: "Utforska noggrant utvalda tomtar i ert område. Läs omdömen från andra familjer och hitta den som passar just er.",
   },
   {
     icon: UserCheck,
-    title: "Verifierade profiler",
-    description: "Alla tomtar legitimerar sig med BankID och laddar upp foto med och utan tomtedräkt.",
+    title: "Trygg verifiering",
+    description: "Varje tomte har genomgått ID-kontroll med BankID och granskats personligen av vårt team. Er trygghet är vår prioritet.",
   },
   {
     icon: CalendarHeart,
-    title: "Boka & dela info",
-    description: "Boka tomten och dela barnens namn samt viktiga detaljer som tomten behöver veta.",
+    title: "Skräddarsy besöket",
+    description: "Dela barnens namn, önskelistor och speciella detaljer. Ju mer tomten vet, desto mer magiskt blir mötet.",
   },
   {
     icon: Sparkles,
-    title: "Magiskt besök",
-    description: "En verifierad tomte dyker upp på julafton och levererar en trygg och oförglömlig upplevelse.",
+    title: "Magi vid dörren",
+    description: "På julafton knackar en riktig tomte på er dörr – redo att skapa minnen som varar livet ut.",
   },
 ];
 
@@ -29,12 +29,12 @@ const HowItWorks = () => {
       <div className="container mx-auto px-4">
         {/* Section header */}
         <div className="text-center mb-16">
-          <span className="text-accent font-medium text-sm uppercase tracking-wider">Så funkar det</span>
+          <span className="text-accent font-medium text-sm uppercase tracking-wider">Så fungerar det</span>
           <h2 className="font-serif text-4xl md:text-5xl text-foreground mt-3 mb-4">
-            Fyra enkla steg till <span className="text-primary">trygg bokning</span>
+            Från önskan till <span className="text-primary">oförglömligt ögonblick</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Boka en verifierad jultomte på några minuter – helt säkert och enkelt
+            Fyra enkla steg skiljer er från årets mest magiska julupplevelse
           </p>
         </div>
 

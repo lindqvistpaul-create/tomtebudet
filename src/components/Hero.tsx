@@ -30,7 +30,7 @@ const Hero = () => {
             style={{ animationDelay: "0.2s" }}
           >
             <Shield className="w-4 h-4 text-accent" />
-            <span className="text-snow/90 text-sm font-medium">Verifierade tomtar med BankID</span>
+            <span className="text-snow/90 text-sm font-medium">Alla tomtar är ID-verifierade med BankID</span>
           </div>
 
           {/* Main heading */}
@@ -38,8 +38,7 @@ const Hero = () => {
             className="font-serif text-4xl md:text-6xl lg:text-7xl text-snow mb-8 opacity-0 animate-fade-in leading-tight"
             style={{ animationDelay: "0.4s" }}
           >
-            Boka en trygg och verifierad{" "}
-            <span className="text-gradient-gold">jultomte</span> till julafton
+            Låt en äkta <span className="text-gradient-gold">jultomte</span> knacka på er dörr i år
           </h1>
 
           {/* Subtitle */}
@@ -47,8 +46,8 @@ const Hero = () => {
             className="text-lg md:text-xl text-snow/80 mb-12 max-w-2xl mx-auto leading-relaxed opacity-0 animate-fade-in"
             style={{ animationDelay: "0.6s" }}
           >
-            Alla tomtar i Tomtebudet är ID-verifierade med BankID och granskas manuellt.
-            Låt en certifierad jultomte sprida magi i ert hem på julafton.
+            Tomtebudet förmedlar noggrant utvalda och verifierade jultomtar som skapar 
+            oförglömliga ögonblick för er familj. Tryggt, enkelt och magiskt.
           </p>
 
           {/* CTA Buttons */}
@@ -57,7 +56,7 @@ const Hero = () => {
             style={{ animationDelay: "0.8s" }}
           >
             <Button variant="hero" size="xl" onClick={() => scrollToSection("top-santas")}>
-              🎅 Boka tomte
+              🎅 Hitta er tomte
             </Button>
             <Button 
               variant="outline" 
@@ -65,7 +64,7 @@ const Hero = () => {
               onClick={() => scrollToSection("become-santa")}
               className="border-accent text-accent hover:bg-accent/10 hover:text-accent"
             >
-              Bli tomte
+              Bli en del av magin
             </Button>
           </div>
 
@@ -76,15 +75,15 @@ const Hero = () => {
           >
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-serif text-accent mb-1">500+</div>
-              <div className="text-snow/60 text-sm">Verifierade tomtar</div>
+              <div className="text-snow/60 text-sm">Certifierade tomtar</div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-serif text-accent mb-1">4.9</div>
-              <div className="text-snow/60 text-sm">Snittbetyg</div>
+              <div className="text-snow/60 text-sm">Av 5 i betyg</div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-serif text-accent mb-1">100%</div>
-              <div className="text-snow/60 text-sm">Trygghetsgaranti</div>
+              <div className="text-snow/60 text-sm">Nöjdhetsgaranti</div>
             </div>
           </div>
         </div>

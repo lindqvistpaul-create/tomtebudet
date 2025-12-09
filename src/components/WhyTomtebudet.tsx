@@ -1,12 +1,12 @@
 import { Check } from "lucide-react";
 
 const benefits = [
-  "ID-verifiering med BankID",
-  "Alla tomtar granskas manuellt",
-  "Trygg betalning (frisläpps efter genomfört besök)",
-  "Familjer kan lämna detaljer till tomten tryggt",
-  "Tomtar laddar upp foto med och utan dräkt",
-  "Premiumupplevelse och tydliga profiler",
+  "Alla tomtar verifieras med BankID",
+  "Personlig granskning av vårt team",
+  "Trygg betalning – pengarna frisläpps efter besöket",
+  "Dela barnens önskemål säkert och konfidentiellt",
+  "Se tomten både med och utan dräkt innan bokning",
+  "Tydliga profiler med omdömen från andra familjer",
 ];
 
 const WhyTomtebudet = () => {
@@ -16,12 +16,12 @@ const WhyTomtebudet = () => {
         <div className="max-w-4xl mx-auto">
           {/* Section header */}
           <div className="text-center mb-16">
-            <span className="text-accent font-medium text-sm uppercase tracking-wider">Trygghet först</span>
+            <span className="text-accent font-medium text-sm uppercase tracking-wider">Trygghet & kvalitet</span>
             <h2 className="font-serif text-4xl md:text-5xl text-foreground mt-3 mb-4">
-              Varför välja <span className="text-primary">Tomtebudet?</span>
+              Varför familjer väljer <span className="text-primary">Tomtebudet</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-              Vi har byggt Sveriges säkraste plattform för tomtebokningar
+              Vi har skapat en plattform där trygghet och magi går hand i hand
             </p>
           </div>
 
