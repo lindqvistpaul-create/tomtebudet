@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { 
   Calendar, 
@@ -17,12 +19,16 @@ import {
   Bell,
   Gift,
   Star,
-  ChevronRight
+  ChevronRight,
+  Mail,
+  Phone,
+  Save
 } from "lucide-react";
 import SimpleHeader from "@/components/SimpleHeader";
 import Footer from "@/components/Footer";
 import { mockBookings } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const statusConfig = {
   upcoming: {
@@ -45,10 +51,18 @@ const statusConfig = {
 type TabType = "bookings" | "favorites" | "settings";
 
 const UserDashboard = () => {
-  const [activeTab, setActiveTab] = useState<TabType>("bookings");
+  const [activeTab, setActiveTab] = useState<TabType>("settings");
   const [activeBookingTab, setActiveBookingTab] = useState<"upcoming" | "completed">("upcoming");
   const [chatMessage, setChatMessage] = useState("");
   const [selectedBooking, setSelectedBooking] = useState<string | null>(mockBookings[0]?.id || null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  
+  // Mock user data
+  const [userData, setUserData] = useState({
+    name: "Anna Andersson",
+    email: "anna.andersson@email.se",
+    phone: "070-123 45 67"
+  });
 
   const filteredBookings = mockBookings.filter((booking) => {
     if (activeBookingTab === "upcoming") return booking.status === "upcoming";
@@ -93,7 +107,7 @@ const UserDashboard = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
               <h1 className="font-serif text-3xl md:text-4xl text-foreground">
-                Välkommen, <span className="text-gradient-gold">Anna!</span>
+                Välkommen, <span className="text-gradient-gold">{userData.name.split(' ')[0]}!</span>
               </h1>
               <p className="text-muted-foreground mt-1">Hantera dina bokningar och upplevelser</p>
             </div>
@@ -385,21 +399,127 @@ const UserDashboard = () => {
               {/* Settings Tab */}
               {activeTab === "settings" && (
                 <div className="space-y-6">
+                  {/* Quick Links */}
                   <div className="bg-card rounded-2xl p-6 shadow-soft">
-                    <h2 className="font-serif text-2xl text-foreground mb-6">Kontoinställningar</h2>
+                    <h2 className="font-serif text-2xl text-foreground mb-4">Genvägar</h2>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <Link 
+                        to="/mina-bokningar"
+                        className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors group"
+                      >
+                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Calendar className="w-6 h-6 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground group-hover:text-primary transition-colors">Mina bokningar</p>
+                          <p className="text-sm text-muted-foreground">Se alla kommande och tidigare bokningar</p>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </Link>
+                      <Link 
+                        to="/sok"
+                        className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors group"
+                      >
+                        <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+                          <Gift className="w-6 h-6 text-accent" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground group-hover:text-accent transition-colors">Boka ny tomte</p>
+                          <p className="text-sm text-muted-foreground">Sök bland våra verifierade tomtar</p>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-accent transition-colors" />
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* Profile Settings */}
+                  <div className="bg-card rounded-2xl p-6 shadow-soft">
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="font-serif text-2xl text-foreground">Kontaktuppgifter</h2>
+                      {!isEditingProfile ? (
+                        <Button variant="outline" size="sm" onClick={() => setIsEditingProfile(true)}>
+                          <Edit2 className="w-4 h-4" />
+                          Redigera
+                        </Button>
+                      ) : (
+                        <Button 
+                          variant="hero" 
+                          size="sm" 
+                          onClick={() => {
+                            setIsEditingProfile(false);
+                            toast.success("Dina uppgifter har sparats!");
+                          }}
+                        >
+                          <Save className="w-4 h-4" />
+                          Spara
+                        </Button>
+                      )}
+                    </div>
                     
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
-                        <div className="flex items-center gap-3">
+                    {isEditingProfile ? (
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Namn</Label>
+                          <Input
+                            id="name"
+                            value={userData.name}
+                            onChange={(e) => setUserData({ ...userData, name: e.target.value })}
+                            className="bg-background"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="email">E-postadress</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={userData.email}
+                            onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+                            className="bg-background"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="phone">Telefonnummer</Label>
+                          <Input
+                            id="phone"
+                            type="tel"
+                            value={userData.phone}
+                            onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
+                            className="bg-background"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl">
                           <User className="w-5 h-5 text-muted-foreground" />
                           <div>
-                            <p className="font-medium text-foreground">Profil</p>
-                            <p className="text-sm text-muted-foreground">Namn, e-post och telefon</p>
+                            <p className="text-sm text-muted-foreground">Namn</p>
+                            <p className="font-medium text-foreground">{userData.name}</p>
                           </div>
                         </div>
-                        <Button variant="outline" size="sm">Redigera</Button>
+                        <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl">
+                          <Mail className="w-5 h-5 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm text-muted-foreground">E-post</p>
+                            <p className="font-medium text-foreground">{userData.email}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl">
+                          <Phone className="w-5 h-5 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm text-muted-foreground">Telefon</p>
+                            <p className="font-medium text-foreground">{userData.phone}</p>
+                          </div>
+                        </div>
                       </div>
+                    )}
+                  </div>
 
+                  {/* Other Settings */}
+                  <div className="bg-card rounded-2xl p-6 shadow-soft">
+                    <h2 className="font-serif text-2xl text-foreground mb-6">Övriga inställningar</h2>
+                    
+                    <div className="space-y-4">
                       <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
                         <div className="flex items-center gap-3">
                           <Bell className="w-5 h-5 text-muted-foreground" />
