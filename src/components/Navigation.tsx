@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Gift } from "lucide-react";
+import { Menu, X, Gift, Fingerprint } from "lucide-react";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,11 +17,19 @@ const Navigation = () => {
           {/* Logo */}
           <div className="flex items-center gap-2">
             <Gift className="w-7 h-7 text-accent" />
-            <span className="font-serif text-xl md:text-2xl text-snow">Tomtebudet</span>
+            <span className="font-serif text-xl md:text-2xl text-snow">
+              Tomte<span className="text-gradient-gold">budet</span>
+            </span>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-6">
+            <button 
+              onClick={() => scrollToSection("top-santas")}
+              className="text-snow/80 hover:text-accent transition-colors text-sm font-medium"
+            >
+              Hitta tomte
+            </button>
             <button 
               onClick={() => scrollToSection("how-it-works")}
               className="text-snow/80 hover:text-accent transition-colors text-sm font-medium"
@@ -32,24 +40,25 @@ const Navigation = () => {
               onClick={() => scrollToSection("why-tomtebudet")}
               className="text-snow/80 hover:text-accent transition-colors text-sm font-medium"
             >
-              Varför Tomtebudet?
+              Varför Tomtebudet
             </button>
             <button 
-              onClick={() => scrollToSection("top-santas")}
+              onClick={() => scrollToSection("become-santa")}
               className="text-snow/80 hover:text-accent transition-colors text-sm font-medium"
             >
-              Hitta tomte
+              För tomtar
             </button>
           </div>
 
-          {/* Desktop CTAs */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* Desktop CTA */}
+          <div className="hidden lg:flex items-center gap-3">
             <Button 
-              variant="snow" 
+              variant="ghost" 
               size="default"
-              onClick={() => scrollToSection("become-santa")}
+              className="text-snow/80 hover:text-accent hover:bg-snow/5"
             >
-              Bli tomte
+              <Fingerprint className="w-4 h-4 mr-2" />
+              Logga in
             </Button>
             <Button 
               variant="hero" 
@@ -62,7 +71,7 @@ const Navigation = () => {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden text-snow p-2"
+            className="lg:hidden text-snow p-2"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -71,34 +80,41 @@ const Navigation = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden py-4 border-t border-snow/10">
-            <div className="flex flex-col gap-4">
+          <div className="lg:hidden py-4 border-t border-snow/10">
+            <div className="flex flex-col gap-2">
+              <button 
+                onClick={() => scrollToSection("top-santas")}
+                className="text-snow/80 hover:text-accent transition-colors text-left py-3 px-2 rounded-lg hover:bg-snow/5"
+              >
+                Hitta tomte
+              </button>
               <button 
                 onClick={() => scrollToSection("how-it-works")}
-                className="text-snow/80 hover:text-accent transition-colors text-left py-2"
+                className="text-snow/80 hover:text-accent transition-colors text-left py-3 px-2 rounded-lg hover:bg-snow/5"
               >
                 Så funkar det
               </button>
               <button 
                 onClick={() => scrollToSection("why-tomtebudet")}
-                className="text-snow/80 hover:text-accent transition-colors text-left py-2"
+                className="text-snow/80 hover:text-accent transition-colors text-left py-3 px-2 rounded-lg hover:bg-snow/5"
               >
-                Varför Tomtebudet?
+                Varför Tomtebudet
               </button>
               <button 
-                onClick={() => scrollToSection("top-santas")}
-                className="text-snow/80 hover:text-accent transition-colors text-left py-2"
+                onClick={() => scrollToSection("become-santa")}
+                className="text-snow/80 hover:text-accent transition-colors text-left py-3 px-2 rounded-lg hover:bg-snow/5"
               >
-                Hitta tomte
+                För tomtar
               </button>
-              <div className="flex flex-col gap-2 pt-4 border-t border-snow/10">
+              
+              <div className="flex flex-col gap-2 pt-4 mt-2 border-t border-snow/10">
                 <Button 
-                  variant="snow" 
+                  variant="ghost" 
                   size="default"
-                  onClick={() => scrollToSection("become-santa")}
-                  className="w-full"
+                  className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
                 >
-                  Bli tomte
+                  <Fingerprint className="w-4 h-4 mr-2" />
+                  Logga in
                 </Button>
                 <Button 
                   variant="hero" 
