@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Shield, Sparkles, Star, Users } from "lucide-react";
+import { Shield, Sparkles, Star, TreePine } from "lucide-react";
 
 const Hero = () => {
   const scrollToSection = (id: string) => {
@@ -10,13 +10,16 @@ const Hero = () => {
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-hero overflow-hidden pt-20">
       {/* Decorative elements */}
       <div className="absolute top-32 left-10 text-accent/30 animate-float">
-        <Sparkles className="w-8 h-8" />
+        <TreePine className="w-8 h-8" />
       </div>
       <div className="absolute top-52 right-20 text-accent/20 animate-float" style={{ animationDelay: "1s" }}>
         <Sparkles className="w-12 h-12" />
       </div>
       <div className="absolute bottom-40 left-20 text-accent/25 animate-float" style={{ animationDelay: "0.5s" }}>
         <Star className="w-10 h-10" />
+      </div>
+      <div className="absolute top-40 right-10 text-accent/20 animate-float" style={{ animationDelay: "1.5s" }}>
+        <TreePine className="w-6 h-6" />
       </div>
 
       <div className="container mx-auto px-4 py-20 relative z-20">
@@ -32,19 +35,20 @@ const Hero = () => {
 
           {/* Main heading */}
           <h1 
-            className="font-serif text-5xl md:text-7xl lg:text-8xl text-snow mb-6 opacity-0 animate-fade-in"
+            className="font-serif text-4xl md:text-6xl lg:text-7xl text-snow mb-8 opacity-0 animate-fade-in leading-tight"
             style={{ animationDelay: "0.4s" }}
           >
-            Tomte<span className="text-gradient-gold">budet</span>
+            Boka en trygg och verifierad{" "}
+            <span className="text-gradient-gold">jultomte</span> till julafton
           </h1>
 
           {/* Subtitle */}
           <p 
-            className="text-xl md:text-2xl text-snow/80 mb-12 max-w-2xl mx-auto leading-relaxed opacity-0 animate-fade-in"
+            className="text-lg md:text-xl text-snow/80 mb-12 max-w-2xl mx-auto leading-relaxed opacity-0 animate-fade-in"
             style={{ animationDelay: "0.6s" }}
           >
-            Sveriges tryggaste marknadsplats för att boka en 
-            verifierad jultomte till julafton.
+            Alla tomtar i Tomtebudet är ID-verifierade med BankID och granskas manuellt.
+            Låt en certifierad jultomte sprida magi i ert hem på julafton.
           </p>
 
           {/* CTA Buttons */}
@@ -53,10 +57,14 @@ const Hero = () => {
             style={{ animationDelay: "0.8s" }}
           >
             <Button variant="hero" size="xl" onClick={() => scrollToSection("top-santas")}>
-              <Users className="w-5 h-5" />
-              Boka en tomte
+              🎅 Boka tomte
             </Button>
-            <Button variant="snow" size="xl" onClick={() => scrollToSection("become-santa")}>
+            <Button 
+              variant="outline" 
+              size="xl" 
+              onClick={() => scrollToSection("become-santa")}
+              className="border-accent text-accent hover:bg-accent/10 hover:text-accent"
+            >
               Bli tomte
             </Button>
           </div>
