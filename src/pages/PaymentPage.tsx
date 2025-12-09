@@ -211,7 +211,7 @@ const PaymentPage = () => {
                     "Personligt besök i ert hem",
                     "Presenter överlämnas",
                     "Chatt med tomten innan besök",
-                    "Gratis avbokning 24h innan"
+                    "Gratis avbokning 48h innan"
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-muted-foreground text-sm">
                       <Check className="w-4 h-4 text-accent flex-shrink-0" />
@@ -284,7 +284,7 @@ const PaymentPage = () => {
                       <h3 className="font-medium text-foreground text-sm">Trygg betalning</h3>
                       <p className="text-xs text-muted-foreground">
                         Betalningen reserveras och släpps först efter att tomtebesöket har genomförts. 
-                        Du kan avboka gratis upp till 24 timmar innan.
+                        Du kan avboka gratis upp till 48 timmar innan.
                       </p>
                     </div>
                   </div>

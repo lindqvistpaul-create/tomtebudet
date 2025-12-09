@@ -36,7 +36,7 @@ const Footer = () => {
               <li><Link to="/bli-tomte" className="hover:text-accent transition-colors">Bli tomte</Link></li>
               <li><Link to="/sa-funkar-det" className="hover:text-accent transition-colors">Hur det fungerar</Link></li>
               <li><Link to="/sa-funkar-det#faq" className="hover:text-accent transition-colors">Ersättning och villkor</Link></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Tips för ett lyckat besök</a></li>
+              <li><Link to="/sa-funkar-det" className="hover:text-accent transition-colors">Vanliga frågor</Link></li>
             </ul>
           </div>
 
@@ -44,7 +44,7 @@ const Footer = () => {
           <div>
             <h4 className="text-snow font-medium mb-4">Om Tomtebudet</h4>
             <ul className="space-y-2 text-snow/60 text-sm">
-              <li><a href="#" className="hover:text-accent transition-colors">Vår historia</a></li>
+              <li><Link to="/sa-funkar-det" className="hover:text-accent transition-colors">Så fungerar det</Link></li>
               <li><Link to="/kontakt" className="hover:text-accent transition-colors">Kontakta oss</Link></li>
               <li><Link to="/integritet-sakerhet" className="hover:text-accent transition-colors">Integritet & säkerhet</Link></li>
               <li><Link to="/kopvillkor" className="hover:text-accent transition-colors">Köpvillkor</Link></li>

@@ -357,7 +357,7 @@ const Booking = () => {
                         <div>
                           <h3 className="font-medium text-foreground">Trygg betalning</h3>
                           <p className="text-sm text-muted-foreground">
-                            Beloppet på {totalPrice} kr reserveras nu och frisläpps till tomten först efter genomfört besök. Du kan avboka gratis upp till 24 timmar innan.
+                            Beloppet på {totalPrice} kr reserveras nu och frisläpps till tomten först efter genomfört besök. Du kan avboka gratis upp till 48 timmar innan.
                           </p>
                         </div>
                       </div>

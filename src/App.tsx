@@ -12,12 +12,9 @@ import Booking from "./pages/Booking";
 import BookingConfirmation from "./pages/BookingConfirmation";
 import MyBookings from "./pages/MyBookings";
 import BecomeSantaOnboarding from "./pages/BecomeSantaOnboarding";
-import LogoShowcase from "./pages/LogoShowcase";
 import SantaDashboard from "./pages/SantaDashboard";
 import UserDashboard from "./pages/UserDashboard";
 import PaymentPage from "./pages/PaymentPage";
-import WizardDemo from "./pages/WizardDemo";
-import IconShowcase from "./pages/IconShowcase";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import PrivacySecurityPage from "./pages/PrivacySecurityPage";
 import ContactPage from "./pages/ContactPage";
@@ -52,9 +49,6 @@ const App = () => (
             <Route path="/aterstall-losenord" element={<ResetPassword />} />
             <Route path="/sok" element={<SearchSantas />} />
             <Route path="/tomte/:id" element={<SantaProfile />} />
-            <Route path="/wizard" element={<WizardDemo />} />
-            <Route path="/ikoner" element={<IconShowcase />} />
-            <Route path="/logotyp" element={<LogoShowcase />} />
             
             {/* Protected routes - any logged in user */}
             <Route path="/mitt-konto" element={
