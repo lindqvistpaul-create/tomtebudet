@@ -1,5 +1,6 @@
 import { Star, BadgeCheck, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const santas = [
   {
@@ -119,9 +120,11 @@ const TopSantas = () => {
 
         {/* View all button */}
         <div className="text-center mt-12">
-          <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/5">
-            Visa alla tomtar
-          </Button>
+          <Link to="/sok">
+            <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/5">
+              Visa alla tomtar
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
