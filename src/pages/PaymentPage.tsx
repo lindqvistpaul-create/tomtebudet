@@ -1,203 +1,140 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { 
   CreditCard, 
-  Lock, 
   Shield, 
   Check,
-  ChevronLeft
+  ChevronLeft,
+  Smartphone,
+  Wallet,
+  MapPin,
+  Calendar,
+  Clock,
+  AlertCircle,
+  Loader2
 } from "lucide-react";
 import SimpleHeader from "@/components/SimpleHeader";
+import Footer from "@/components/Footer";
 import { mockSantas } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
+
+type PaymentMethod = "card" | "swish" | "klarna";
 
 const PaymentPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const santa = mockSantas.find((s) => s.id === id) || mockSantas[0];
+  const santa = mockSantas.find((s) => s.id === id);
   
   const [isProcessing, setIsProcessing] = useState(false);
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [cardName, setCardName] = useState("");
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("card");
 
-  // Mock booking data - in real app this would come from state/context
+  // Mock booking data - in real app this would come from state/context/database
   const bookingData = {
     duration: 30,
+    date: "24 december 2024",
     time: "15:00",
     children: [{ name: "Ella", age: "6 år" }],
-    address: "Storgatan 15, 114 55 Stockholm"
+    address: "Storgatan 15",
+    city: "Stockholm"
   };
+
+  // If no santa found, show error state
+  if (!santa) {
+    return (
+      <div className="min-h-screen bg-primary flex flex-col">
+        <SimpleHeader />
+        <main className="flex-1 flex items-center justify-center pt-24 pb-16">
+          <div className="container mx-auto px-4 max-w-md">
+            <div className="bg-card rounded-2xl p-8 shadow-soft text-center">
+              <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="w-8 h-8 text-destructive" />
+              </div>
+              <h1 className="font-serif text-2xl text-foreground mb-2">
+                Bokningen hittades inte
+              </h1>
+              <p className="text-muted-foreground mb-6">
+                Vi kunde tyvärr inte hitta den bokning du söker. Den kan ha tagits bort eller så är länken felaktig.
+              </p>
+              <Link to="/mina-bokningar">
+                <Button variant="default" size="lg" className="w-full">
+                  Tillbaka till Mina bokningar
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const totalPrice = (bookingData.duration / 15) * santa.pricePerQuarter;
+  const pricePerQuarter = santa.pricePerQuarter;
 
-  const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-    const matches = v.match(/\d{4,16}/g);
-    const match = (matches && matches[0]) || "";
-    const parts = [];
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4));
-    }
-    return parts.length ? parts.join(" ") : value;
-  };
-
-  const formatExpiryDate = (value: string) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-    if (v.length >= 2) {
-      return v.substring(0, 2) + "/" + v.substring(2, 4);
-    }
-    return v;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setIsProcessing(true);
     
     // Simulate payment processing
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    navigate(`/bekraftelse/b-${Date.now()}`);
+    // Navigate to confirmation with a mock booking ID
+    const mockBookingId = `b-${Date.now()}`;
+    navigate(`/bekraftelse/${mockBookingId}`);
   };
 
+  const paymentMethods = [
+    {
+      id: "card" as PaymentMethod,
+      name: "Kortbetalning",
+      description: "Visa, Mastercard, Amex",
+      icon: CreditCard,
+    },
+    {
+      id: "swish" as PaymentMethod,
+      name: "Swish",
+      description: "Betala direkt med mobilen",
+      icon: Smartphone,
+    },
+    {
+      id: "klarna" as PaymentMethod,
+      name: "Klarna",
+      description: "Betala senare eller delbetala",
+      icon: Wallet,
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-primary flex flex-col">
       <SimpleHeader />
       
-      <main className="pt-24 pb-16">
+      <main className="flex-1 pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Back button */}
           <button 
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-background/60 hover:text-background transition-colors mb-6"
           >
             <ChevronLeft className="w-4 h-4" />
             Tillbaka
           </button>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Payment Form */}
-            <div className="bg-card rounded-2xl p-6 md:p-8 shadow-soft">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <CreditCard className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h1 className="font-serif text-2xl text-foreground">Betalning</h1>
-                  <p className="text-muted-foreground text-sm">Säker betalning med kortreservation</p>
-                </div>
-              </div>
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="font-serif text-3xl md:text-4xl text-background mb-2">
+              Betala din bokning
+            </h1>
+            <p className="text-background/70">
+              Granska din bokning innan du slutför betalningen.
+            </p>
+          </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Card Number */}
-                <div className="space-y-2">
-                  <Label>Kortnummer</Label>
-                  <div className="relative">
-                    <Input
-                      placeholder="1234 5678 9012 3456"
-                      value={cardNumber}
-                      onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-                      maxLength={19}
-                      className="bg-background pl-12"
-                      required
-                    />
-                    <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  </div>
-                </div>
-
-                {/* Cardholder Name */}
-                <div className="space-y-2">
-                  <Label>Kortinnehavarens namn</Label>
-                  <Input
-                    placeholder="Anna Andersson"
-                    value={cardName}
-                    onChange={(e) => setCardName(e.target.value)}
-                    className="bg-background"
-                    required
-                  />
-                </div>
-
-                {/* Expiry & CVV */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Utgångsdatum</Label>
-                    <Input
-                      placeholder="MM/ÅÅ"
-                      value={expiryDate}
-                      onChange={(e) => setExpiryDate(formatExpiryDate(e.target.value))}
-                      maxLength={5}
-                      className="bg-background"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>CVV</Label>
-                    <div className="relative">
-                      <Input
-                        placeholder="123"
-                        value={cvv}
-                        onChange={(e) => setCvv(e.target.value.replace(/\D/g, "").slice(0, 3))}
-                        maxLength={3}
-                        className="bg-background"
-                        required
-                      />
-                      <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Security Info */}
-                <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl">
-                  <div className="flex items-start gap-3">
-                    <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <div>
-                      <h3 className="font-medium text-foreground text-sm">Trygg betalning</h3>
-                      <p className="text-xs text-muted-foreground">
-                        Beloppet reserveras nu och frisläpps till tomten först efter genomfört besök. Du kan avboka gratis upp till 24 timmar innan.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Submit Button */}
-                <Button 
-                  type="submit" 
-                  variant="festive" 
-                  size="xl" 
-                  className="w-full"
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                      Behandlar betalning...
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="w-5 h-5" />
-                      Reservera {totalPrice} kr
-                    </>
-                  )}
-                </Button>
-
-                {/* Card logos */}
-                <div className="flex items-center justify-center gap-4 pt-2">
-                  <div className="text-xs text-muted-foreground flex items-center gap-2">
-                    <Lock className="w-3 h-3" />
-                    256-bit SSL-krypterad
-                  </div>
-                </div>
-              </form>
-            </div>
-
-            {/* Order Summary */}
-            <div className="space-y-6">
+          <div className="grid lg:grid-cols-5 gap-8">
+            {/* Left Column - Booking Summary */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Booking Summary Card */}
               <div className="bg-card rounded-2xl p-6 shadow-soft">
-                <h2 className="font-serif text-xl text-foreground mb-4">Bokningssammanfattning</h2>
+                <h2 className="font-serif text-xl text-foreground mb-4">Din bokning</h2>
                 
                 {/* Santa Info */}
                 <div className="flex items-center gap-4 pb-4 border-b border-border">
@@ -208,32 +145,44 @@ const PaymentPage = () => {
                   />
                   <div>
                     <h3 className="font-serif text-lg text-foreground">{santa.name}</h3>
-                    <p className="text-sm text-muted-foreground">{santa.location}</p>
+                    <div className="flex items-center gap-1 text-sm text-accent">
+                      <span className="text-yellow-500">★</span>
+                      <span>{santa.rating}</span>
+                      <span className="text-muted-foreground">({santa.reviews} omdömen)</span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Booking Details */}
                 <div className="py-4 space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Datum</span>
-                    <span className="text-foreground">24 december 2024</span>
+                  <div className="flex items-center gap-3 text-sm">
+                    <Calendar className="w-4 h-4 text-accent" />
+                    <span className="text-muted-foreground">Datum:</span>
+                    <span className="text-foreground ml-auto">{bookingData.date}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Tid</span>
-                    <span className="text-foreground">{bookingData.time}</span>
+                  <div className="flex items-center gap-3 text-sm">
+                    <Clock className="w-4 h-4 text-accent" />
+                    <span className="text-muted-foreground">Tid:</span>
+                    <span className="text-foreground ml-auto">{bookingData.time}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Längd</span>
-                    <span className="text-foreground">{bookingData.duration} minuter</span>
+                  <div className="flex items-center gap-3 text-sm">
+                    <Clock className="w-4 h-4 text-accent" />
+                    <span className="text-muted-foreground">Längd:</span>
+                    <span className="text-foreground ml-auto">{bookingData.duration} minuter</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Antal barn</span>
-                    <span className="text-foreground">{bookingData.children.length} st</span>
+                  <div className="flex items-center gap-3 text-sm">
+                    <MapPin className="w-4 h-4 text-accent" />
+                    <span className="text-muted-foreground">Plats:</span>
+                    <span className="text-foreground ml-auto">{bookingData.city}</span>
                   </div>
                 </div>
 
                 {/* Price Breakdown */}
                 <div className="pt-4 border-t border-border space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Pris per 15 min</span>
+                    <span className="text-foreground">{pricePerQuarter} kr</span>
+                  </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Tomtebesök ({bookingData.duration} min)</span>
                     <span className="text-foreground">{totalPrice} kr</span>
@@ -245,10 +194,10 @@ const PaymentPage = () => {
                 </div>
 
                 {/* Total */}
-                <div className="pt-4 mt-4 border-t border-border">
+                <div className="pt-4 mt-4 border-t-2 border-accent/30">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium text-foreground">Totalt</span>
-                    <span className="font-serif text-2xl text-foreground">{totalPrice} kr</span>
+                    <span className="font-medium text-foreground">Totalt att betala</span>
+                    <span className="font-serif text-2xl text-accent">{totalPrice} kr</span>
                   </div>
                 </div>
               </div>
@@ -265,16 +214,126 @@ const PaymentPage = () => {
                     "Gratis avbokning 24h innan"
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-muted-foreground text-sm">
-                      <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                      <Check className="w-4 h-4 text-accent flex-shrink-0" />
                       {item}
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
+
+            {/* Right Column - Payment Section */}
+            <div className="lg:col-span-3">
+              <div className="bg-card rounded-2xl p-6 md:p-8 shadow-soft">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+                    <CreditCard className="w-6 h-6 text-accent" />
+                  </div>
+                  <div>
+                    <h2 className="font-serif text-xl text-foreground">Välj betalmetod</h2>
+                    <p className="text-muted-foreground text-sm">Säker betalning med kortreservation</p>
+                  </div>
+                </div>
+
+                {/* Payment Method Selection */}
+                <div className="space-y-3 mb-6">
+                  {paymentMethods.map((method) => (
+                    <button
+                      key={method.id}
+                      type="button"
+                      onClick={() => setSelectedMethod(method.id)}
+                      className={cn(
+                        "w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left",
+                        selectedMethod === method.id
+                          ? "border-accent bg-accent/5"
+                          : "border-border hover:border-accent/50 hover:bg-muted/50"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-10 h-10 rounded-lg flex items-center justify-center",
+                        selectedMethod === method.id ? "bg-accent/20" : "bg-muted"
+                      )}>
+                        <method.icon className={cn(
+                          "w-5 h-5",
+                          selectedMethod === method.id ? "text-accent" : "text-muted-foreground"
+                        )} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-medium text-foreground">{method.name}</div>
+                        <div className="text-sm text-muted-foreground">{method.description}</div>
+                      </div>
+                      <div className={cn(
+                        "w-5 h-5 rounded-full border-2 flex items-center justify-center",
+                        selectedMethod === method.id
+                          ? "border-accent bg-accent"
+                          : "border-muted-foreground"
+                      )}>
+                        {selectedMethod === method.id && (
+                          <Check className="w-3 h-3 text-primary-foreground" />
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Security Info */}
+                <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl mb-6">
+                  <div className="flex items-start gap-3">
+                    <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="font-medium text-foreground text-sm">Trygg betalning</h3>
+                      <p className="text-xs text-muted-foreground">
+                        Betalningen reserveras och släpps först efter att tomtebesöket har genomförts. 
+                        Du kan avboka gratis upp till 24 timmar innan.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <Button 
+                  onClick={handleSubmit}
+                  variant="festive" 
+                  size="xl" 
+                  className="w-full"
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Behandlar betalning...
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="w-5 h-5" />
+                      Slutför betalning – {totalPrice} kr
+                    </>
+                  )}
+                </Button>
+
+                {/* Trust text below button */}
+                <p className="text-center text-xs text-muted-foreground mt-4">
+                  Betalningen reserveras och släpps först efter att tomtebesöket har genomförts.
+                </p>
+
+                {/* Security badges */}
+                <div className="flex items-center justify-center gap-6 pt-6 mt-6 border-t border-border">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Shield className="w-4 h-4 text-accent" />
+                    <span>Säker betalning</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <CreditCard className="w-4 h-4 text-accent" />
+                    <span>Krypterad</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 };
