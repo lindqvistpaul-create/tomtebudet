@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Fingerprint, FileCheck, Camera, CheckCircle } from "lucide-react";
 
@@ -86,9 +87,11 @@ const BecomeSanta = () => {
 
           {/* CTA */}
           <div className="text-center">
-            <Button variant="hero" size="xl">
-              🎅 Bli tomte
-            </Button>
+            <Link to="/bli-tomte">
+              <Button variant="hero" size="xl">
+                🎅 Bli tomte
+              </Button>
+            </Link>
             <p className="text-snow/50 text-sm mt-4">
               Gratis att registrera sig • Sätt dina egna priser • Utbetalning inom 2 dagar
             </p>
