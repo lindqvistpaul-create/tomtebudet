@@ -23,9 +23,9 @@ const Footer = () => {
             <h4 className="text-snow font-medium mb-4">För familjer</h4>
             <ul className="space-y-2 text-snow/60 text-sm">
               <li><Link to="/sok" className="hover:text-accent transition-colors">Hitta en tomte</Link></li>
-              <li><a href="#how-it-works" className="hover:text-accent transition-colors">Så fungerar det</a></li>
+              <li><Link to="/sa-funkar-det" className="hover:text-accent transition-colors">Så fungerar det</Link></li>
               <li><a href="#why-tomtebudet" className="hover:text-accent transition-colors">Trygghet och kvalitet</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Vanliga frågor</a></li>
+              <li><Link to="/sa-funkar-det#faq" className="hover:text-accent transition-colors">Vanliga frågor</Link></li>
             </ul>
           </div>
 
@@ -34,8 +34,8 @@ const Footer = () => {
             <h4 className="text-snow font-medium mb-4">För tomtar</h4>
             <ul className="space-y-2 text-snow/60 text-sm">
               <li><Link to="/bli-tomte" className="hover:text-accent transition-colors">Bli tomte</Link></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Hur det fungerar</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Ersättning och villkor</a></li>
+              <li><Link to="/sa-funkar-det" className="hover:text-accent transition-colors">Hur det fungerar</Link></li>
+              <li><Link to="/sa-funkar-det#faq" className="hover:text-accent transition-colors">Ersättning och villkor</Link></li>
               <li><a href="#" className="hover:text-accent transition-colors">Tips för ett lyckat besök</a></li>
             </ul>
           </div>

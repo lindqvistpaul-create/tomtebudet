@@ -18,6 +18,7 @@ import UserDashboard from "./pages/UserDashboard";
 import PaymentPage from "./pages/PaymentPage";
 import WizardDemo from "./pages/WizardDemo";
 import IconShowcase from "./pages/IconShowcase";
+import HowItWorksPage from "./pages/HowItWorksPage";
 import Auth from "./pages/Auth";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -37,6 +38,7 @@ const App = () => (
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Index />} />
+            <Route path="/sa-funkar-det" element={<HowItWorksPage />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />

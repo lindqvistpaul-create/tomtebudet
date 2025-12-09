@@ -37,7 +37,7 @@ const Header = () => {
 
   const navLinks = [
     { label: "Hitta tomte", target: "top-santas" },
-    { label: "Så fungerar det", target: "how-it-works" },
+    { label: "Så fungerar det", href: "/sa-funkar-det" },
     { label: "Trygghet & kvalitet", target: "why-tomtebudet" },
   ];
 
@@ -53,13 +53,23 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-6">
             {navLinks.map((link) => (
-              <button
-                key={link.target}
-                onClick={() => scrollToSection(link.target)}
-                className="text-snow/80 hover:text-accent transition-colors text-sm font-medium"
-              >
-                {link.label}
-              </button>
+              'href' in link ? (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  className="text-snow/80 hover:text-accent transition-colors text-sm font-medium"
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <button
+                  key={link.target}
+                  onClick={() => scrollToSection(link.target!)}
+                  className="text-snow/80 hover:text-accent transition-colors text-sm font-medium"
+                >
+                  {link.label}
+                </button>
+              )
             ))}
           </nav>
 
@@ -192,15 +202,26 @@ const Header = () => {
         {isOpen && (
           <nav className="lg:hidden py-4 border-t border-snow/10 animate-fade-in">
             <div className="flex flex-col gap-1">
-              {navLinks.map((link) => (
+            {navLinks.map((link) => (
+              'href' in link ? (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className="text-snow/80 hover:text-accent transition-colors text-left py-3 px-3 rounded-lg hover:bg-snow/5"
+                >
+                  {link.label}
+                </Link>
+              ) : (
                 <button
                   key={link.target}
-                  onClick={() => scrollToSection(link.target)}
+                  onClick={() => scrollToSection(link.target!)}
                   className="text-snow/80 hover:text-accent transition-colors text-left py-3 px-3 rounded-lg hover:bg-snow/5"
                 >
                   {link.label}
                 </button>
-              ))}
+              )
+            ))}
               
               <div className="flex flex-col gap-2 pt-4 mt-2 border-t border-snow/10">
                 {user ? (
