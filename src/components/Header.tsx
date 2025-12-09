@@ -1,13 +1,22 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Fingerprint, User, Gift } from "lucide-react";
+import { Menu, X, Gift, User, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "@/components/Logo";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+  const { user, signOut, loading } = useAuth();
 
   const scrollToSection = (id: string) => {
     if (isHomePage) {
@@ -15,6 +24,11 @@ const Header = () => {
     } else {
       window.location.href = `/#${id}`;
     }
+    setIsOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
     setIsOpen(false);
   };
 
@@ -59,16 +73,58 @@ const Header = () => {
                 Tomteportal
               </Button>
             </Link>
-            <Link to="/mitt-konto">
-              <Button 
-                variant="ghost" 
-                size="default"
-                className="text-snow/80 hover:text-accent hover:bg-snow/5"
-              >
-                <User className="w-4 h-4" />
-                Mitt konto
-              </Button>
-            </Link>
+            
+            {loading ? (
+              <div className="w-24 h-10 bg-snow/10 rounded animate-pulse" />
+            ) : user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="default"
+                    className="text-snow/80 hover:text-accent hover:bg-snow/5 gap-2"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center">
+                      <User className="w-4 h-4 text-accent" />
+                    </div>
+                    <span className="max-w-24 truncate">
+                      {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link to="/mitt-konto" className="cursor-pointer">
+                      <User className="w-4 h-4 mr-2" />
+                      Mitt konto
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/mina-bokningar" className="cursor-pointer">
+                      <Gift className="w-4 h-4 mr-2" />
+                      Mina bokningar
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logga ut
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/auth">
+                <Button 
+                  variant="ghost" 
+                  size="default"
+                  className="text-snow/80 hover:text-accent hover:bg-snow/5"
+                >
+                  <User className="w-4 h-4" />
+                  Logga in
+                </Button>
+              </Link>
+            )}
+            
             <Link to="/sok">
               <Button 
                 variant="hero" 
@@ -104,16 +160,50 @@ const Header = () => {
               ))}
               
               <div className="flex flex-col gap-2 pt-4 mt-2 border-t border-snow/10">
-                <Link to="/mitt-konto" onClick={() => setIsOpen(false)}>
-                  <Button 
-                    variant="ghost" 
-                    size="default"
-                    className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
-                  >
-                    <User className="w-4 h-4" />
-                    Mitt konto
-                  </Button>
-                </Link>
+                {user ? (
+                  <>
+                    <Link to="/mitt-konto" onClick={() => setIsOpen(false)}>
+                      <Button 
+                        variant="ghost" 
+                        size="default"
+                        className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
+                      >
+                        <User className="w-4 h-4" />
+                        Mitt konto
+                      </Button>
+                    </Link>
+                    <Link to="/mina-bokningar" onClick={() => setIsOpen(false)}>
+                      <Button 
+                        variant="ghost" 
+                        size="default"
+                        className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
+                      >
+                        <Gift className="w-4 h-4" />
+                        Mina bokningar
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="ghost" 
+                      size="default"
+                      className="w-full justify-start text-destructive hover:bg-destructive/10"
+                      onClick={handleSignOut}
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logga ut
+                    </Button>
+                  </>
+                ) : (
+                  <Link to="/auth" onClick={() => setIsOpen(false)}>
+                    <Button 
+                      variant="ghost" 
+                      size="default"
+                      className="w-full justify-start text-snow/80 hover:text-accent hover:bg-snow/5"
+                    >
+                      <User className="w-4 h-4" />
+                      Logga in
+                    </Button>
+                  </Link>
+                )}
                 <Link to="/tomte-dashboard" onClick={() => setIsOpen(false)}>
                   <Button 
                     variant="ghost" 
