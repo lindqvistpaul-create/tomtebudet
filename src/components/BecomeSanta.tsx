@@ -62,7 +62,7 @@ const BecomeSanta = () => {
                 className="group relative bg-snow/5 backdrop-blur-sm border border-snow/10 rounded-xl md:rounded-2xl p-4 md:p-6 pt-8 md:pt-6 hover:bg-snow/10 transition-all duration-300 flex-shrink-0 w-[180px] md:w-auto snap-start"
               >
                 {/* Step number badge - inside card on mobile, outside on desktop */}
-                <div className="absolute top-2 left-2 md:-top-3 md:-left-3 w-6 h-6 md:w-8 md:h-8 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-serif font-bold text-xs md:text-sm shadow-lg">
+                <div className="absolute top-2 right-2 md:-top-3 md:-right-3 w-6 h-6 md:w-8 md:h-8 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-serif font-bold text-xs md:text-sm shadow-lg">
                   {item.step}
                 </div>
 
