@@ -63,6 +63,7 @@ export type Database = {
           santa_id: string
           santa_image: string | null
           santa_name: string
+          santa_user_id: string | null
           status: string
           time: string
           total_price: number
@@ -82,6 +83,7 @@ export type Database = {
           santa_id: string
           santa_image?: string | null
           santa_name: string
+          santa_user_id?: string | null
           status?: string
           time: string
           total_price: number
@@ -101,6 +103,7 @@ export type Database = {
           santa_id?: string
           santa_image?: string | null
           santa_name?: string
+          santa_user_id?: string | null
           status?: string
           time?: string
           total_price?: number
