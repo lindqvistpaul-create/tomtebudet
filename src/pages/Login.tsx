@@ -129,6 +129,16 @@ const Login = () => {
                   "Logga in"
                 )}
               </Button>
+
+              {/* Forgot password link */}
+              <div className="text-center">
+                <Link 
+                  to="/glomt-losenord" 
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Glömt lösenord?
+                </Link>
+              </div>
             </form>
 
             {/* Divider */}
