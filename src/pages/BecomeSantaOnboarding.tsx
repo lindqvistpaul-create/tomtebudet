@@ -287,6 +287,18 @@ const BecomeSantaOnboarding = () => {
     
     if (result) {
       toast.success('Din ansökan har skickats in!');
+      
+      // Notify admin about new santa registration
+      try {
+        await supabase.functions.invoke('notify-admin-new-santa', {
+          body: { user_id: user?.id }
+        });
+        console.log('Admin notification sent');
+      } catch (notifyError) {
+        console.error('Failed to send admin notification:', notifyError);
+        // Don't block the user flow if notification fails
+      }
+      
       handleNext();
     }
     

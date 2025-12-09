@@ -88,13 +88,13 @@ const AdminNotifications = () => {
 
   const fetchNotifications = async () => {
     try {
-      // Fetch pending santa applications
+      // Fetch pending santa applications (both 'pending' and 'pending_review' status)
       const { data: pendingApps } = await supabase
         .from("santa_applications")
         .select("id, created_at, status")
-        .eq("status", "pending")
+        .in("status", ["pending", "pending_review"])
         .order("created_at", { ascending: false })
-        .limit(5);
+        .limit(10);
 
       // Fetch recent bookings (last 24 hours)
       const yesterday = new Date();
