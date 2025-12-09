@@ -15,6 +15,7 @@ const Footer = () => {
       id: "families",
       title: "För familjer",
       links: [
+        { label: "Anmäl intresse", to: "/intresse-familj" },
         { label: "Hitta en tomte", to: "/sok" },
         { label: "Så fungerar det", to: "/sa-funkar-det" },
         { label: "Trygghet och kvalitet", href: "#why-tomtebudet" },

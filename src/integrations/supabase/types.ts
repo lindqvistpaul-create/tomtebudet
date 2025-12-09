@@ -121,6 +121,36 @@ export type Database = {
         }
         Relationships: []
       }
+      family_interest: {
+        Row: {
+          children_info: string | null
+          created_at: string
+          email: string
+          id: string
+          location: string | null
+          name: string | null
+          notified_at: string | null
+        }
+        Insert: {
+          children_info?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          location?: string | null
+          name?: string | null
+          notified_at?: string | null
+        }
+        Update: {
+          children_info?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          location?: string | null
+          name?: string | null
+          notified_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
