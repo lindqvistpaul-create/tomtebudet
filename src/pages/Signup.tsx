@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { validatePassword } from "@/lib/passwordValidation";
+import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 
 const Signup = () => {
   const [searchParams] = useSearchParams();
@@ -58,8 +60,10 @@ const Signup = () => {
       return;
     }
 
-    if (password.length < 6) {
-      toast.error("Lösenordet måste vara minst 6 tecken");
+    // Validate password strength
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      toast.error(passwordValidation.errors[0] || "Lösenordet är för svagt");
       return;
     }
 
@@ -260,10 +264,10 @@ const Signup = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       className="pl-12 h-14 bg-muted/30 border-border text-foreground placeholder:text-muted-foreground"
                       required
-                      minLength={6}
+                      minLength={8}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground">Minst 6 tecken</p>
+                  <PasswordStrengthIndicator password={password} />
                 </div>
 
                 <div className="space-y-2">
