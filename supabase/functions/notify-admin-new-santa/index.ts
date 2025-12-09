@@ -66,7 +66,7 @@ const handler = async (req: Request): Promise<Response> => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Tomtebudet <onboarding@resend.dev>",
+        from: "Tomtebudet <no-reply@tomtebudet.se>",
         to: [ADMIN_EMAIL],
         subject: "Ny tomte registrerad på Tomtebudet",
         html: `
