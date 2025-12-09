@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Shield, Sparkles, TreePine } from "lucide-react";
+import { Sparkles, TreePine } from "lucide-react";
 import Starfall from "@/components/Starfall";
+import TrustBadge from "@/components/TrustBadge";
 
 const Hero = () => {
   const scrollToSection = (id: string) => {
@@ -27,11 +28,10 @@ const Hero = () => {
         <div className="max-w-4xl mx-auto text-center">
           {/* Trust badge */}
           <div 
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-snow/10 border border-snow/20 backdrop-blur-sm mb-8 opacity-0 animate-fade-in"
+            className="flex justify-center mb-8 opacity-0 animate-fade-in"
             style={{ animationDelay: "0.2s" }}
           >
-            <Shield className="w-4 h-4 text-accent" />
-            <span className="text-snow/90 text-sm font-medium">Trygg tomtebokning – alla tomtar är BankID-verifierade</span>
+            <TrustBadge variant="hero" />
           </div>
 
           {/* Main heading */}
