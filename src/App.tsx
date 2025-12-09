@@ -19,6 +19,8 @@ import PaymentPage from "./pages/PaymentPage";
 import WizardDemo from "./pages/WizardDemo";
 import IconShowcase from "./pages/IconShowcase";
 import Auth from "./pages/Auth";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +36,8 @@ const App = () => (
             {/* Public routes */}
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/sok" element={<SearchSantas />} />
             <Route path="/tomte/:id" element={<SantaProfile />} />
             <Route path="/wizard" element={<WizardDemo />} />
