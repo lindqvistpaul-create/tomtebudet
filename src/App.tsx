@@ -11,6 +11,9 @@ import BookingConfirmation from "./pages/BookingConfirmation";
 import MyBookings from "./pages/MyBookings";
 import BecomeSantaOnboarding from "./pages/BecomeSantaOnboarding";
 import LogoShowcase from "./pages/LogoShowcase";
+import SantaDashboard from "./pages/SantaDashboard";
+import UserDashboard from "./pages/UserDashboard";
+import PaymentPage from "./pages/PaymentPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,7 +31,10 @@ const App = () => (
           <Route path="/boka/:id" element={<Booking />} />
           <Route path="/bekraftelse/:bookingId" element={<BookingConfirmation />} />
           <Route path="/mina-bokningar" element={<MyBookings />} />
+          <Route path="/mitt-konto" element={<UserDashboard />} />
           <Route path="/bli-tomte" element={<BecomeSantaOnboarding />} />
+          <Route path="/tomte-dashboard" element={<SantaDashboard />} />
+          <Route path="/betala/:id" element={<PaymentPage />} />
           <Route path="/logotyp" element={<LogoShowcase />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
