@@ -25,6 +25,7 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AdminBookings from "./pages/admin/AdminBookings";
 import AdminSantas from "./pages/admin/AdminSantas";
+import AdminSantaReview from "./pages/admin/AdminSantaReview";
 import AdminCustomers from "./pages/admin/AdminCustomers";
 import AdminCancellations from "./pages/admin/AdminCancellations";
 import AdminSettings from "./pages/admin/AdminSettings";
@@ -89,6 +90,7 @@ const App = () => (
               </ProtectedRoute>
             }>
               <Route index element={<AdminOverview />} />
+              <Route path="granskning" element={<AdminSantaReview />} />
               <Route path="bokningar" element={<AdminBookings />} />
               <Route path="tomtar" element={<AdminSantas />} />
               <Route path="kunder" element={<AdminCustomers />} />
