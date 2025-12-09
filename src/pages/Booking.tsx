@@ -77,30 +77,30 @@ const Booking = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-32 lg:pb-16">
       <SimpleHeader />
       
-      <main className="pt-24 pb-16">
+      <main className="pt-20 md:pt-24 pb-8">
         <div className="container mx-auto px-4 max-w-4xl">
-          {/* Progress Steps */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
+          {/* Progress Steps - Mobile optimized */}
+          <div className="mb-6 md:mb-8 overflow-x-auto -mx-4 px-4">
+            <div className="flex items-center justify-between min-w-[280px]">
               {steps.map((step, index) => (
-                <div key={step.id} className="flex items-center">
+                <div key={step.id} className="flex items-center flex-1 last:flex-none">
                   <div className="flex flex-col items-center">
                     <div
                       className={cn(
-                        "w-12 h-12 rounded-full flex items-center justify-center transition-colors",
+                        "w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-colors",
                         currentStep >= step.id
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted text-muted-foreground"
                       )}
                     >
-                      <step.icon className="w-5 h-5" />
+                      <step.icon className="w-4 h-4 md:w-5 md:h-5" />
                     </div>
                     <span
                       className={cn(
-                        "text-sm mt-2 font-medium",
+                        "text-xs md:text-sm mt-1.5 md:mt-2 font-medium text-center whitespace-nowrap",
                         currentStep >= step.id ? "text-foreground" : "text-muted-foreground"
                       )}
                     >
@@ -110,10 +110,9 @@ const Booking = () => {
                   {index < steps.length - 1 && (
                     <div
                       className={cn(
-                        "h-0.5 w-full mx-4 hidden md:block",
+                        "h-0.5 flex-1 mx-2 md:mx-4",
                         currentStep > step.id ? "bg-primary" : "bg-muted"
                       )}
-                      style={{ minWidth: "60px" }}
                     />
                   )}
                 </div>
@@ -121,32 +120,32 @@ const Booking = () => {
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2">
-              <div className="bg-card rounded-2xl p-6 md:p-8 shadow-soft">
+              <div className="bg-card rounded-2xl p-5 md:p-8 shadow-soft">
                 {/* Step 1: Choose Time */}
                 {currentStep === 1 && (
-                  <div className="space-y-6">
-                    <h2 className="font-serif text-2xl text-foreground">Välj tid och varaktighet</h2>
+                  <div className="space-y-5 md:space-y-6">
+                    <h2 className="font-serif text-xl md:text-2xl text-foreground">Välj tid och varaktighet</h2>
                     
                     {/* Duration */}
                     <div>
-                      <Label className="text-foreground mb-3 block">Varaktighet</Label>
-                      <div className="grid grid-cols-3 gap-3">
+                      <Label className="text-foreground mb-3 block text-sm md:text-base">Varaktighet</Label>
+                      <div className="grid grid-cols-3 gap-2 md:gap-3">
                         {durations.map((d) => (
                           <button
                             key={d.minutes}
                             onClick={() => setSelectedDuration(d.minutes)}
                             className={cn(
-                              "p-4 rounded-xl border-2 text-center transition-all",
+                              "p-3 md:p-4 rounded-xl border-2 text-center transition-all active:scale-95",
                               selectedDuration === d.minutes
                                 ? "border-primary bg-primary/5"
                                 : "border-border hover:border-primary/50"
                             )}
                           >
-                            <div className="font-serif text-xl text-foreground">{d.label}</div>
-                            <div className="text-sm text-muted-foreground">{d.description}</div>
+                            <div className="font-serif text-lg md:text-xl text-foreground">{d.label}</div>
+                            <div className="text-xs md:text-sm text-muted-foreground">{d.description}</div>
                           </button>
                         ))}
                       </div>
@@ -154,16 +153,16 @@ const Booking = () => {
 
                     {/* Time Selection */}
                     <div>
-                      <Label className="text-foreground mb-3 block">Välj starttid (24 december)</Label>
-                      <div className="grid grid-cols-5 gap-2">
+                      <Label className="text-foreground mb-3 block text-sm md:text-base">Välj starttid (24 december)</Label>
+                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                         {santa.availableTimes.map((time) => (
                           <button
                             key={time}
                             onClick={() => setSelectedTime(time)}
                             className={cn(
-                              "py-3 px-4 rounded-lg border-2 text-center transition-all",
+                              "py-3 px-3 md:px-4 rounded-lg border-2 text-center transition-all active:scale-95 min-h-[48px]",
                               selectedTime === time
-                                ? "border-primary bg-primary/5 text-foreground"
+                                ? "border-primary bg-primary/5 text-foreground font-medium"
                                 : "border-border hover:border-primary/50 text-foreground"
                             )}
                           >
@@ -177,14 +176,16 @@ const Booking = () => {
 
                 {/* Step 2: Children Info */}
                 {currentStep === 2 && (
-                  <div className="space-y-6">
-                    <h2 className="font-serif text-2xl text-foreground">Barnens information</h2>
-                    <p className="text-muted-foreground">
-                      Hjälp tomten att göra besöket extra speciellt genom att dela information om barnen.
-                    </p>
+                  <div className="space-y-5 md:space-y-6">
+                    <div>
+                      <h2 className="font-serif text-xl md:text-2xl text-foreground">Barnens information</h2>
+                      <p className="text-muted-foreground text-sm md:text-base mt-1">
+                        Hjälp tomten att göra besöket extra speciellt.
+                      </p>
+                    </div>
 
                     {children.map((child, index) => (
-                      <div key={index} className="p-5 bg-muted/30 rounded-xl space-y-4">
+                      <div key={index} className="p-4 md:p-5 bg-muted/30 rounded-xl space-y-4">
                         <div className="flex items-center justify-between">
                           <h3 className="font-medium text-foreground">Barn {index + 1}</h3>
                           {children.length > 1 && (
@@ -192,51 +193,51 @@ const Booking = () => {
                               variant="ghost"
                               size="sm"
                               onClick={() => removeChild(index)}
-                              className="text-muted-foreground hover:text-destructive"
+                              className="text-muted-foreground hover:text-destructive h-9 w-9 p-0"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           )}
                         </div>
                         
-                        <div className="grid md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-3 md:gap-4">
                           <div className="space-y-2">
-                            <Label>Namn</Label>
+                            <Label className="text-sm">Namn</Label>
                             <Input
                               placeholder="Barnets namn"
                               value={child.name}
                               onChange={(e) => updateChild(index, "name", e.target.value)}
-                              className="bg-background"
+                              className="bg-background h-12"
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label>Ålder</Label>
+                            <Label className="text-sm">Ålder</Label>
                             <Input
                               placeholder="t.ex. 6 år"
                               value={child.age}
                               onChange={(e) => updateChild(index, "age", e.target.value)}
-                              className="bg-background"
+                              className="bg-background h-12"
                             />
                           </div>
                         </div>
                         
                         <div className="space-y-2">
-                          <Label>Presenter som tomten tar med</Label>
+                          <Label className="text-sm">Presenter som tomten tar med</Label>
                           <Input
                             placeholder="t.ex. Docka, Lego, Bok"
                             value={child.gifts}
                             onChange={(e) => updateChild(index, "gifts", e.target.value)}
-                            className="bg-background"
+                            className="bg-background h-12"
                           />
                         </div>
                         
                         <div className="space-y-2">
-                          <Label>Specialinformation (valfritt)</Label>
+                          <Label className="text-sm">Specialinfo (valfritt)</Label>
                           <Textarea
                             placeholder="t.ex. Älskar dinosaurier, blyg till en början..."
                             value={child.specialInfo}
                             onChange={(e) => updateChild(index, "specialInfo", e.target.value)}
-                            className="bg-background resize-none"
+                            className="bg-background resize-none min-h-[80px]"
                             rows={2}
                           />
                         </div>
@@ -246,7 +247,7 @@ const Booking = () => {
                     <Button
                       variant="outline"
                       onClick={addChild}
-                      className="w-full border-dashed"
+                      className="w-full border-dashed h-12"
                     >
                       <Plus className="w-4 h-4" />
                       Lägg till ett barn till
@@ -256,61 +257,65 @@ const Booking = () => {
 
                 {/* Step 3: Address */}
                 {currentStep === 3 && (
-                  <div className="space-y-6">
-                    <h2 className="font-serif text-2xl text-foreground">Leveransadress</h2>
-                    <p className="text-muted-foreground">
-                      Vart ska tomten komma?
-                    </p>
+                  <div className="space-y-5 md:space-y-6">
+                    <div>
+                      <h2 className="font-serif text-xl md:text-2xl text-foreground">Leveransadress</h2>
+                      <p className="text-muted-foreground text-sm md:text-base mt-1">
+                        Vart ska tomten komma?
+                      </p>
+                    </div>
 
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label>Gatuadress</Label>
+                        <Label className="text-sm">Gatuadress</Label>
                         <Input
                           placeholder="Storgatan 15"
                           value={address.street}
                           onChange={(e) => setAddress({ ...address, street: e.target.value })}
-                          className="bg-background"
+                          className="bg-background h-12"
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 gap-3 md:gap-4">
                         <div className="space-y-2">
-                          <Label>Postnummer</Label>
+                          <Label className="text-sm">Postnummer</Label>
                           <Input
                             placeholder="114 55"
                             value={address.postalCode}
                             onChange={(e) => setAddress({ ...address, postalCode: e.target.value })}
-                            className="bg-background"
+                            className="bg-background h-12"
+                            inputMode="numeric"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label>Stad</Label>
+                          <Label className="text-sm">Stad</Label>
                           <Input
                             placeholder="Stockholm"
                             value={address.city}
                             onChange={(e) => setAddress({ ...address, city: e.target.value })}
-                            className="bg-background"
+                            className="bg-background h-12"
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Portkod (valfritt)</Label>
+                        <Label className="text-sm">Portkod (valfritt)</Label>
                         <Input
                           placeholder="1234"
                           value={address.doorCode}
                           onChange={(e) => setAddress({ ...address, doorCode: e.target.value })}
-                          className="bg-background"
+                          className="bg-background h-12"
+                          inputMode="numeric"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Instruktioner till tomten (valfritt)</Label>
+                        <Label className="text-sm">Instruktioner till tomten (valfritt)</Label>
                         <Textarea
-                          placeholder="t.ex. Ring på dörren, använd bakdörren, vänta ute tills barnen är klara..."
+                          placeholder="t.ex. Ring på dörren, använd bakdörren..."
                           value={address.instructions}
                           onChange={(e) => setAddress({ ...address, instructions: e.target.value })}
-                          className="bg-background resize-none"
+                          className="bg-background resize-none min-h-[100px]"
                           rows={3}
                         />
                       </div>
@@ -320,30 +325,30 @@ const Booking = () => {
 
                 {/* Step 4: Confirmation */}
                 {currentStep === 4 && (
-                  <div className="space-y-6">
-                    <h2 className="font-serif text-2xl text-foreground">Bekräfta din bokning</h2>
+                  <div className="space-y-5 md:space-y-6">
+                    <h2 className="font-serif text-xl md:text-2xl text-foreground">Bekräfta din bokning</h2>
                     
                     {/* Summary */}
-                    <div className="space-y-4">
+                    <div className="space-y-3 md:space-y-4">
                       <div className="p-4 bg-muted/30 rounded-xl">
-                        <h3 className="font-medium text-foreground mb-2">Tid & Tomte</h3>
-                        <p className="text-muted-foreground">
-                          {santa.name} • 24 december kl {selectedTime} • {selectedDuration} minuter
+                        <h3 className="font-medium text-foreground mb-2 text-sm md:text-base">Tid & Tomte</h3>
+                        <p className="text-muted-foreground text-sm">
+                          {santa.name} • 24 dec kl {selectedTime} • {selectedDuration} min
                         </p>
                       </div>
 
                       <div className="p-4 bg-muted/30 rounded-xl">
-                        <h3 className="font-medium text-foreground mb-2">Barn</h3>
+                        <h3 className="font-medium text-foreground mb-2 text-sm md:text-base">Barn</h3>
                         {children.filter(c => c.name).map((child, i) => (
-                          <p key={i} className="text-muted-foreground">
+                          <p key={i} className="text-muted-foreground text-sm">
                             {child.name}, {child.age} – {child.gifts}
                           </p>
                         ))}
                       </div>
 
                       <div className="p-4 bg-muted/30 rounded-xl">
-                        <h3 className="font-medium text-foreground mb-2">Adress</h3>
-                        <p className="text-muted-foreground">
+                        <h3 className="font-medium text-foreground mb-2 text-sm md:text-base">Adress</h3>
+                        <p className="text-muted-foreground text-sm">
                           {address.street}, {address.postalCode} {address.city}
                           {address.doorCode && ` • Portkod: ${address.doorCode}`}
                         </p>
@@ -355,9 +360,9 @@ const Booking = () => {
                       <div className="flex items-start gap-3">
                         <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                         <div>
-                          <h3 className="font-medium text-foreground">Trygg betalning</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Beloppet på {totalPrice} kr reserveras nu och frisläpps till tomten först efter genomfört besök. Du kan avboka gratis upp till 48 timmar innan.
+                          <h3 className="font-medium text-foreground text-sm md:text-base">Trygg betalning</h3>
+                          <p className="text-xs md:text-sm text-muted-foreground">
+                            Beloppet på {totalPrice} kr reserveras nu och frisläpps efter genomfört besök. Avboka gratis 48h innan.
                           </p>
                         </div>
                       </div>
@@ -365,10 +370,10 @@ const Booking = () => {
                   </div>
                 )}
 
-                {/* Navigation Buttons */}
-                <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
+                {/* Navigation Buttons - Hidden on mobile (we use sticky footer) */}
+                <div className="hidden lg:flex items-center justify-between mt-8 pt-6 border-t border-border">
                   {currentStep > 1 ? (
-                    <Button variant="outline" onClick={handleBack}>
+                    <Button variant="outline" onClick={handleBack} size="lg">
                       <ChevronLeft className="w-4 h-4" />
                       Tillbaka
                     </Button>
@@ -377,7 +382,7 @@ const Booking = () => {
                   )}
                   
                   {currentStep < 4 ? (
-                    <Button variant="hero" onClick={handleNext} disabled={currentStep === 1 && !selectedTime}>
+                    <Button variant="hero" onClick={handleNext} disabled={currentStep === 1 && !selectedTime} size="lg">
                       Fortsätt
                       <ChevronRight className="w-4 h-4" />
                     </Button>
@@ -391,14 +396,15 @@ const Booking = () => {
               </div>
             </div>
 
-            {/* Sidebar - Order Summary */}
-            <div className="lg:col-span-1">
+            {/* Sidebar - Order Summary (hidden on mobile) */}
+            <div className="hidden lg:block lg:col-span-1">
               <div className="sticky top-28 bg-card rounded-2xl p-6 shadow-soft border border-border/50">
                 <div className="flex items-center gap-4 pb-4 border-b border-border">
                   <img
                     src={santa.image}
                     alt={santa.name}
                     className="w-16 h-16 rounded-xl object-cover"
+                    loading="lazy"
                   />
                   <div>
                     <h3 className="font-serif text-lg text-foreground">{santa.name}</h3>
@@ -437,6 +443,42 @@ const Booking = () => {
           </div>
         </div>
       </main>
+
+      {/* Mobile Sticky Footer */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-lg safe-area-inset-bottom">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
+            {currentStep > 1 && (
+              <Button variant="outline" onClick={handleBack} className="flex-shrink-0 h-12 px-4">
+                <ChevronLeft className="w-4 h-4" />
+                <span className="hidden xs:inline ml-1">Tillbaka</span>
+              </Button>
+            )}
+            
+            <div className={cn("flex-1", currentStep === 1 && "text-left")}>
+              <div className="text-sm text-muted-foreground">Totalt</div>
+              <div className="font-serif text-xl text-foreground">{totalPrice} kr</div>
+            </div>
+            
+            {currentStep < 4 ? (
+              <Button 
+                variant="hero" 
+                onClick={handleNext} 
+                disabled={currentStep === 1 && !selectedTime}
+                className="h-12 px-6 text-base"
+              >
+                Fortsätt
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            ) : (
+              <Button variant="festive" onClick={handleConfirm} className="h-12 px-5 text-sm">
+                <CreditCard className="w-4 h-4" />
+                Betala {totalPrice} kr
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
