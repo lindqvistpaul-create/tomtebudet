@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Gift, Fingerprint } from "lucide-react";
+import { Menu, X, Fingerprint } from "lucide-react";
 import { Link } from "react-router-dom";
+import Logo from "@/components/Logo";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,11 +24,8 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
-            <Gift className="w-7 h-7 text-accent" />
-            <span className="font-serif text-xl md:text-2xl text-snow">
-              Tomte<span className="text-gradient-gold">budet</span>
-            </span>
+          <Link to="/" className="hover:opacity-90 transition-opacity">
+            <Logo variant="horizontal" size="md" textColor="light" iconColor="gold" />
           </Link>
 
           {/* Desktop Navigation */}
