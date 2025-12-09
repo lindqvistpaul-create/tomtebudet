@@ -6,6 +6,95 @@
  */
 
 // ============================================
+// BOKNINGSFLÖDE – STEG
+// ============================================
+
+export const bookingFlow = {
+  steps: [
+    {
+      id: 1,
+      name: "Välj tid",
+      shortName: "Tid",
+      description: "När ska magin ske?",
+      hint: "Välj datum och tid som passar er familj bäst.",
+    },
+    {
+      id: 2,
+      name: "Skapa din bokning",
+      shortName: "Bokning",
+      description: "Berätta om ert besök",
+      hint: "Anpassa besökets längd efter era önskemål.",
+    },
+    {
+      id: 3,
+      name: "Familjens detaljer",
+      shortName: "Familjen",
+      description: "Hjälp tomten att skapa magi",
+      hint: "Dela information om barnen så att tomten kan göra besöket extra personligt.",
+    },
+    {
+      id: 4,
+      name: "Instruktioner till tomten",
+      shortName: "Instruktioner",
+      description: "Sista förberedelserna",
+      hint: "Berätta hur tomten hittar till er och om det finns något speciellt att tänka på.",
+    },
+    {
+      id: 5,
+      name: "Bekräftelse",
+      shortName: "Bekräfta",
+      description: "Granska era uppgifter",
+      hint: "Kontrollera att allt stämmer innan ni går vidare till betalning.",
+    },
+    {
+      id: 6,
+      name: "Betalning",
+      shortName: "Betala",
+      description: "Trygg betalning",
+      hint: "Beloppet reserveras och frisläpps till tomten först efter genomfört besök.",
+    },
+    {
+      id: 7,
+      name: "Klar – Tomten är på väg",
+      shortName: "Klar!",
+      description: "Nu börjar nedräkningen!",
+      hint: "Er bokning är bekräftad. Vi ser fram emot att skapa ett magiskt ögonblick för er familj.",
+    },
+  ],
+  
+  // Navigeringsknappar för varje steg
+  navigation: {
+    next: "Fortsätt",
+    back: "Tillbaka",
+    confirm: "Bekräfta bokning",
+    pay: "Betala tryggt",
+    complete: "Visa min bokning",
+  },
+  
+  // Rubriker för varje steg (längre format)
+  titles: {
+    selectTime: "Välj tid för ert tomtebesök",
+    createBooking: "Anpassa ert magiska ögonblick",
+    familyDetails: "Berätta om era barn",
+    instructions: "Instruktioner till tomten",
+    confirmation: "Bekräfta era uppgifter",
+    payment: "Slutför er bokning",
+    complete: "Bokningen är bekräftad!",
+  },
+  
+  // Underrubriker för varje steg
+  subtitles: {
+    selectTime: "Välj en tid som passar er familj på julafton",
+    createBooking: "Välj längd och lägg till detaljer för ert besök",
+    familyDetails: "Dela information som hjälper tomten att skapa ett personligt besök",
+    instructions: "Hjälp tomten att hitta rätt och förbered för ett smidigt besök",
+    confirmation: "Granska och bekräfta innan betalning",
+    payment: "Trygg betalning – pengarna frisläpps först efter besöket",
+    complete: "Tack för ert förtroende! En magisk julupplevelse väntar er familj.",
+  },
+} as const;
+
+// ============================================
 // KNAPPAR
 // ============================================
 
