@@ -15,10 +15,12 @@ const Auth = () => {
   const defaultRole = (searchParams.get("role") as UserRole) || "customer";
   const returnTo = searchParams.get("returnTo") || "/";
   
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(searchParams.get("mode") === "signup" ? false : true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  
   const [selectedRole, setSelectedRole] = useState<UserRole>(defaultRole);
   const [loading, setLoading] = useState(false);
   const { signIn, signUp, user } = useAuth();
@@ -55,10 +57,10 @@ const Auth = () => {
           navigate(returnTo);
         }
       } else {
-        if (!fullName.trim()) {
+        if (!firstName.trim() || !lastName.trim()) {
           toast({
             title: "Namn saknas",
-            description: "Vänligen ange ditt namn.",
+            description: "Vänligen ange både förnamn och efternamn.",
             variant: "destructive",
           });
           setLoading(false);
@@ -77,7 +79,7 @@ const Auth = () => {
           return;
         }
         
-        const { error } = await signUp(email, password, fullName, selectedRole);
+        const { error } = await signUp(email, password, firstName, lastName, selectedRole);
         if (error) {
           if (error.message.includes("already registered")) {
             toast({
@@ -183,19 +185,36 @@ const Auth = () => {
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
               {!isLogin && (
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Namn</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                    <Input
-                      id="fullName"
-                      type="text"
-                      placeholder={isSantaSignup ? "Kalle Jansen" : "Anna Andersson"}
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="pl-10 h-12 bg-background"
-                      required={!isLogin}
-                    />
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">Förnamn</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        id="firstName"
+                        type="text"
+                        placeholder="Kalle"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        className="pl-10 h-12 bg-background"
+                        required={!isLogin}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Efternamn</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        id="lastName"
+                        type="text"
+                        placeholder="Jansen"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        className="pl-10 h-12 bg-background"
+                        required={!isLogin}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
