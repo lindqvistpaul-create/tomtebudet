@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "tomtebudet-mcp",
+      "version": "0.1.0",
+      "title": "Tomtebudet"
+    },
+    "tools": [
+      {
+        "name": "get_platform_info",
+        "title": "Get Tomtebudet info",
+        "description": "Get an overview of Tomtebudet: what the platform is, current pre-launch status, and how families and Santas can get involved before Christmas 2026 bookings open.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "submit_family_interest",
+        "title": "Submit family interest",
+        "description": "Add a family to the Tomtebudet interest list. Families are notified when Christmas 2026 bookings open. Requires email and name; location and children info are optional.",
+        "annotations": {
+          "readOnlyHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email",
+              "description": "Family contact email (required)."
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "description": "Family/contact name (required)."
+            },
+            "location": {
+              "type": "string",
+              "maxLength": 100,
+              "description": "City or area in Sweden, optional."
+            },
+            "children_info": {
+              "type": "string",
+              "maxLength": 500,
+              "description": "Optional info about the children (ages, names)."
+            }
+          },
+          "required": [
+            "email",
+            "name"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
