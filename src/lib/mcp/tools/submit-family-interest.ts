@@ -23,8 +23,9 @@ export default defineTool({
   },
   annotations: { readOnlyHint: false, openWorldHint: false },
   handler: async ({ email, name, location, children_info }) => {
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
+    const env = (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env ?? {};
+    const supabaseUrl = env.SUPABASE_URL;
+    const supabaseKey = env.SUPABASE_PUBLISHABLE_KEY;
     if (!supabaseUrl || !supabaseKey) {
       return {
         content: [{ type: "text", text: "Server not configured." }],
