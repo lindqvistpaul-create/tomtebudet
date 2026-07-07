@@ -336,13 +336,13 @@ export type Database = {
       public_santas: {
         Row: {
           available_times: string[] | null
-          bankid_verified: boolean
+          bankid_verified: boolean | null
           bio: string | null
           city: string | null
           costume_photo_url: string | null
           display_name: string | null
           experience: string | null
-          id: string
+          id: string | null
           portrait_photo_url: string | null
           price_per_quarter: number | null
           reviewed_at: string | null
