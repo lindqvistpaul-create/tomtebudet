@@ -14,36 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      bankid_orders: {
-        Row: {
-          created_at: string
-          id: string
-          order_ref: string
-          qr_start_secret: string
-          qr_start_token: string
-          status: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          order_ref: string
-          qr_start_secret: string
-          qr_start_token: string
-          status?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          order_ref?: string
-          qr_start_secret?: string
-          qr_start_token?: string
-          status?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       booking_children: {
         Row: {
           age: string
@@ -151,36 +121,6 @@ export type Database = {
         }
         Relationships: []
       }
-      contact_messages: {
-        Row: {
-          created_at: string
-          email: string
-          handled_at: string | null
-          id: string
-          message: string
-          name: string
-          subject: string | null
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          handled_at?: string | null
-          id?: string
-          message: string
-          name: string
-          subject?: string | null
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          handled_at?: string | null
-          id?: string
-          message?: string
-          name?: string
-          subject?: string | null
-        }
-        Relationships: []
-      }
       family_interest: {
         Row: {
           children_info: string | null
@@ -253,7 +193,6 @@ export type Database = {
           bankid_verified: boolean
           bankid_verified_at: string | null
           bio: string | null
-          city: string | null
           costume_photo_url: string | null
           created_at: string
           experience: string | null
@@ -273,7 +212,6 @@ export type Database = {
           bankid_verified?: boolean
           bankid_verified_at?: string | null
           bio?: string | null
-          city?: string | null
           costume_photo_url?: string | null
           created_at?: string
           experience?: string | null
@@ -293,7 +231,6 @@ export type Database = {
           bankid_verified?: boolean
           bankid_verified_at?: string | null
           bio?: string | null
-          city?: string | null
           costume_photo_url?: string | null
           created_at?: string
           experience?: string | null
@@ -333,22 +270,7 @@ export type Database = {
       }
     }
     Views: {
-      public_santas: {
-        Row: {
-          available_times: string[] | null
-          bankid_verified: boolean
-          bio: string | null
-          city: string | null
-          costume_photo_url: string | null
-          display_name: string | null
-          experience: string | null
-          id: string
-          portrait_photo_url: string | null
-          price_per_quarter: number | null
-          reviewed_at: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       get_user_role: {
