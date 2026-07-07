@@ -8,3 +8,14 @@ verify_jwt = false
 
 [functions.notify-admin-new-santa]
 verify_jwt = true
+
+[functions.bankid]
+verify_jwt = true
+
+# Skickar godkännande-mail; gör egen admin-rollkontroll i koden
+[functions.send-santa-approved-email]
+verify_jwt = true
+
+# Publik MCP-server (t.ex. intresseanmälan via AI-agenter) – ingen session finns
+[functions.mcp]
+verify_jwt = false

@@ -83,6 +83,14 @@ serve(async (req) => {
 
     console.log("Found booking:", booking.id, "Total price:", booking.total_price);
 
+    // Don't create new checkout sessions for already-paid bookings
+    if (booking.payment_status === "paid") {
+      return new Response(
+        JSON.stringify({ error: "Booking is already paid" }),
+        { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
@@ -98,7 +106,10 @@ serve(async (req) => {
     const customerEmail = profile?.email || user.email;
 
     // Determine the domain for redirect URLs
-    const origin = req.headers.get("origin") || "https://tomtebudet.lovable.app";
+    const origin =
+      req.headers.get("origin") ||
+      Deno.env.get("SITE_URL") ||
+      "https://tomtebudet.se";
 
     console.log("Creating Stripe checkout session with origin:", origin);
 

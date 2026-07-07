@@ -45,6 +45,14 @@ Denna policy gäller för att säkerställa att våra tomtar får skälig kompen
         <p className="text-snow/60 mt-1">Hantera plattformsinställningar och policyer</p>
       </div>
 
+      {/* Under construction warning */}
+      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-500/10 border border-amber-500/40">
+        <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+        <p className="text-sm font-medium text-amber-600">
+          Denna sida är inte färdigbyggd ännu – åtgärder sparas inte.
+        </p>
+      </div>
+
       {/* System Info */}
       <Card className="bg-card border-snow/10">
         <CardHeader>
@@ -119,7 +127,7 @@ Denna policy gäller för att säkerställa att våra tomtar får skälig kompen
               />
             </div>
           </div>
-          <Button onClick={handleSavePricing}>
+          <Button onClick={handleSavePricing} disabled>
             <Save className="w-4 h-4 mr-2" />
             Spara prisinställningar
           </Button>
@@ -176,7 +184,7 @@ Denna policy gäller för att säkerställa att våra tomtar får skälig kompen
             />
           </div>
 
-          <Button onClick={handleSavePolicy}>
+          <Button onClick={handleSavePolicy} disabled>
             <Save className="w-4 h-4 mr-2" />
             Spara avbokningspolicy
           </Button>

@@ -28,7 +28,9 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
+import { resolvePublicPhotoUrl } from "@/lib/santaPhotos";
 import { toast } from "sonner";
+import { resolveStorageUrl } from "./AdminSantaReview";
 
 interface Santa {
   id: string;
@@ -36,6 +38,7 @@ interface Santa {
   full_name: string | null;
   email: string | null;
   phone: string | null;
+  city: string | null;
   status: string;
   bio: string | null;
   experience: string | null;
@@ -65,10 +68,30 @@ const AdminSantas = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedSanta, setSelectedSanta] = useState<Santa | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [signedUrls, setSignedUrls] = useState<{
+    portrait: string | null;
+    costume: string | null;
+    idDocument: string | null;
+  }>({ portrait: null, costume: null, idDocument: null });
 
   useEffect(() => {
     fetchSantas();
   }, []);
+
+  // Portrait/costume live in the public santa-photos bucket; the ID document
+  // stays in the private bucket and needs a signed URL.
+  useEffect(() => {
+    if (!selectedSanta) {
+      setSignedUrls({ portrait: null, costume: null, idDocument: null });
+      return;
+    }
+    (async () => {
+      const portrait = resolvePublicPhotoUrl(selectedSanta.portrait_photo_url);
+      const costume = resolvePublicPhotoUrl(selectedSanta.costume_photo_url);
+      const idDocument = await resolveStorageUrl(selectedSanta.id_document_url);
+      setSignedUrls({ portrait, costume, idDocument });
+    })();
+  }, [selectedSanta]);
 
   const fetchSantas = async () => {
     try {
@@ -267,25 +290,29 @@ const AdminSantas = () => {
               {/* Profile Photos */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="aspect-square rounded-lg bg-snow/5 flex items-center justify-center overflow-hidden">
-                  {selectedSanta.portrait_photo_url ? (
-                    <img 
-                      src={selectedSanta.portrait_photo_url} 
+                  {signedUrls.portrait ? (
+                    <img
+                      src={signedUrls.portrait}
                       alt="Porträtt"
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-muted-foreground text-sm">Inget porträtt</span>
+                    <span className="text-muted-foreground text-sm">
+                      {selectedSanta.portrait_photo_url ? "Laddar bild..." : "Inget porträtt"}
+                    </span>
                   )}
                 </div>
                 <div className="aspect-square rounded-lg bg-snow/5 flex items-center justify-center overflow-hidden">
-                  {selectedSanta.costume_photo_url ? (
-                    <img 
-                      src={selectedSanta.costume_photo_url} 
+                  {signedUrls.costume ? (
+                    <img
+                      src={signedUrls.costume}
                       alt="Tomtedräkt"
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-muted-foreground text-sm">Ingen dräktbild</span>
+                    <span className="text-muted-foreground text-sm">
+                      {selectedSanta.costume_photo_url ? "Laddar bild..." : "Ingen dräktbild"}
+                    </span>
                   )}
                 </div>
               </div>
@@ -295,6 +322,10 @@ const AdminSantas = () => {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Namn</span>
                   <span className="text-foreground">{selectedSanta.full_name || "-"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Stad/område</span>
+                  <span className="text-foreground">{selectedSanta.city || "-"}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">E-post</span>
@@ -347,15 +378,17 @@ const AdminSantas = () => {
               {/* ID Document */}
               <div className="space-y-2">
                 <h3 className="font-serif text-foreground">ID-dokument</h3>
-                {selectedSanta.id_document_url ? (
-                  <a 
-                    href={selectedSanta.id_document_url} 
-                    target="_blank" 
+                {signedUrls.idDocument ? (
+                  <a
+                    href={signedUrls.idDocument}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-accent hover:underline text-sm"
                   >
                     Visa dokument
                   </a>
+                ) : selectedSanta.id_document_url ? (
+                  <p className="text-muted-foreground text-sm">Laddar dokument...</p>
                 ) : (
                   <p className="text-muted-foreground text-sm">Inget dokument uppladdats</p>
                 )}

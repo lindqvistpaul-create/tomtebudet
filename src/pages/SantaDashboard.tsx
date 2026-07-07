@@ -58,57 +58,6 @@ interface Booking {
   children?: BookingChild[];
 }
 
-const recentReviews = [
-  {
-    id: "1",
-    author: "Maria S.",
-    rating: 5,
-    text: "Fantastisk tomte! Barnen älskade honom och han hade verkligen en magisk aura.",
-    date: "15 dec 2024"
-  },
-  {
-    id: "2",
-    author: "Johan K.",
-    rating: 5,
-    text: "Så professionell och varm. Kommer definitivt att boka igen nästa år!",
-    date: "12 dec 2024"
-  },
-  {
-    id: "3",
-    author: "Anna L.",
-    rating: 4,
-    text: "Bra besök, barnen var glada. Lite sen ankomst men inget problem.",
-    date: "10 dec 2024"
-  }
-];
-
-const notifications = [
-  {
-    id: "1",
-    type: "booking",
-    title: "Ny bokning!",
-    message: "En familj vill boka dig på julafton",
-    time: "2 tim sedan",
-    unread: true
-  },
-  {
-    id: "2",
-    type: "message",
-    title: "Nytt meddelande",
-    message: "En familj har skickat ett meddelande",
-    time: "5 tim sedan",
-    unread: true
-  },
-  {
-    id: "3",
-    type: "review",
-    title: "Nytt omdöme",
-    message: "Maria S. gav dig 5 stjärnor!",
-    time: "1 dag sedan",
-    unread: false
-  }
-];
-
 type TabType = "overview" | "calendar" | "notifications" | "reviews" | "earnings" | "settings";
 
 const SantaDashboard = () => {
@@ -119,10 +68,30 @@ const SantaDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [updatingBookingId, setUpdatingBookingId] = useState<string | null>(null);
 
-  // Profile status (would come from santa_applications table)
-  const isVerified = true;
-  const averageRating = 4.9;
-  const totalReviews = 47;
+  // Profile status from santa_applications table
+  const [isVerified, setIsVerified] = useState(false);
+
+  // Load verification status from the santa's application
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchApplication = async () => {
+      const { data, error } = await supabase
+        .from('santa_applications')
+        .select('bankid_verified, status')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching application:', error);
+        return;
+      }
+
+      setIsVerified(Boolean(data?.bankid_verified && data?.status === 'approved'));
+    };
+
+    fetchApplication();
+  }, [user]);
 
   // Fetch bookings assigned to this Santa
   const fetchBookings = useCallback(async () => {
@@ -586,10 +555,7 @@ const SantaDashboard = () => {
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Betyg</span>
-                      <span className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-accent fill-accent" />
-                        {averageRating} ({totalReviews})
-                      </span>
+                      <span className="text-muted-foreground">Inga omdömen ännu</span>
                     </div>
                   </div>
                   <Button 
@@ -632,8 +598,8 @@ const SantaDashboard = () => {
                         <span className="text-muted-foreground text-sm">Betyg</span>
                         <Star className="w-5 h-5 text-accent fill-accent" />
                       </div>
-                      <p className="font-serif text-3xl text-foreground">{averageRating}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Baserat på {totalReviews} omdömen</p>
+                      <p className="font-serif text-3xl text-foreground">–</p>
+                      <p className="text-xs text-muted-foreground mt-1">Inga omdömen ännu</p>
                     </div>
                     
                     <div className="bg-card rounded-2xl p-5 shadow-soft">
@@ -744,27 +710,11 @@ const SantaDashboard = () => {
                       </Button>
                     </div>
 
-                    <div className="space-y-4">
-                      {recentReviews.slice(0, 2).map((review) => (
-                        <div key={review.id} className="border-b border-border/50 pb-4 last:border-0 last:pb-0">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="font-medium text-foreground">{review.author}</span>
-                            <div className="flex items-center gap-1">
-                              {[...Array(5)].map((_, i) => (
-                                <Star 
-                                  key={i}
-                                  className={cn(
-                                    "w-4 h-4",
-                                    i < review.rating ? "text-accent fill-accent" : "text-muted"
-                                  )}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <p className="text-muted-foreground">{review.text}</p>
-                          <p className="text-xs text-muted-foreground mt-2">{review.date}</p>
-                        </div>
-                      ))}
+                    <div className="text-center py-8">
+                      <Star className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                      <p className="text-muted-foreground">
+                        Inga omdömen ännu. Omdömen visas här efter dina första besök.
+                      </p>
                     </div>
                   </div>
                 </>
@@ -849,38 +799,12 @@ const SantaDashboard = () => {
               {!loading && activeTab === "notifications" && (
                 <div className="bg-card rounded-2xl p-6 shadow-soft">
                   <h2 className="font-serif text-2xl text-foreground mb-6">Notiser</h2>
-                  
-                  <div className="space-y-3">
-                    {notifications.map((notification) => (
-                      <div
-                        key={notification.id}
-                        className={cn(
-                          "flex items-start gap-4 p-4 rounded-xl transition-colors",
-                          notification.unread ? "bg-primary/5 border border-primary/20" : "bg-muted/30"
-                        )}
-                      >
-                        <div className={cn(
-                          "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0",
-                          notification.type === "booking" && "bg-primary/10",
-                          notification.type === "message" && "bg-accent/10",
-                          notification.type === "review" && "bg-accent/10"
-                        )}>
-                          {notification.type === "booking" && <Calendar className="w-5 h-5 text-primary" />}
-                          {notification.type === "message" && <MessageCircle className="w-5 h-5 text-accent" />}
-                          {notification.type === "review" && <Star className="w-5 h-5 text-accent fill-accent" />}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-1">
-                            <h4 className="font-medium text-foreground">{notification.title}</h4>
-                            <span className="text-xs text-muted-foreground">{notification.time}</span>
-                          </div>
-                          <p className="text-sm text-muted-foreground">{notification.message}</p>
-                        </div>
-                        {notification.unread && (
-                          <span className="w-2 h-2 rounded-full bg-primary flex-shrink-0 mt-2" />
-                        )}
-                      </div>
-                    ))}
+
+                  <div className="text-center py-8">
+                    <Bell className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-muted-foreground">
+                      Inga notiser. Här ser du nya bokningar, meddelanden och omdömen.
+                    </p>
                   </div>
                 </div>
               )}
@@ -890,34 +814,13 @@ const SantaDashboard = () => {
                 <div className="bg-card rounded-2xl p-6 shadow-soft">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="font-serif text-2xl text-foreground">Omdömen</h2>
-                    <div className="flex items-center gap-2">
-                      <Star className="w-6 h-6 text-accent fill-accent" />
-                      <span className="font-serif text-2xl text-foreground">{averageRating}</span>
-                      <span className="text-muted-foreground">({totalReviews} omdömen)</span>
-                    </div>
                   </div>
-                  
-                  <div className="space-y-4">
-                    {recentReviews.map((review) => (
-                      <div key={review.id} className="border-b border-border/50 pb-4 last:border-0 last:pb-0">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-medium text-foreground">{review.author}</span>
-                          <div className="flex items-center gap-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star 
-                                key={i}
-                                className={cn(
-                                  "w-4 h-4",
-                                  i < review.rating ? "text-accent fill-accent" : "text-muted"
-                                )}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        <p className="text-muted-foreground">{review.text}</p>
-                        <p className="text-xs text-muted-foreground mt-2">{review.date}</p>
-                      </div>
-                    ))}
+
+                  <div className="text-center py-8">
+                    <Star className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-muted-foreground">
+                      Inga omdömen ännu. Omdömen visas här efter dina första besök.
+                    </p>
                   </div>
                 </div>
               )}
@@ -943,9 +846,10 @@ const SantaDashboard = () => {
                         {bookings.filter(b => b.status === 'completed')
                           .reduce((sum, b) => sum + b.total_price, 0)} kr
                       </p>
-                      <Button variant="hero" size="sm" className="mt-3 w-full">
+                      <Button variant="hero" size="sm" className="mt-3 w-full" disabled>
                         Ta ut pengar
                       </Button>
+                      <p className="text-xs text-muted-foreground mt-2 text-center">Kommer snart</p>
                     </div>
                   </div>
 
@@ -1010,9 +914,12 @@ const SantaDashboard = () => {
                         defaultValue="Erfaren tomte med över 10 års erfarenhet av att sprida julglädje..."
                       />
                     </div>
-                    <Button variant="hero" className="mt-6">
-                      Spara ändringar
-                    </Button>
+                    <div className="mt-6 flex items-center gap-3">
+                      <Button variant="hero" disabled>
+                        Spara ändringar
+                      </Button>
+                      <span className="text-xs text-muted-foreground">Kommer snart</span>
+                    </div>
                   </div>
 
                   <div className="bg-card rounded-2xl p-6 shadow-soft">

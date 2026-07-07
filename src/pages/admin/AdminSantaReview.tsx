@@ -32,6 +32,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { resolvePublicPhotoUrl } from "@/lib/santaPhotos";
 import { toast } from "sonner";
 
 interface SantaApplication {
@@ -40,6 +41,7 @@ interface SantaApplication {
   full_name: string | null;
   email: string | null;
   phone: string | null;
+  city: string | null;
   status: string;
   bio: string | null;
   experience: string | null;
@@ -62,6 +64,25 @@ const statusLabels: Record<string, { label: string; variant: "default" | "second
   rejected: { label: "Avslagen", variant: "destructive" },
 };
 
+// Bucket 'santa-uploads' is PRIVATE and only holds ID documents: stored
+// values are storage paths (legacy rows may contain full public URLs).
+// Resolve to a temporary signed URL. Portrait/costume photos live in the
+// PUBLIC 'santa-photos' bucket – use resolvePublicPhotoUrl for those.
+export async function resolveStorageUrl(value: string | null): Promise<string | null> {
+  if (!value) return null;
+  let path = value;
+  if (value.startsWith("http")) {
+    const marker = "/santa-uploads/";
+    const idx = value.indexOf(marker);
+    if (idx === -1) return null;
+    path = value.slice(idx + marker.length);
+  }
+  const { data } = await supabase.storage
+    .from("santa-uploads")
+    .createSignedUrl(path, 600);
+  return data?.signedUrl ?? null;
+}
+
 const AdminSantaReview = () => {
   const [applications, setApplications] = useState<SantaApplication[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,6 +93,11 @@ const AdminSantaReview = () => {
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [signedUrls, setSignedUrls] = useState<{
+    portrait: string | null;
+    costume: string | null;
+    idDocument: string | null;
+  }>({ portrait: null, costume: null, idDocument: null });
 
   // Stats
   const [stats, setStats] = useState({
@@ -83,6 +109,21 @@ const AdminSantaReview = () => {
   useEffect(() => {
     fetchApplications();
   }, []);
+
+  // Portrait/costume are public (santa-photos); the ID document stays in the
+  // private bucket and needs a signed URL.
+  useEffect(() => {
+    if (!selectedApplication) {
+      setSignedUrls({ portrait: null, costume: null, idDocument: null });
+      return;
+    }
+    (async () => {
+      const portrait = resolvePublicPhotoUrl(selectedApplication.portrait_photo_url);
+      const costume = resolvePublicPhotoUrl(selectedApplication.costume_photo_url);
+      const idDocument = await resolveStorageUrl(selectedApplication.id_document_url);
+      setSignedUrls({ portrait, costume, idDocument });
+    })();
+  }, [selectedApplication]);
 
   const fetchApplications = async () => {
     try {
@@ -382,28 +423,32 @@ const AdminSantaReview = () => {
                 <div className="space-y-2">
                   <Label className="text-muted-foreground">Porträttbild</Label>
                   <div className="aspect-square rounded-lg bg-snow/5 flex items-center justify-center overflow-hidden border border-snow/10">
-                    {selectedApplication.portrait_photo_url ? (
-                      <img 
-                        src={selectedApplication.portrait_photo_url} 
+                    {signedUrls.portrait ? (
+                      <img
+                        src={signedUrls.portrait}
                         alt="Porträtt"
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-muted-foreground text-sm">Inget porträtt</span>
+                      <span className="text-muted-foreground text-sm">
+                        {selectedApplication.portrait_photo_url ? "Laddar bild..." : "Inget porträtt"}
+                      </span>
                     )}
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-muted-foreground">Tomtedräkt</Label>
                   <div className="aspect-square rounded-lg bg-snow/5 flex items-center justify-center overflow-hidden border border-snow/10">
-                    {selectedApplication.costume_photo_url ? (
-                      <img 
-                        src={selectedApplication.costume_photo_url} 
+                    {signedUrls.costume ? (
+                      <img
+                        src={signedUrls.costume}
                         alt="Tomtedräkt"
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-muted-foreground text-sm">Ingen dräktbild</span>
+                      <span className="text-muted-foreground text-sm">
+                        {selectedApplication.costume_photo_url ? "Laddar bild..." : "Ingen dräktbild"}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -414,6 +459,10 @@ const AdminSantaReview = () => {
                 <div>
                   <Label className="text-muted-foreground">Namn</Label>
                   <p className="text-foreground font-medium">{selectedApplication.full_name || "-"}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Stad/område</Label>
+                  <p className="text-foreground">{selectedApplication.city || "-"}</p>
                 </div>
                 <div>
                   <Label className="text-muted-foreground">E-post</Label>
@@ -452,11 +501,11 @@ const AdminSantaReview = () => {
               {/* ID Document */}
               <div>
                 <Label className="text-muted-foreground">ID-dokument</Label>
-                {selectedApplication.id_document_url ? (
+                {signedUrls.idDocument ? (
                   <div className="mt-2">
-                    <a 
-                      href={selectedApplication.id_document_url} 
-                      target="_blank" 
+                    <a
+                      href={signedUrls.idDocument}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-accent hover:underline"
                     >
@@ -464,6 +513,8 @@ const AdminSantaReview = () => {
                       Öppna dokument i ny flik
                     </a>
                   </div>
+                ) : selectedApplication.id_document_url ? (
+                  <p className="text-muted-foreground mt-1">Laddar dokument...</p>
                 ) : (
                   <p className="text-muted-foreground mt-1">Inget dokument uppladdats</p>
                 )}

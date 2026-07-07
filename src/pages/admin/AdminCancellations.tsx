@@ -160,6 +160,14 @@ const AdminCancellations = () => {
         <p className="text-snow/60 mt-1">Hantera avbokningar och eventuella ersättningar</p>
       </div>
 
+      {/* Under construction warning */}
+      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-500/10 border border-amber-500/40">
+        <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+        <p className="text-sm font-medium text-amber-600">
+          Denna sida är inte färdigbyggd ännu – åtgärder sparas inte.
+        </p>
+      </div>
+
       {/* Info Card */}
       <Card className="bg-accent/10 border-accent/20">
         <CardContent className="pt-6">
@@ -408,21 +416,27 @@ const AdminCancellations = () => {
                     <Button
                       variant="default"
                       size="sm"
+                      disabled
                       onClick={() => markAsHandled(selectedCancellation.id)}
                     >
                       <CheckCircle className="w-4 h-4 mr-1" />
                       Markera som hanterad
                     </Button>
-                    {selectedCancellation.compensation_amount > 0 && 
+                    {selectedCancellation.compensation_amount > 0 &&
                      selectedCancellation.compensation_status === "pending" && (
                       <Button
                         variant="outline"
                         size="sm"
+                        disabled
                         onClick={() => waiveCompensation(selectedCancellation.id)}
                       >
                         Efterskänk ersättning
                       </Button>
                     )}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-amber-600">
+                    <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                    <span>Denna sida är inte färdigbyggd ännu – åtgärder sparas inte.</span>
                   </div>
                 </div>
               )}

@@ -48,12 +48,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    // Guard against the duplicate role-fetch race: onAuthStateChange fires
+    // immediately with the current session, so the manual getSession()
+    // fallback should only run if the listener hasn't fired yet.
+    let initialCheckDone = false;
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        initialCheckDone = true;
         setSession(session);
         setUser(session?.user ?? null);
-        
+
         // Fetch role after auth state change (deferred to avoid deadlock)
         if (session?.user) {
           setTimeout(() => {
@@ -66,11 +72,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     );
 
-    // THEN check for existing session
+    // THEN check for existing session (fallback if the listener didn't fire)
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (initialCheckDone) return;
+      initialCheckDone = true;
       setSession(session);
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
         fetchUserRole(session.user.id).then(setRole);
       }
@@ -109,6 +117,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    setUser(null);
+    setSession(null);
     setRole(null);
   };
 

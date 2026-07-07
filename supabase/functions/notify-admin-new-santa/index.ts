@@ -8,11 +8,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Admin email address - change this to your actual admin email
-const ADMIN_EMAIL = "admin@tomtebudet.se";
+const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") ?? "admin@tomtebudet.se";
 
 interface NewSantaRequest {
-  user_id: string;
   name?: string;
   email?: string;
   region?: string;
@@ -27,7 +25,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Verify authorization header exists (JWT verification is handled by Supabase)
+    // Derive the user from the verified JWT – never trust a user_id from the body.
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       console.error("No authorization header provided");
@@ -37,8 +35,22 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const { user_id, name, email, region }: NewSantaRequest = await req.json();
-    
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+    const user_id = user.id;
+
+    const { name, email, region }: NewSantaRequest = await req.json();
+
     console.log("New santa registration:", { user_id, name, email, region });
     // If we don't have full data, try to fetch from database
     let santaName = name || "Ej angivet";
@@ -46,14 +58,8 @@ const handler = async (req: Request): Promise<Response> => {
     let santaRegion = region || "Ej angivet";
 
     if (!name || !email) {
-      // Create Supabase client with service role for admin access
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-      
-      const supabase = createClient(supabaseUrl, supabaseServiceKey);
-      
       // Fetch profile data
-      const { data: profile } = await supabase
+      const { data: profile } = await supabaseAdmin
         .from("profiles")
         .select("full_name, email")
         .eq("user_id", user_id)

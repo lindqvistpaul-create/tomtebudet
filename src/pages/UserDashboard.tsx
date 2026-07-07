@@ -27,7 +27,6 @@ import {
 } from "lucide-react";
 import SimpleHeader from "@/components/SimpleHeader";
 import Footer from "@/components/Footer";
-import { mockBookings } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
@@ -53,15 +52,31 @@ const statusConfig = {
 
 type TabType = "bookings" | "favorites" | "settings";
 
+interface DashboardBooking {
+  id: string;
+  santaName: string;
+  santaImage: string | null;
+  date: string;
+  time: string;
+  duration: number;
+  address: string;
+  totalPrice: number;
+  status: "upcoming" | "completed" | "cancelled";
+  children: { name: string; age: string; gifts: string | null; specialInfo?: string | null }[];
+}
+
 const UserDashboard = () => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>("settings");
   const [activeBookingTab, setActiveBookingTab] = useState<"upcoming" | "completed">("upcoming");
   const [chatMessage, setChatMessage] = useState("");
-  const [selectedBooking, setSelectedBooking] = useState<string | null>(mockBookings[0]?.id || null);
+  const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [bookings, setBookings] = useState<DashboardBooking[]>([]);
+  const [bookingsLoading, setBookingsLoading] = useState(true);
+  const [bookingsError, setBookingsError] = useState(false);
   
   const [userData, setUserData] = useState({
     name: "",
@@ -106,6 +121,53 @@ const UserDashboard = () => {
     }
   }, [user]);
 
+  // Load the user's real bookings
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchBookings = async () => {
+      setBookingsLoading(true);
+      setBookingsError(false);
+      try {
+        const { data, error } = await supabase
+          .from('bookings')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('date');
+
+        if (error) throw error;
+
+        const mapped: DashboardBooking[] = (data || []).map((b) => ({
+          id: b.id,
+          santaName: b.santa_name,
+          santaImage: b.santa_image,
+          date: b.date,
+          time: b.time,
+          duration: b.duration,
+          address: [b.address, b.postal_code, b.city].filter(Boolean).join(', '),
+          totalPrice: b.total_price,
+          status:
+            b.status === 'completed'
+              ? 'completed'
+              : b.status === 'cancelled' || b.status === 'declined'
+                ? 'cancelled'
+                : 'upcoming',
+          children: [],
+        }));
+
+        setBookings(mapped);
+        setSelectedBooking(mapped[0]?.id || null);
+      } catch (error) {
+        console.error('Error fetching bookings:', error);
+        setBookingsError(true);
+      } finally {
+        setBookingsLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, [user]);
+
   const handleSaveProfile = async () => {
     if (!user) return;
     
@@ -135,12 +197,12 @@ const UserDashboard = () => {
     navigate("/");
   };
 
-  const filteredBookings = mockBookings.filter((booking) => {
+  const filteredBookings = bookings.filter((booking) => {
     if (activeBookingTab === "upcoming") return booking.status === "upcoming";
     return booking.status === "completed" || booking.status === "cancelled";
   });
 
-  const currentBooking = mockBookings.find((b) => b.id === selectedBooking);
+  const currentBooking = bookings.find((b) => b.id === selectedBooking);
 
   const tabs = [
     { id: "bookings" as TabType, label: "Mina bokningar", icon: Calendar },
@@ -255,14 +317,25 @@ const UserDashboard = () => {
                     </Button>
                   </div>
 
-                  {filteredBookings.length === 0 ? (
+                  {bookingsLoading ? (
+                    <div className="bg-card rounded-2xl p-12 text-center shadow-soft">
+                      <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                      <p className="text-muted-foreground mt-4">Laddar bokningar...</p>
+                    </div>
+                  ) : bookingsError ? (
+                    <div className="bg-card rounded-2xl p-12 text-center shadow-soft">
+                      <XCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
+                      <h2 className="font-serif text-2xl text-foreground mb-2">Något gick fel</h2>
+                      <p className="text-muted-foreground">
+                        Vi kunde inte hämta dina bokningar just nu. Försök igen senare.
+                      </p>
+                    </div>
+                  ) : filteredBookings.length === 0 ? (
                     <div className="bg-card rounded-2xl p-12 text-center shadow-soft">
                       <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                      <h2 className="font-serif text-2xl text-foreground mb-2">Inga bokningar</h2>
+                      <h2 className="font-serif text-2xl text-foreground mb-2">Du har inga bokningar ännu</h2>
                       <p className="text-muted-foreground mb-6">
-                        {activeBookingTab === "upcoming" 
-                          ? "Du har inga kommande bokningar ännu."
-                          : "Du har inga tidigare bokningar."}
+                        Bokningen öppnar inför julen 2026 – då kan du hitta och boka en verifierad tomte här.
                       </p>
                       <Link to="/sok">
                         <Button variant="hero">
@@ -286,9 +359,9 @@ const UserDashboard = () => {
                             >
                               <div className="flex items-start gap-4">
                                 <img
-                                  src={booking.santaImage}
+                                  src={booking.santaImage || undefined}
                                   alt={booking.santaName}
-                                  className="w-14 h-14 rounded-xl object-cover"
+                                  className="w-14 h-14 rounded-xl object-cover bg-muted"
                                 />
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center justify-between mb-1">
@@ -319,9 +392,9 @@ const UserDashboard = () => {
                             <div className="flex items-start justify-between mb-6">
                               <div className="flex items-center gap-4">
                                 <img
-                                  src={currentBooking.santaImage}
+                                  src={currentBooking.santaImage || undefined}
                                   alt={currentBooking.santaName}
-                                  className="w-16 h-16 rounded-xl object-cover"
+                                  className="w-16 h-16 rounded-xl object-cover bg-muted"
                                 />
                                 <div>
                                   <h2 className="font-serif text-2xl text-foreground">

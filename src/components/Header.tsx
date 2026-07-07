@@ -61,7 +61,7 @@ const Header = () => {
   };
 
   const navLinks = [
-    { label: "Hitta tomte", target: "top-santas", icon: Gift },
+    { label: "Hitta tomte", href: "/sok", icon: Gift },
     { label: "Så fungerar det", href: "/sa-funkar-det", icon: Calendar },
     { label: "Trygghet & kvalitet", target: "why-tomtebudet", icon: Settings },
   ];

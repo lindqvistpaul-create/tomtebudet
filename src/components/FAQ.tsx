@@ -31,6 +31,10 @@ const familyFAQs: FAQItem[] = [
   {
     question: "Vad händer om tomten inte dyker upp?",
     answer: "I det osannolika fallet får du omedelbart tillbaka hela beloppet. Vi hjälper dig gärna att hitta en annan tillgänglig tomte."
+  },
+  {
+    question: "Stämmer det att varje bokning ger en julklapp till ett barn i utsatthet?",
+    answer: "Ja. För varje tomtebesök som bokas donerar Tomtebudet en del av intäkten till barn i Sverige som annars riskerar att bli utan julklapp. Donationen görs i samarbete med en svensk barnorganisation som presenteras under hösten 2026."
   }
 ];
 

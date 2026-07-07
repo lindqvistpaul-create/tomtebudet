@@ -8,6 +8,7 @@ import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 import PrelaunchBanner from "@/components/PrelaunchBanner";
 import FamilyInterestCTA from "@/components/FamilyInterestCTA";
+import DonationPromise from "@/components/DonationPromise";
 
 const Index = () => {
   return (
@@ -27,6 +28,7 @@ const Index = () => {
         <HowItWorks />
         <FamilyInterestCTA />
         <WhyTomtebudet />
+        <DonationPromise />
         {/* PRELAUNCH: Hide TopSantas since no active santas yet */}
         <BecomeSanta />
         <FAQ />

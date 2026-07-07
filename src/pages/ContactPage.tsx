@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, "Namn är obligatoriskt").max(100, "Namnet får max vara 100 tecken"),
@@ -89,16 +90,19 @@ const ContactPage = () => {
     setErrors({});
 
     try {
-      // TODO: Replace with actual API call
-      // await fetch('/api/contact', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      const subjectLabel =
+        subjectOptions.find((o) => o.value === result.data.subject)?.label ??
+        result.data.subject;
+
+      const { error } = await supabase.from('contact_messages').insert({
+        name: result.data.name,
+        email: result.data.email,
+        subject: subjectLabel,
+        message: result.data.message,
+      });
+
+      if (error) throw error;
+
       setIsSubmitted(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
     } catch {

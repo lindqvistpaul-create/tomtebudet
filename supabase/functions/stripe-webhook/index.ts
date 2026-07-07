@@ -31,26 +31,34 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    // Parse the event (without signature verification for now - add STRIPE_WEBHOOK_SECRET later)
+    // SECURITY: signature verification is MANDATORY. Without it, anyone could
+    // POST a fake "checkout.session.completed" and mark bookings as paid.
     let event: Stripe.Event;
-    
+
     const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
-    if (webhookSecret && signature) {
-      try {
-        event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-        console.log("Webhook signature verified");
-      } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : "Unknown error";
-        console.error("Webhook signature verification failed:", errorMessage);
-        return new Response(
-          JSON.stringify({ error: "Invalid signature" }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-    } else {
-      // Parse without verification (for development)
-      event = JSON.parse(body);
-      console.log("Webhook parsed without signature verification (dev mode)");
+    if (!webhookSecret) {
+      console.error("STRIPE_WEBHOOK_SECRET is not configured");
+      return new Response(
+        JSON.stringify({ error: "Webhook not configured" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (!signature) {
+      return new Response(
+        JSON.stringify({ error: "Missing stripe-signature header" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    try {
+      event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
+      console.log("Webhook signature verified");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      console.error("Webhook signature verification failed:", errorMessage);
+      return new Response(
+        JSON.stringify({ error: "Invalid signature" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     console.log("Processing event type:", event.type);

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const PrivacySecurityPage = () => {
   const { toast } = useToast();
@@ -30,15 +31,29 @@ const PrivacySecurityPage = () => {
     }
 
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
+    const { error } = await supabase.from('contact_messages').insert({
+      name: contactForm.name.trim(),
+      email: contactForm.email.trim(),
+      subject: "Integritet & säkerhet",
+      message: contactForm.message.trim(),
+    });
+
+    if (error) {
+      toast({
+        title: "Något gick fel",
+        description: "Ditt meddelande kunde inte skickas. Försök igen senare.",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     toast({
       title: "Meddelande skickat",
       description: "Tack för ditt meddelande. Vi återkommer så snart vi kan."
     });
-    
+
     setContactForm({ name: "", email: "", message: "" });
     setIsSubmitting(false);
   };

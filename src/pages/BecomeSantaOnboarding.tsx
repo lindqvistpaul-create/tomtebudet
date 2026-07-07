@@ -23,10 +23,15 @@ import {
   Loader2
 } from "lucide-react";
 import SimpleHeader from "@/components/SimpleHeader";
+import BankIdVerification from "@/components/BankIdVerification";
 import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { resolvePublicPhotoUrl } from "@/lib/santaPhotos";
+import type { Database } from "@/integrations/supabase/types";
 import { toast } from "sonner";
+
+type ApplicationUpdate = Database["public"]["Tables"]["santa_applications"]["Update"];
 
 const steps = [
   { id: 1, title: "Introduktion", icon: Gift },
@@ -49,7 +54,6 @@ const BecomeSantaOnboarding = () => {
   const [applicationId, setApplicationId] = useState<string | null>(null);
   
   // BankID state
-  const [bankIdVerifying, setBankIdVerifying] = useState(false);
   const [bankIdVerified, setBankIdVerified] = useState(false);
   
   // File upload states
@@ -64,6 +68,7 @@ const BecomeSantaOnboarding = () => {
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [profile, setProfile] = useState({
     pricePerQuarter: "",
+    city: "",
     bio: "",
     experience: "",
   });
@@ -99,11 +104,14 @@ const BecomeSantaOnboarding = () => {
         setApplicationId(data.id);
         setBankIdVerified(data.bankid_verified);
         setIdDocumentUrl(data.id_document_url);
-        setPortraitPhotoUrl(data.portrait_photo_url);
-        setCostumePhotoUrl(data.costume_photo_url);
+        // Portrait/costume photos live in the PUBLIC santa-photos bucket –
+        // stored values are storage paths (legacy rows may hold full URLs).
+        setPortraitPhotoUrl(resolvePublicPhotoUrl(data.portrait_photo_url));
+        setCostumePhotoUrl(resolvePublicPhotoUrl(data.costume_photo_url));
         setSelectedTimes(data.available_times || []);
         setProfile({
           pricePerQuarter: data.price_per_quarter?.toString() || "",
+          city: data.city || "",
           bio: data.bio || "",
           experience: data.experience || "",
         });
@@ -126,7 +134,7 @@ const BecomeSantaOnboarding = () => {
     }
   };
 
-  const createOrUpdateApplication = async (updates: Record<string, unknown>) => {
+  const createOrUpdateApplication = async (updates: ApplicationUpdate) => {
     if (!user) return null;
     
     try {
@@ -158,24 +166,27 @@ const BecomeSantaOnboarding = () => {
     }
   };
 
-  const uploadFile = async (file: File, folder: string): Promise<string | null> => {
+  // ID documents go to the PRIVATE 'santa-uploads' bucket; profile photos
+  // (portrait/costume) go to the PUBLIC 'santa-photos' bucket. We always
+  // store the storage path in the database.
+  const uploadFile = async (
+    file: File,
+    folder: string,
+    bucket: 'santa-uploads' | 'santa-photos' = 'santa-uploads'
+  ): Promise<string | null> => {
     if (!user) return null;
-    
+
     const fileExt = file.name.split('.').pop();
     const fileName = `${user.id}/${folder}/${Date.now()}.${fileExt}`;
-    
+
     try {
       const { error: uploadError } = await supabase.storage
-        .from('santa-uploads')
+        .from(bucket)
         .upload(fileName, file, { upsert: true });
-      
+
       if (uploadError) throw uploadError;
-      
-      const { data: { publicUrl } } = supabase.storage
-        .from('santa-uploads')
-        .getPublicUrl(fileName);
-      
-      return publicUrl;
+
+      return fileName;
     } catch (err) {
       console.error('Upload error:', err);
       toast.error('Kunde inte ladda upp filen');
@@ -203,23 +214,20 @@ const BecomeSantaOnboarding = () => {
     }
   };
 
-  const simulateBankId = async () => {
-    setBankIdVerifying(true);
-    
-    // Simulate BankID verification (in production, this would call a real BankID service)
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const result = await createOrUpdateApplication({
-      bankid_verified: true,
-      bankid_verified_at: new Date().toISOString(),
-    });
-    
-    if (result) {
-      setBankIdVerified(true);
-      toast.success('BankID-verifiering lyckades!');
+  // Real BankID verification is handled by the bankid edge function, which
+  // marks the application as verified server-side. Here we just sync UI state
+  // and make sure we have the application id for the following steps.
+  const handleBankIdVerified = async () => {
+    setBankIdVerified(true);
+    // The edge function may have created the application row; fetch its id.
+    if (!applicationId && user) {
+      const { data } = await supabase
+        .from('santa_applications')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (data) setApplicationId(data.id);
     }
-    
-    setBankIdVerifying(false);
   };
 
   const handleIdUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -229,10 +237,10 @@ const BecomeSantaOnboarding = () => {
     setIdDocument(file);
     setLoading(true);
     
-    const url = await uploadFile(file, 'id-documents');
-    if (url) {
-      setIdDocumentUrl(url);
-      await createOrUpdateApplication({ id_document_url: url });
+    const path = await uploadFile(file, 'id-documents');
+    if (path) {
+      setIdDocumentUrl(path);
+      await createOrUpdateApplication({ id_document_url: path });
       toast.success('ID-handling uppladdad');
     }
     
@@ -246,10 +254,11 @@ const BecomeSantaOnboarding = () => {
     setPortraitPhoto(file);
     setLoading(true);
     
-    const url = await uploadFile(file, 'portraits');
-    if (url) {
-      setPortraitPhotoUrl(url);
-      await createOrUpdateApplication({ portrait_photo_url: url });
+    const path = await uploadFile(file, 'portraits', 'santa-photos');
+    if (path) {
+      // Preview from the local file – the DB stores the storage path
+      setPortraitPhotoUrl(URL.createObjectURL(file));
+      await createOrUpdateApplication({ portrait_photo_url: path });
       toast.success('Porträttbild uppladdad');
     }
     
@@ -263,10 +272,11 @@ const BecomeSantaOnboarding = () => {
     setCostumePhoto(file);
     setLoading(true);
     
-    const url = await uploadFile(file, 'costumes');
-    if (url) {
-      setCostumePhotoUrl(url);
-      await createOrUpdateApplication({ costume_photo_url: url });
+    const path = await uploadFile(file, 'costumes', 'santa-photos');
+    if (path) {
+      // Preview from the local file – the DB stores the storage path
+      setCostumePhotoUrl(URL.createObjectURL(file));
+      await createOrUpdateApplication({ costume_photo_url: path });
       toast.success('Tomtebild uppladdad');
     }
     
@@ -275,9 +285,11 @@ const BecomeSantaOnboarding = () => {
 
   const handleSubmitProfile = async () => {
     setLoading(true);
-    
+
+    const parsedPrice = parseInt(profile.pricePerQuarter, 10);
     const result = await createOrUpdateApplication({
-      price_per_quarter: parseInt(profile.pricePerQuarter),
+      price_per_quarter: Number.isNaN(parsedPrice) ? null : parsedPrice,
+      city: profile.city.trim(),
       bio: profile.bio,
       experience: profile.experience,
       available_times: selectedTimes,
@@ -519,40 +531,7 @@ const BecomeSantaOnboarding = () => {
                 </p>
 
                 {!bankIdVerified ? (
-                  <div className="space-y-6">
-                    <div className="bg-muted/30 rounded-2xl p-8">
-                      <div className="w-32 h-32 mx-auto mb-4 bg-background rounded-xl flex items-center justify-center border-2 border-dashed border-border">
-                        {bankIdVerifying ? (
-                          <Loader2 className="w-16 h-16 text-primary animate-spin" />
-                        ) : (
-                          <Fingerprint className="w-16 h-16 text-muted-foreground" />
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {bankIdVerifying ? "Väntar på BankID..." : "Klicka nedan för att öppna BankID"}
-                      </p>
-                    </div>
-
-                    <Button 
-                      variant="hero" 
-                      size="xl" 
-                      className="w-full"
-                      onClick={simulateBankId}
-                      disabled={bankIdVerifying}
-                    >
-                      {bankIdVerifying ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Verifierar...
-                        </>
-                      ) : (
-                        <>
-                          <Fingerprint className="w-5 h-5" />
-                          Öppna BankID
-                        </>
-                      )}
-                    </Button>
-                  </div>
+                  <BankIdVerification onVerified={handleBankIdVerified} />
                 ) : (
                   <div className="space-y-6">
                     <div className="bg-primary/10 rounded-2xl p-8">
@@ -810,6 +789,20 @@ const BecomeSantaOnboarding = () => {
                     </p>
                   </div>
 
+                  {/* City / area */}
+                  <div className="space-y-2">
+                    <Label className="text-foreground">Stad/område</Label>
+                    <Input
+                      placeholder="t.ex. Stockholm, Umeå eller Skellefteå med omnejd"
+                      value={profile.city}
+                      onChange={(e) => setProfile({ ...profile, city: e.target.value })}
+                      className="bg-background h-12"
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      Visas på din profil så att familjer i närheten hittar dig.
+                    </p>
+                  </div>
+
                   {/* Available times */}
                   <div className="space-y-3">
                     <Label className="text-foreground">Tillgängliga tider på julafton</Label>
@@ -868,7 +861,7 @@ const BecomeSantaOnboarding = () => {
                   <Button 
                     variant="hero" 
                     onClick={handleSubmitProfile}
-                    disabled={!profile.pricePerQuarter || selectedTimes.length === 0 || loading}
+                    disabled={!profile.pricePerQuarter || !profile.city.trim() || selectedTimes.length === 0 || loading}
                     className="flex-1"
                   >
                     {loading ? (

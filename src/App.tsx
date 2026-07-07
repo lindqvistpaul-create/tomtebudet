@@ -1,36 +1,42 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 import { AuthProvider } from "@/hooks/useAuth";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import PrelaunchInfo from "./pages/PrelaunchInfo";
 import FamilyInterest from "./pages/FamilyInterest";
-import BecomeSantaOnboarding from "./pages/BecomeSantaOnboarding";
-import SantaDashboard from "./pages/SantaDashboard";
-import UserDashboard from "./pages/UserDashboard";
-import HowItWorksPage from "./pages/HowItWorksPage";
-import PrivacySecurityPage from "./pages/PrivacySecurityPage";
-import ContactPage from "./pages/ContactPage";
-import TermsPage from "./pages/TermsPage";
 import Auth from "./pages/Auth";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
-import AdminLayout from "./pages/admin/AdminLayout";
-import AdminOverview from "./pages/admin/AdminOverview";
-import AdminBookings from "./pages/admin/AdminBookings";
-import AdminSantas from "./pages/admin/AdminSantas";
-import AdminSantaReview from "./pages/admin/AdminSantaReview";
-import AdminFamilyInterest from "./pages/admin/AdminFamilyInterest";
-import AdminCustomers from "./pages/admin/AdminCustomers";
-import AdminCancellations from "./pages/admin/AdminCancellations";
-import AdminSettings from "./pages/admin/AdminSettings";
+
+// Non-critical routes are lazy-loaded to keep the initial bundle small
+const SearchSantas = lazy(() => import("./pages/SearchSantas"));
+const SantaProfile = lazy(() => import("./pages/SantaProfile"));
+const BecomeSantaOnboarding = lazy(() => import("./pages/BecomeSantaOnboarding"));
+const SantaDashboard = lazy(() => import("./pages/SantaDashboard"));
+const UserDashboard = lazy(() => import("./pages/UserDashboard"));
+const HowItWorksPage = lazy(() => import("./pages/HowItWorksPage"));
+const PrivacySecurityPage = lazy(() => import("./pages/PrivacySecurityPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const TermsPage = lazy(() => import("./pages/TermsPage"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
+const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
+const AdminBookings = lazy(() => import("./pages/admin/AdminBookings"));
+const AdminSantas = lazy(() => import("./pages/admin/AdminSantas"));
+const AdminSantaReview = lazy(() => import("./pages/admin/AdminSantaReview"));
+const AdminFamilyInterest = lazy(() => import("./pages/admin/AdminFamilyInterest"));
+const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers"));
+const AdminCancellations = lazy(() => import("./pages/admin/AdminCancellations"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 
 const queryClient = new QueryClient();
 
@@ -40,6 +46,13 @@ function PageTracker() {
   return null;
 }
 
+// Minimal centered spinner shown while a lazy-loaded route loads
+const RouteFallback = () => (
+  <div className="min-h-screen bg-background flex items-center justify-center">
+    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+  </div>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -48,7 +61,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <PageTracker />
-          <Routes>
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
             {/* Public routes */}
             <Route path="/" element={<Index />} />
             <Route path="/sa-funkar-det" element={<HowItWorksPage />} />
@@ -62,9 +76,11 @@ const App = () => (
             <Route path="/aterstall-losenord" element={<ResetPassword />} />
             <Route path="/intresse-familj" element={<FamilyInterest />} />
             
-            {/* PRELAUNCH: Customer booking routes redirect to info page */}
-            <Route path="/sok" element={<PrelaunchInfo />} />
-            <Route path="/tomte/:id" element={<PrelaunchInfo />} />
+            {/* Public santa profiles – live since Sept 1 */}
+            <Route path="/sok" element={<SearchSantas />} />
+            <Route path="/tomte/:id" element={<SantaProfile />} />
+
+            {/* PRELAUNCH: Booking routes redirect to info page until Nov/Dec */}
             <Route path="/boka/:id" element={<PrelaunchInfo />} />
             <Route path="/betala/:id" element={<PrelaunchInfo />} />
             <Route path="/bekraftelse/:bookingId" element={<PrelaunchInfo />} />
@@ -104,7 +120,8 @@ const App = () => (
             
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
